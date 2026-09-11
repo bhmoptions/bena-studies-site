@@ -1,7 +1,7 @@
 import * as T from 'three';
 import { OrbitControls } from '../../../../../assets/vendor/three/OrbitControls.js';
-import { createWorkshopAssets, ANGLES } from './modelos.mjs?v=puzzles-json-3';
-import { SIDES, total, balanceTilt, valuesForSide } from './logica.mjs?v=puzzles-json-3';
+import { createWorkshopAssets, ANGLES } from './modelos.mjs?v=puzzles-json-4';
+import { SIDES, total, balanceTilt, valuesForSide } from './logica.mjs?v=puzzles-json-4';
 import { createBoxEffects } from './efeitos.mjs';
 import { createBoxControls } from './controles-caixa.mjs';
 import { MECHANISMS } from './mecanismos.mjs';
@@ -52,7 +52,7 @@ export function createScene(host,config,callbacks,reducedMotion=false) {
     scale.root.rotation.y=ANGLES[side];scale.root.position.set(Math.sin(ANGLES[side])*4.6,0,Math.cos(ANGLES[side])*4.6);
     scene.add(scale.root);scales[side]=scale;placed[side]={left:[],right:[]};
     // The clue belongs to the physical mechanism: a colored note rests at its right.
-    const hint=assets.makeHintPaper(side,config.targets[side]);hint.position.set(side==='purple'?2.45:1.72,0,.18);hint.rotation.y=-.08;scale.root.add(hint);
+    const hint=assets.makeHintPaper(side,config.targets[side],config.hints?.[side]);hint.position.set(side==='purple'?2.45:1.72,0,.18);hint.rotation.y=-.08;scale.root.add(hint);
     for(const [pan,group]of Object.entries(scale.pans))hit(group,side==='purple'?1.7:2.1,.22,side==='purple'?1.7:2.1,new T.Vector3(0,.15,0),{kind:'pan',side,pan});
     const f=box.faces[side];
     hit(f.panel,2.6,2.4,.18,new T.Vector3(0,1.65,1.45),{kind:'face',side});
