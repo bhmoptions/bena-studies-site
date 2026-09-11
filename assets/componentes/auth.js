@@ -35,11 +35,17 @@ window.BENA_AUTH = {
     if (!user) return;
     try {
       const token = await user.getIdToken();
-      await fetch('/api/registro-aluno', {
+      const res = await fetch('/api/registro-aluno', {
         method:  'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body:    JSON.stringify({ nome, serie: serie ?? window.BENA_CONFIG?.serieAtual ?? null }),
       });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        console.error('[BENA_AUTH] sincronizarAluno erro:', res.status, data);
+      } else {
+        console.log('[BENA_AUTH] sincronizarAluno sucesso:', data);
+      }
     } catch (e) {
       console.warn('[BENA_AUTH] sincronizarAluno falhou:', e.message);
     }
@@ -319,7 +325,11 @@ loginBtn.onclick = showLoginModal;
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     const snap = await getDoc(doc(db, 'usuarios', user.uid));
-    updateLoginBtn(user, snap.exists() ? snap.data().nome : null);
+    const nome = snap.exists() ? snap.data().nome : null;
+    updateLoginBtn(user, nome);
+    if (nome) {
+      window.BENA_AUTH.sincronizarAluno(nome);
+    }
   } else {
     updateLoginBtn(null, null);
   }
