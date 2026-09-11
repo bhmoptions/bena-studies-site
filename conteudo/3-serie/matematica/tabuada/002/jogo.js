@@ -21,12 +21,14 @@
         {left:590,right:710,top:140}, {left:345,right:435,top:90}
       ];
       const hazards = [
-        {x:225,y:382,w:60,h:23}, {x:525,y:382,w:66,h:23},
-        {x:350,y:227,w:100,h:22,hanging:true}, {x:646,y:116,w:58,h:24},
-        {x:80,y:0,w:90,h:22,hanging:true},
-        {x:65,y:157,w:80,h:22,hanging:true},
-        {x:370,y:102,w:40,h:22,hanging:true},
-        {x:615,y:152,w:90,h:22,hanging:true}
+        {x:225,y:382,w:60,h:23},                // 1. Chão (esquerda)
+        {x:525,y:382,w:66,h:23},                // 2. Chão (direita)
+        {x:350,y:227,w:100,h:22,hanging:true},  // 3. Suspenso sob o computador (o verde)
+        {x:646,y:116,w:58,h:24},                // 4. Em cima da plataforma direita
+        {x:80,y:0,w:90,h:22,hanging:true},      // 5. Suspenso no teto (superior esquerdo)
+        {x:65,y:157,w:80,h:22,hanging:true},    // 6. Suspenso sob a plataforma esquerda
+        {x:370,y:102,w:40,h:22,hanging:true},   // 7. Suspenso sob a plataforma do topo
+        {x:615,y:152,w:90,h:22,hanging:true}    // 8. Suspenso sob a plataforma direita
       ];
       let respawnDelay = 0;
       function roomGeometry() {
