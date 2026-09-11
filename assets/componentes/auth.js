@@ -1,4 +1,4 @@
-﻿// Firebase Auth + Firestore — Bena Studies
+// Firebase Auth + Firestore — Bena Studies
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
@@ -28,6 +28,41 @@ window.BENA_AUTH = {
     return snap.exists() ? snap.data() : null;
   },
   logout: () => signOut(auth),
+
+  // Sincroniza o usuario com MySQL (chamado automaticamente apos login/nome)
+  sincronizarAluno: async (nome, serie) => {
+    const user = auth.currentUser;
+    if (!user) return;
+    try {
+      const token = await user.getIdToken();
+      await fetch('/api/registro-aluno', {
+        method:  'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ nome, serie: serie ?? window.BENA_CONFIG?.serieAtual ?? null }),
+      });
+    } catch (e) {
+      console.warn('[BENA_AUTH] sincronizarAluno falhou:', e.message);
+    }
+  },
+
+  // Salva resultado de partida no MySQL (chamado pelo jogo ao terminar)
+  salvarPartida: async (dados) => {
+    const user = auth.currentUser;
+    if (!user) return { ok: false, error: 'Nao autenticado' };
+    try {
+      const token = await user.getIdToken();
+      const res   = await fetch('/api/salvar-partida', {
+        method:  'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body:    JSON.stringify(dados),
+      });
+      return res.json();
+    } catch (e) {
+      console.warn('[BENA_AUTH] salvarPartida falhou:', e.message);
+      return { ok: false, error: e.message };
+    }
+  },
+
 };
 
 /* DOM */
@@ -111,6 +146,7 @@ function showLoginModal() {
       const cred = await signInWithEmailAndPassword(auth, email, pass);
       const snap = await getDoc(doc(db, 'usuarios', cred.user.uid));
       if (snap.exists()) {
+        window.BENA_AUTH.sincronizarAluno(snap.data().nome); // sync com MySQL (non-blocking)
         modal.close();
       } else {
         showNomeModal(cred.user);
@@ -191,6 +227,7 @@ function showNomeModal(user) {
         return;
       }
       await salvarPerfil(user.uid, user.email, nome);
+      window.BENA_AUTH.sincronizarAluno(nome); // sync com MySQL (non-blocking)
       updateLoginBtn(user, nome);
       modal.close();
     } catch (err) {
@@ -248,6 +285,7 @@ function showEditarNomeModal(user, perfil) {
         return;
       }
       await atualizarNome(user.uid, nomeAtual, novoNome);
+      window.BENA_AUTH.sincronizarAluno(novoNome); // sync com MySQL (non-blocking)
       updateLoginBtn(user, novoNome);
       modal.close();
     } catch (err) {
