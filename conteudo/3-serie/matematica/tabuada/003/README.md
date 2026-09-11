@@ -101,9 +101,12 @@ As três balanças de ponteiro leem as configurações de
 o jogo sorteia uma entrada até 24 para a azul, uma de 25 a 40 para a amarela e
 uma acima de 40 para a vermelha. Cada uma mostra somente os seus cinco frascos
 e aceita exclusivamente os pares `correct` do arquivo — não são inferidos
-novos pares pela multiplicação. Os frascos comportam de 2 a 12 bolinhas. A
-balança roxa continua com sua regra própria de equilibrar dois tipos diferentes
-de frasco, usando os cinco frascos da prateleira azul.
+novos pares pela multiplicação. Os frascos comportam de 2 a 12 bolinhas.
+Além disso, as três balanças recebem aleatoriamente uma operação cada (1 soma, 1 subtração
+e 1 divisão, sem repetição) a partir de `assets/files/3rd grade/math/003/Contas.json`. O bilhete
+físico exibe a dica correspondente: "Essa é fácil..." com `X + Y = ?`, "Vamos subtrair?"
+com `X - Y = ?` ou "Você sabe dividir?" com `X ÷ Y = ?`. A balança roxa continua com
+sua regra própria de equilibrar dois tipos diferentes de frasco, usando os cinco frascos da prateleira azul.
 As relações da roxa são verificadas entre tipos diferentes com no máximo
 dez frascos por prato. As oito configurações recentes orientam a antirrepetição.
 
