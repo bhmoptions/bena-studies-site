@@ -2,7 +2,7 @@ const {chromium}=require('C:/Users/Felippe/.cache/codex-runtimes/codex-primary-r
 (async()=>{const b=await chromium.launch({executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',headless:true});try{
 const p=await b.newPage({viewport:{width:1440,height:900}});const errors=[];p.on('pageerror',e=>errors.push(e.message));
 await p.goto('http://localhost:8765/conteudo/3-serie/matematica/tabuada/002/index.html');
-if(await p.locator('.lab-ledge').count()!==7||await p.locator('.electric-arc').count()!==4)throw Error('Geometria');
+if(await p.locator('.lab-ledge').count()!==7||await p.locator('.electric-arc').count()!==8)throw Error('Geometria');
 await p.locator('.room-console').click();await p.locator('[data-choice="0"]').click();await p.locator('.room-puzzle h3').focus();
 await p.keyboard.down('ArrowRight');await p.locator('.electrocuted').waitFor();await p.keyboard.up('ArrowRight');await p.locator('.electrocuted').waitFor({state:'detached'});
 const position=await p.locator('.room-player').evaluate(e=>[parseFloat(e.style.left),parseFloat(e.style.top)]);
