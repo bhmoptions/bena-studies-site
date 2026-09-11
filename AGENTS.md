@@ -20,6 +20,19 @@ Antes de criar ou alterar jogos ou ranking, leia e siga [Regras de pontuação](
 ## Páginas de jogos
 As páginas dos jogos NÃO devem ter hero section ou footer. Apenas a área efetiva do jogo e área de instruções, dicas, ferramentas, comandos, etc...
 
+### Padrão obrigatório de cabeçalho dos jogos
+Todas as páginas próprias de jogos e templates de jogos devem seguir estritamente o seguinte padrão de cabeçalho (`<header class="game-template-header">`):
+1. **Estrutura e elementos**:
+   - Elemento da esquerda: link para retornar (`<a href="...">← Voltar aos jogos</a>`).
+   - Elemento da direita: marca do site (`<span>Bena Studies <b>✦</b></span>`).
+   - **NÃO incluir o nome do jogo no cabeçalho** (apenas os dois elementos acima, alinhados às extremidades via `display: flex; justify-content: space-between; align-items: center;`).
+2. **Estilo visual**:
+   - Fundo sólido na cor `#191d29` (sem transparência e sem o padrão quadriculado/grid de caderno visível no cabeçalho).
+   - Borda inferior sutil `1px solid #303646`.
+   - Altura padrão de 62px com preenchimento lateral `padding: 0 clamp(18px, 3vw, 32px)`.
+   - Marca "Bena Studies" em tipografia serif/display de 22px (`font-family: var(--display, Georgia), serif; font-size: 22px; color: #f3ecdc;`).
+   - Símbolo `✦` em destaque dourado/brass (`#d7b36a`).
+
 ## Servidor
 Quando o usuário pedir para abrir o servidor, use "http://localhost:8765/"
 

@@ -31,14 +31,21 @@
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 0 32px;
-  border-bottom: 1px solid var(--template-edge);
-  font-size: 12px;
+  padding: 0 clamp(18px, 3vw, 32px);
+  border-bottom: 1px solid #303646;
+  background: #191d29;
+  font-size: 13px;
+  box-sizing: border-box;
 }
 
 .game-template-header a {
   color: var(--template-muted);
   text-decoration: none;
+  font-weight: 700;
+}
+
+.game-template-header a:hover {
+  color: var(--template-brass);
 }
 
 .game-template-header > span:nth-child(2) {
@@ -47,11 +54,6 @@
 }
 
 .game-template-header b { color: var(--template-brass); }
-
-.game-template-header > span:last-child {
-  color: var(--template-muted);
-  font-size: 11px;
-}
 
 .game-template-layout {
   display: grid;

@@ -32,21 +32,24 @@
   outline-offset: 3px;
 }
 
-/* Cabeçalho do template */
+/* Cabeçalho do template padronizado (fundo sólido escuro #191d29) */
 .game-template-header {
   height: 62px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 0 32px;
-  border-bottom: 1px solid var(--template-edge);
-  font-size: 12px;
+  padding: 0 clamp(18px, 3vw, 32px);
+  border-bottom: 1px solid #303646;
+  background: #191d29;
+  font-size: 13px;
+  box-sizing: border-box;
 }
 
 .game-template-header a {
   color: var(--template-muted);
   text-decoration: none;
+  font-weight: 700;
 }
 
 .game-template-header a:hover {
@@ -60,11 +63,6 @@
 
 .game-template-header b {
   color: var(--template-brass);
-}
-
-.game-title-label {
-  color: var(--template-muted);
-  font-size: 11px;
 }
 
 /* Layout Exato do Template de Duas Áreas */
@@ -298,10 +296,16 @@
   border-radius: 8px;
 }
 
-/* Adaptação do Mascote sobre o fundo bege */
-.helix-sidebar .mascot-feedback:is(.success, .error) .mascot-caption,
-.helix-sidebar .mascot-feedback .mascot-equation {
+/* Adaptação do Mascote sobre o painel lateral:
+   Em estado neutro (ready), preserva var(--panel-ink) sobre o bege.
+   Em erro ou sucesso (fundo escuro/colorido), força #fff6e9 para alto contraste legível! */
+.helix-sidebar .mascot-feedback.ready .mascot-caption {
   color: var(--panel-ink);
+}
+
+.helix-sidebar .mascot-feedback:is(.success, .error) .mascot-caption,
+.helix-sidebar .mascot-feedback:is(.success, .error) .mascot-equation {
+  color: #fff6e9 !important;
 }
 
 /* Tela de Resultado Final */

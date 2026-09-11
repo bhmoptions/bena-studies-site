@@ -98,3 +98,41 @@ dialog .mascot-hint p { color: #fff6e9; font-size: 14px; line-height: 1.6; margi
 .score-value { display: block; font-family: 'Fredoka', sans-serif; font-size: 34px; color: var(--accent); margin-bottom: 8px; }
 .score-summary p { margin-top: 5px; }
 dialog .timing-note { font-size: 12px; margin-top: 6px; }
+
+/* Padrão oficial de cabeçalho para páginas de jogos */
+.game-template-header {
+  height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0 clamp(18px, 3vw, 32px);
+  border-bottom: 1px solid #303646;
+  background-color: #191d29;
+  background-image: none;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.game-template-header a {
+  color: #b6bac9;
+  text-decoration: none;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+}
+
+.game-template-header a:hover {
+  color: #d7b36a;
+}
+
+.game-template-header > span:nth-child(2) {
+  font-family: var(--display, Georgia), serif;
+  font-size: 22px;
+  color: #f3ecdc;
+}
+
+.game-template-header b {
+  color: #d7b36a;
+}
+

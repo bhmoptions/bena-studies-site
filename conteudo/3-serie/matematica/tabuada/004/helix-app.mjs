@@ -70,7 +70,7 @@ export function createHelixGame(container, callbacks) {
       if (!pairs.some(p => p.a === a && p.b === b)) pairs.push({ a, b });
     }
 
-    return pairs.map(({ a, b }) => {
+    return pairs.map(({ a, b }, platformIndex) => {
       const correct = a * b;
       const wrongPool = new Set();
       if (b > 1) wrongPool.add(a * (b - 1));
@@ -91,18 +91,31 @@ export function createHelixGame(container, callbacks) {
       const wrong1 = wrongArr[0] || (correct + 3);
       const wrong2 = wrongArr[1] || (correct - 3 > 0 ? correct - 3 : correct + 4);
 
-      // Alternância obrigatória: [Vazia, Resposta, Vazia, Resposta, Vazia, Resposta]
-      // Setor 0 é VAZIO para a bolinha quicar com segurança no início de cada plataforma!
-      const answerIndices = [1, 3, 5];
+      // Alternância obrigatória de 6 seções (3 vazias e 3 respostas intercaladas).
+      // Plataforma par (0, 2, 4...): vazias em [0, 2, 4], respostas em [1, 3, 5].
+      // Plataforma ímpar (1, 3, 5...): vazias em [1, 3, 5], respostas em [0, 2, 4].
+      // Desta forma, a seção logo abaixo da resposta certa da plataforma anterior é 100% garantida como VAZIA!
+      const isEvenPlat = platformIndex % 2 === 0;
+      const answerIndices = isEvenPlat ? [1, 3, 5] : [0, 2, 4];
       const correctIndex = answerIndices[Math.floor(Math.random() * answerIndices.length)];
       const remainingIndices = answerIndices.filter(i => i !== correctIndex);
 
-      const sectors = Array(6).fill(null).map((_, idx) => ({
-        index: idx,
-        isEmpty: idx % 2 === 0, // 0, 2, 4 são vazias
-        isCorrect: idx === correctIndex,
-        value: idx === correctIndex ? correct : (idx === remainingIndices[0] ? wrong1 : (idx === remainingIndices[1] ? wrong2 : null))
-      }));
+      const sectors = Array(6).fill(null).map((_, idx) => {
+        const isEmpty = isEvenPlat ? (idx % 2 === 0) : (idx % 2 === 1);
+        const isCorrect = idx === correctIndex;
+        let value = null;
+        if (!isEmpty) {
+          if (idx === correctIndex) value = correct;
+          else if (idx === remainingIndices[0]) value = wrong1;
+          else if (idx === remainingIndices[1]) value = wrong2;
+        }
+        return {
+          index: idx,
+          isEmpty,
+          isCorrect,
+          value
+        };
+      });
 
       return {
         a, b, correct,

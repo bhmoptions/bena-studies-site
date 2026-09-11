@@ -2,8 +2,11 @@
 
 /* Página própria: sem moldura, sobreposição ou limite de altura de modal. */
 body.standalone-game{background:var(--paper);min-height:100dvh}
-.game-page-header{padding:18px clamp(18px,3vw,48px);display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line);font-size:13px}
-.game-page-header>a{font-weight:700}.game-page-header>span{font-family:'Fredoka',sans-serif;color:var(--muted)}
+.game-template-header, .game-page-header{height:62px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 clamp(18px,3vw,32px);border-bottom:1px solid #303646;background:#191d29;font-size:13px;box-sizing:border-box}
+.game-template-header>a, .game-page-header>a{font-weight:700;color:var(--muted);text-decoration:none}
+.game-template-header>a:hover, .game-page-header>a:hover{color:#d7b36a}
+.game-template-header>span, .game-page-header>span{font-family:var(--display,Georgia),serif;font-size:22px;color:var(--ink)}
+.game-template-header b, .game-page-header b{color:#d7b36a}
 .room-page.room-dialog{width:100%;max-height:none;min-height:calc(100dvh - 58px);padding:clamp(20px,3vw,48px);margin:0}
 .room-page .room-layout{grid-template-columns:minmax(0,1fr) minmax(310px,380px);gap:clamp(20px,3vw,42px)}
 .room-page .room-world{width:100%}.room-page .room-top{padding-right:0}.room-page .room-top h2{font-size:clamp(32px,3.5vw,52px)}
