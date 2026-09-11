@@ -52,10 +52,10 @@ const { chromium } = require('C:/Users/Felippe/.cache/codex-runtimes/codex-prima
     assert.equal(scoreText.trim(), '0', 'Pontos iniciais devem ser 0');
     assert.match(questionText.trim(), /^\d+\s*×\s*\d+\s*=\s*\?$/, 'Formato de pergunta válido');
 
-    console.log('6. Testando controles de rotação e alinhando número...');
-    await page.locator('#btn-rotate-left').click();
-    await page.waitForTimeout(300);
-    await page.locator('#btn-rotate-left').click();
+    console.log('6. Testando controles de rotação por teclado...');
+    await page.keyboard.press('ArrowLeft');
+    await page.waitForTimeout(200);
+    await page.keyboard.press('ArrowLeft');
     await page.waitForTimeout(600);
 
     console.log('7. Capturando screenshot desktop com número em foco...');

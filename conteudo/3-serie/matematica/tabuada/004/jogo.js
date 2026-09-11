@@ -27,8 +27,6 @@
       const currentQuestion = container.querySelector('#current-question');
       const feedbackEl = container.querySelector('.feedback');
       const floatingScore = container.querySelector('#floating-score');
-      const btnRotateLeft = container.querySelector('#btn-rotate-left');
-      const btnRotateRight = container.querySelector('#btn-rotate-right');
       const activeSection = container.querySelector('#helix-active-section');
       const questionCard = container.querySelector('#helix-question-card');
       const resultCard = container.querySelector('#helix-result-card');
@@ -147,14 +145,6 @@
             </div>
           `;
         });
-      }
-
-      // Eventos de rotação por botões
-      if (btnRotateLeft) {
-        btnRotateLeft.onclick = () => helixInstance?.rotateLeft();
-      }
-      if (btnRotateRight) {
-        btnRotateRight.onclick = () => helixInstance?.rotateRight();
       }
 
       // Botão de jogar de novo

@@ -106,7 +106,7 @@ export function createHelixGame(container, callbacks) {
 
       return {
         a, b, correct,
-        hint: `${a} × ${b} é o mesmo que somar ${Array(b).fill(a).join(' + ')} (${correct}).`,
+        hint: `${a} × ${b} é o mesmo que somar ${Array(b).fill(a).join(' + ')}.`,
         sectors
       };
     });
@@ -116,23 +116,23 @@ export function createHelixGame(container, callbacks) {
   function createNumberTexture(number) {
     const canvas = document.createElement('canvas');
     canvas.width = 512;
-    canvas.height = 384;
+    canvas.height = 512;
     const ctx = canvas.getContext('2d');
 
-    ctx.clearRect(0, 0, 512, 384);
+    ctx.clearRect(0, 0, 512, 512);
 
-    // Contorno escuro para contraste impecável sobre o azul
-    ctx.font = '900 160px system-ui, -apple-system, sans-serif';
+    // Contorno escuro espesso para contraste impecável sobre o azul
+    ctx.font = '900 200px system-ui, -apple-system, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    ctx.strokeStyle = 'rgba(5, 20, 55, 0.85)';
-    ctx.lineWidth = 18;
-    ctx.strokeText(String(number), 256, 192);
+    ctx.strokeStyle = 'rgba(0, 15, 45, 0.95)';
+    ctx.lineWidth = 22;
+    ctx.strokeText(String(number), 256, 256);
 
     // Texto em branco puro
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(String(number), 256, 192);
+    ctx.fillText(String(number), 256, 256);
 
     const texture = new THREE.CanvasTexture(canvas);
     texture.generateMipmaps = true;
@@ -173,6 +173,7 @@ export function createHelixGame(container, callbacks) {
   scene.add(rimLight);
 
   // Materiais das Plataformas
+  // Seções com Resposta (Fundo Azul)
   const matTopBlue = new THREE.MeshStandardMaterial({
     color: '#1a6cd4',
     roughness: 0.32,
@@ -183,6 +184,19 @@ export function createHelixGame(container, callbacks) {
     roughness: 0.45,
     metalness: 0.2
   });
+
+  // Seções Vazias (Fundo Branco)
+  const matTopWhite = new THREE.MeshStandardMaterial({
+    color: '#ffffff',
+    roughness: 0.22,
+    metalness: 0.05
+  });
+  const matSideWhite = new THREE.MeshStandardMaterial({
+    color: '#d4dde8',
+    roughness: 0.4,
+    metalness: 0.1
+  });
+
   const matErrorTop = new THREE.MeshStandardMaterial({
     color: '#d93829',
     roughness: 0.32,
@@ -227,22 +241,30 @@ export function createHelixGame(container, callbacks) {
 
     const group = new THREE.Group();
 
-    const mesh = new THREE.Mesh(geom, [matTopBlue, matSideBlue]);
+    // Seção vazia: branca | Seção com resposta: azul
+    const sectorMats = sectorData.isEmpty
+      ? [matTopWhite, matSideWhite]
+      : [matTopBlue, matSideBlue];
+    const mesh = new THREE.Mesh(geom, sectorMats);
     group.add(mesh);
 
-    // Se tiver número, adiciona o rótulo de texto nítido na superfície superior
+    // Se tiver número, adiciona o rótulo de texto nítido na superfície superior (plano e sem afundar)
     let labelMesh = null;
     if (sectorData.value !== null && sectorData.value !== undefined) {
-      const labelGeom = new THREE.PlaneGeometry(1.9, 1.4);
-      labelGeom.rotateZ(Math.PI); // inverte para orientação correta voltada para o jogador
-      labelGeom.rotateX(-Math.PI / 2 + 0.35); // inclinado para a câmera
+      const labelGeom = new THREE.PlaneGeometry(1.85, 1.85);
+      labelGeom.rotateX(-Math.PI / 2); // plano sobre o topo, com topo do número apontando para o centro (leitura natural de frente)
       const labelMat = new THREE.MeshBasicMaterial({
         map: createNumberTexture(sectorData.value),
         transparent: true,
-        depthWrite: false
+        depthWrite: false,
+        side: THREE.DoubleSide, // visível sem culling
+        polygonOffset: true,
+        polygonOffsetFactor: -4,
+        polygonOffsetUnits: -4
       });
       labelMesh = new THREE.Mesh(labelGeom, labelMat);
-      labelMesh.position.set(0, PLATFORM_THICKNESS + 0.025, 2.35);
+      labelMesh.renderOrder = 10;
+      labelMesh.position.set(0, PLATFORM_THICKNESS + 0.045, 2.25);
       group.add(labelMesh);
     }
 
