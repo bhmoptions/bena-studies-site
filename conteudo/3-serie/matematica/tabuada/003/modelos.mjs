@@ -198,7 +198,7 @@ export function createWorkshopAssets() {
     root.scale.setScalar(size); batch(root);
     return root;
   }
-  function makeHintPaper(side, target) {
+  function makeHintPaper(side, target, hint = null) {
     const root=new T.Group(), paperColors={blue:'#8cdbef',red:'#f3ad9f',yellow:'#f5d56f',purple:'#cbb2ed'};
     const c=canvas(900,560,(ctx,w,h)=>{
       ctx.fillStyle=paperColors[side];ctx.fillRect(0,0,w,h);
@@ -211,8 +211,13 @@ export function createWorkshopAssets() {
         ctx.fillText('Mesmo número,',w/2,245);ctx.fillText('contas diferentes...',w/2,325);
         ctx.font='34px Arial';ctx.fillText('Os dois pratos devem usar frascos diferentes entre si.',w/2,421);ctx.fillText('Cada prato deve usar o mesmo tipo de frasco.',w/2,461);
       }else{
-        ctx.fillText('Alcance a marca',w/2,245);ctx.font='bold 98px Georgia';ctx.fillText(String(target)+' bolinhas',w/2,345);
-        ctx.font='34px Arial';ctx.fillText('Forme grupos de frascos iguais.',w/2,431);
+        const title = hint?.title || 'Alcance a marca';
+        const expr = hint?.expression || (String(target) + ' bolinhas');
+        ctx.fillText(title, w / 2, 245);
+        ctx.font = 'bold 98px Georgia';
+        ctx.fillText(expr, w / 2, 345);
+        ctx.font = '34px Arial';
+        ctx.fillText('Forme grupos de frascos iguais.', w / 2, 431);
       }
     });
     const mat=new T.MeshBasicMaterial({map:texture(c),side:T.DoubleSide});materials.add(mat);
