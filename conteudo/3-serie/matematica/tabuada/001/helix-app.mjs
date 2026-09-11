@@ -72,6 +72,8 @@ export function createHelixGame(container, callbacks) {
       if (!pairs.some(p => p.a === a && p.b === b)) pairs.push({ a, b });
     }
 
+    let lastLandingSector = 0; // Na plataforma inicial (índice 0), a bolinha começa alinhada no setor frontal 0
+
     return pairs.map(({ a, b }, platformIndex) => {
       const correct = a * b;
       const wrongPool = new Set();
@@ -104,7 +106,26 @@ export function createHelixGame(container, callbacks) {
       // Desta forma, a seção logo abaixo da resposta certa da plataforma anterior é 100% garantida como VAZIA!
       const isEvenPlat = platformIndex % 2 === 0;
       const answerIndices = isEvenPlat ? [1, 3, 5, 7] : [0, 2, 4, 6];
-      const correctIndex = answerIndices[Math.floor(Math.random() * answerIndices.length)];
+
+      // Seção onde a bolinha aterrissa nesta plataforma:
+      // Na plataforma 0, ela inicia sobre o setor 0. Nas seguintes, cai no setor onde a plataforma anterior quebrou.
+      const landingSector = lastLandingSector;
+      const adjacentIndices = [
+        (landingSector - 1 + SECTORS_PER_PLATFORM) % SECTORS_PER_PLATFORM,
+        (landingSector + 1) % SECTORS_PER_PLATFORM
+      ];
+      const distantIndices = answerIndices.filter(i => !adjacentIndices.includes(i));
+
+      // Sorteio enviesado: ~33.33% (1/3) de chance de estar adjacente (lado direito ou esquerdo)
+      // e ~66.67% (2/3) de estar em posições distantes (exigindo maior rotação da torre).
+      let correctIndex;
+      if (Math.random() < 1 / 3) {
+        correctIndex = adjacentIndices[Math.floor(Math.random() * adjacentIndices.length)];
+      } else {
+        correctIndex = distantIndices[Math.floor(Math.random() * distantIndices.length)];
+      }
+      lastLandingSector = correctIndex;
+
       const remainingIndices = answerIndices.filter(i => i !== correctIndex);
 
       const sectors = Array(SECTORS_PER_PLATFORM).fill(null).map((_, idx) => {
