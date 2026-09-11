@@ -1,0 +1,108 @@
+/* Template visual inspirado no jogo Matemática / Tabuada / 03. */
+.game-template-page {
+  --template-bg: #191d29;
+  --template-ink: #f4ead6;
+  --template-muted: #b6c4bf;
+  --template-brass: #d7b36a;
+  --template-edge: #5b6256;
+  --template-side: #f0e5cb;
+  background: var(--template-bg);
+  color: var(--template-ink);
+  margin: 0;
+  min-width: 320px;
+}
+
+.game-template-page *,
+.game-template-page *::before,
+.game-template-page *::after { box-sizing: border-box; }
+
+.game-template-page a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.game-template-page a:focus-visible {
+  outline: 3px solid var(--template-brass);
+  outline-offset: 3px;
+}
+
+.game-template-header {
+  height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0 32px;
+  border-bottom: 1px solid var(--template-edge);
+  font-size: 12px;
+}
+
+.game-template-header a {
+  color: var(--template-muted);
+  text-decoration: none;
+}
+
+.game-template-header > span:nth-child(2) {
+  font-family: var(--display, Georgia), serif;
+  font-size: 22px;
+}
+
+.game-template-header b { color: var(--template-brass); }
+
+.game-template-header > span:last-child {
+  color: var(--template-muted);
+  font-size: 11px;
+}
+
+.game-template-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 348px;
+  gap: 20px;
+  height: calc(100dvh - 114px);
+  padding: 26px clamp(8px, 1.5vw, 28px);
+}
+
+.game-template-main {
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--template-edge);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--template-bg);
+}
+
+.game-template-side {
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--template-brass);
+  border-radius: 9px;
+  background: var(--template-side);
+  box-shadow: inset 0 0 0 4px var(--template-side), inset 0 0 0 5px #cbb990;
+}
+
+@media (min-width: 1600px) {
+  .game-template-layout { grid-template-columns: minmax(0, 1fr) 380px; }
+}
+
+@media (max-width: 1150px) {
+  .game-template-layout { gap: 12px; grid-template-columns: minmax(0, 1fr) 325px; padding: 22px 18px; }
+}
+
+@media (max-width: 850px) {
+  .game-template-header { padding: 0 18px; }
+  .game-template-header > span:last-child { display: none; }
+  .game-template-layout { grid-template-columns: 1fr; height: auto; min-height: calc(100dvh - 62px); }
+  .game-template-main { height: 480px; min-height: 400px; }
+  .game-template-side { min-height: 240px; }
+}
+
+@media (max-width: 460px) {
+  .game-template-header { height: 54px; font-size: 11px; }
+  .game-template-header > span:nth-child(2) { font-size: 18px; }
+  .game-template-layout { min-height: calc(100dvh - 54px); padding: 20px 10px 12px; }
+  .game-template-main { height: 400px; min-height: 0; }
+  .game-template-side { min-height: 200px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-template-page * { animation: none !important; transition: none !important; }
+}
