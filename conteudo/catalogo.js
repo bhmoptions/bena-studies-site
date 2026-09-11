@@ -22,6 +22,10 @@ window.BENA_CONTEUDO = {
           descricao: 'Quatro mecanismos, frascos e um segredo em uma oficina 3D.',
           arquivo: 'matematica/tabuada/003/jogo.js',
           pagina: 'matematica/tabuada/003/index.html'
+        }, {
+          id: '004', nome: 'Tabuada Race2',
+          descricao: 'Dez contas para praticar no seu ritmo.',
+          arquivo: 'matematica/tabuada/004/jogo.js'
         }]
       }]
     }]

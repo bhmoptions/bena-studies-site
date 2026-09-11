@@ -17,6 +17,11 @@ window.BENA_CONFIG_PONTUACAO = {
     tempoAtivo: false,
     // Só terá efeito se tempoAtivo for true. Referência a calibrar com o responsável.
     tempoReferenciaSegundos: 120
+  },
+  '3-serie/matematica/tabuada/004': {
+    tempoAtivo: false,
+    // Só terá efeito se tempoAtivo for true. Referência a calibrar com o responsável.
+    tempoReferenciaSegundos: 120
   }
 };
 
