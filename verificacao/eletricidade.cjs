@@ -1,0 +1,25 @@
+const {chromium}=require('C:/Users/Felippe/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+(async()=>{const b=await chromium.launch({executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',headless:true});try{
+const p=await b.newPage({viewport:{width:1440,height:900}});const errors=[];p.on('pageerror',e=>errors.push(e.message));
+await p.goto('http://localhost:8765/conteudo/3-serie/matematica/tabuada/002/index.html');
+if(await p.locator('.lab-ledge').count()!==7||await p.locator('.electric-arc').count()!==4)throw Error('Geometria');
+await p.locator('.room-console').click();await p.locator('[data-choice="0"]').click();await p.locator('.room-puzzle h3').focus();
+await p.keyboard.down('ArrowRight');await p.locator('.electrocuted').waitFor();await p.keyboard.up('ArrowRight');await p.locator('.electrocuted').waitFor({state:'detached'});
+const position=await p.locator('.room-player').evaluate(e=>[parseFloat(e.style.left),parseFloat(e.style.top)]);
+if(Math.abs(position[0]-75/8)>.1||Math.abs(position[1]-373/4.25)>.1)throw Error('Spawn');
+if(!await p.locator('[data-choice="0"]').isDisabled())throw Error('Resposta perdida');
+await p.keyboard.press('ArrowUp');await p.waitForTimeout(900);
+const landed=await p.locator('.room-player').evaluate(e=>parseFloat(e.style.top));
+if(landed >= (405-32)/4.25)throw Error('Pulo não alcançou uma plataforma: '+landed);
+if(await p.locator('.room-game-title').textContent()!=='De novo essa fase?')throw Error('Título do jogo');
+if(await p.locator('.room-console small').count()||!await p.locator('.room-console img[src$="assets/images/TLA/Desktop.png"]').count())throw Error('Imagem do computador');
+if(!(await p.locator('.electric-arc--hanging').count()))throw Error('Arco suspenso');
+await p.reload();await p.locator('.room-console').click();await p.locator('[data-choice="1"]').click();await p.locator('.room-next').click();
+await p.getByRole('heading',{name:'Desta vez, falta uma peça'}).waitFor({timeout:7000});
+await p.reload();await p.locator('.room-console').click();await p.locator('[data-choice="1"]').click();
+await p.keyboard.down('ArrowRight');await p.waitForTimeout(450);await p.keyboard.press('ArrowUp');await p.waitForTimeout(1250);await p.keyboard.press('ArrowUp');await p.waitForTimeout(1700);await p.keyboard.up('ArrowRight');
+await p.getByRole('heading',{name:'Desta vez, falta uma peça'}).waitFor({timeout:7000});
+await p.screenshot({path:'verificacao/sala-eletrica.png',animations:'disabled'});
+await p.emulateMedia({reducedMotion:'reduce'});if(await p.locator('.arc-core').first().evaluate(e=>getComputedStyle(e).animationName)!=='none')throw Error('Movimento reduzido');
+if(errors.length)throw Error(errors.join('\n'));console.log('OK: geometria, computador, arco suspenso, choque, reaparecimento, salto e saídas automática/manual.');
+}finally{await b.close()}})().catch(e=>{console.error(e);process.exit(1)});

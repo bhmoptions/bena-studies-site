@@ -1,0 +1,30 @@
+// Cada tema pode ter vários jogos, organizados em pastas 001, 002, 003...
+window.BENA_CONTEUDO = {
+  3: {
+    nome: '3ª série',
+    materias: [{
+      id: 'matematica', nome: 'Matemática', simbolo: '×',
+      chamada: 'Uma ideia. Muitas soluções.',
+      descricao: 'Descubra os números e multiplique a diversão.',
+      temas: [{
+        nome: 'Tabuada',
+        jogos: [{
+          id: '001', nome: 'Desafio da tabuada',
+          descricao: 'Dez contas para praticar no seu ritmo.',
+          arquivo: 'matematica/tabuada/001/jogo.js'
+        }, {
+          id: '002', nome: 'De novo essa fase?',
+          descricao: 'Cinco portas. A mesma sala. Uma nova regra a cada vez.',
+          arquivo: 'matematica/tabuada/002/jogo.js',
+          pagina: 'matematica/tabuada/002/index.html'
+        }, {
+          id: '003', nome: 'A caixa dos produtos',
+          descricao: 'Quatro mecanismos, frascos e um segredo em uma oficina 3D.',
+          arquivo: 'matematica/tabuada/003/jogo.js',
+          pagina: 'matematica/tabuada/003/index.html'
+        }]
+      }]
+    }]
+  }
+};
+

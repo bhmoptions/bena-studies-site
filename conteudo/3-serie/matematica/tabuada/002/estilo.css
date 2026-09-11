@@ -1,0 +1,79 @@
+.room-dialog{width:min(1140px,calc(100% - 28px));padding:30px;max-height:94vh}.room-top{display:flex;justify-content:space-between;align-items:center;padding-right:28px}.room-top h2{font-size:40px;margin:6px 0 20px}.room-phase{font-size:12px;letter-spacing:2px;color:var(--accent);border:1px solid var(--line);padding:12px;border-radius:8px}.room-layout{display:grid;grid-template-columns:1.5fr 1fr;gap:24px;align-items:start}.room-world{--room-bg:#171e29;--room-line:#303f4e;--room-stone:#607689;--room-light:#f4cc7a;--room-dark:#0c121b;--room-green:#a9e6b6;position:relative;aspect-ratio:800/425;overflow:hidden;border:2px solid var(--room-stone);border-radius:12px;background:var(--room-bg);isolation:isolate}.room-grid{position:absolute;inset:0;background-image:linear-gradient(var(--room-line) 1px,transparent 1px),linear-gradient(90deg,var(--room-line) 1px,transparent 1px);background-size:6.25% 14.7%;opacity:.45}.room-wall-note{position:absolute;left:8%;top:10%;font:44px 'Kalam',cursive;color:var(--room-stone);transform:rotate(-8deg)}.room-wall-note small{display:block;font-size:12px;line-height:1}.room-window{position:absolute;left:32%;top:9%;height:23%;width:14%;border:6px solid var(--room-line);background:var(--room-dark);display:grid;place-items:center;color:var(--room-light);font-size:38px}.room-wire{position:absolute;left:50%;width:41%;height:50%;top:21%;border-top:3px solid var(--room-line);border-right:3px solid var(--room-line)}.powered .room-wire{border-color:var(--room-green)}.room-platform{position:absolute;background:var(--room-stone);height:4%;border-bottom:4px solid var(--room-line)}.platform-one{left:18.125%;top:65.88%;width:16.875%}.platform-two{left:60%;top:58.23%;width:16.875%}.room-floor{position:absolute;top:88.23%;bottom:0;width:100%;border-top:5px solid var(--room-stone);background:var(--room-line)}.room-floor-label{position:absolute;bottom:3%;left:4%;font-size:clamp(6px,1vw,9px);letter-spacing:2px;color:var(--room-stone)}.room-console{position:absolute;left:47%;top:65%;height:23.2%;width:10%;background:var(--room-stone);border:3px solid var(--room-dark);border-radius:5px;z-index:2;padding:2px;color:var(--room-dark)}.room-console span{display:block;background:var(--room-light);font:bold clamp(15px,3vw,30px) 'Fredoka',sans-serif;line-height:1.1}.room-console small{font-size:clamp(5px,.8vw,8px);font-weight:bold}.room-door{position:absolute;left:87%;top:49%;height:39.2%;width:10%;background:var(--room-dark);border:4px solid var(--room-stone);border-radius:28px 28px 0 0;padding:0;z-index:2;color:var(--room-stone)}.room-door b{font-size:clamp(6px,.8vw,9px)}.door-lamp{display:block;margin:8px auto;width:8px;height:8px;border-radius:50%;background:var(--accent)}.room-door i{position:absolute;bottom:24%;right:10%;width:4px;height:10px;background:var(--room-stone)}.room-door.unlocked{border-color:var(--room-green);background:var(--room-green);color:var(--room-dark);box-shadow:0 0 24px #a9e6b655}.unlocked .door-lamp{background:var(--room-dark)}.room-player{position:absolute;width:3.5%;height:9.41%;background:var(--room-light);border:2px solid var(--room-dark);border-radius:5px;z-index:3;pointer-events:none;box-shadow:0 3px 0 var(--room-dark)}.player-eyes{display:block;text-align:center;font:bold clamp(6px,1.5vw,16px) monospace;line-height:1;color:var(--room-dark)}.player-book{position:absolute;left:15%;right:15%;height:18%;bottom:12%;border-bottom:2px solid var(--room-dark)}.room-controls{display:flex;justify-content:space-between;gap:8px;margin-top:12px}.room-controls>div{display:flex;gap:6px}.room-controls button{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:12px;min-height:46px;touch-action:none}.room-controls small{opacity:.55;margin-left:5px}.room-help{font-size:11px!important;margin-top:12px}.room-status{font-size:13px!important;color:var(--accent)!important;min-height:45px;margin-top:8px}.room-puzzle h3{font-size:25px;margin:8px 0}.room-clue{font-size:14px!important}.room-puzzle .notebook-buddy{width:66px;height:66px}.room-puzzle .mascot-title{font-size:23px}.room-puzzle .mascot-equation{font-size:16px}.room-options{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}.room-options button{flex:1;min-width:65px;background:var(--white);border:2px solid var(--line);padding:15px 8px;border-radius:9px;font-size:17px}.room-options button.correct{border-color:var(--accent)}.room-options button.retry{opacity:.5}.room-options button[aria-pressed=true]{background:var(--accent);color:var(--accent-ink)}.room-adjust{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:18px}.room-adjust button{font-size:25px;background:var(--soft);border:1px solid var(--line);border-radius:8px;width:46px;height:46px}.room-adjust output{font-size:22px;font-family:'Fredoka',sans-serif}.room-crystals{color:var(--accent);font-size:20px;min-height:10px;margin-top:8px}.room-check{justify-content:center}.room-check:disabled{opacity:.5;cursor:default}.room-keys button{min-width:55px}.pair-state{font-size:12px!important;margin-top:8px}.panel-sleep{border:1px dashed var(--line);border-radius:10px;margin-top:18px;padding:20px;font-size:14px!important}.panel-sleep span{font-size:12px}.room-next{width:100%;gap:10px;margin-top:16px}.room-next[hidden]{display:none}.room-back{width:auto;font-size:12px;margin-top:18px}.room-finish{max-width:550px;margin:20px auto}.room-finish h2{font-size:38px}.room-dialog button:disabled{cursor:default}@media(max-width:850px){.room-layout{grid-template-columns:1fr}.room-dialog{padding:24px 16px}.room-top h2{font-size:32px}.room-phase{font-size:10px;padding:8px}.room-world{min-height:0}.room-controls button{font-size:12px;padding:10px}.room-puzzle{border-top:1px solid var(--line);padding-top:18px}.room-puzzle .notebook-buddy{width:74px;height:74px}.room-status{min-height:0}.room-top{padding-right:20px}.room-puzzle .room-options button{min-height:48px}}
+
+/* Página própria: sem moldura, sobreposição ou limite de altura de modal. */
+body.standalone-game{background:var(--paper);min-height:100dvh}
+.game-page-header{padding:18px clamp(18px,3vw,48px);display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line);font-size:13px}
+.game-page-header>a{font-weight:700}.game-page-header>span{font-family:'Fredoka',sans-serif;color:var(--muted)}
+.room-page.room-dialog{width:100%;max-height:none;min-height:calc(100dvh - 58px);padding:clamp(20px,3vw,48px);margin:0}
+.room-page .room-layout{grid-template-columns:minmax(0,1fr) minmax(310px,380px);gap:clamp(20px,3vw,42px)}
+.room-page .room-world{width:100%}.room-page .room-top{padding-right:0}.room-page .room-top h2{font-size:clamp(32px,3.5vw,52px)}
+.room-page p{line-height:1.8;color:var(--muted)}.room-page .mascot-hint p{color:#fff6e9;font-size:14px;line-height:1.6;margin-block:4px}
+.room-page .room-finish{padding-top:32px}.room-page .room-finish h2{font-size:38px;margin-block:16px}
+@media(max-width:850px){.room-page .room-layout{grid-template-columns:1fr}.room-page.room-dialog{padding:20px 16px}.game-page-header{padding:16px}.room-page .room-top h2{font-size:32px}}
+
+.room-layout{align-items:stretch}.room-puzzle{display:flex;flex-direction:column}.room-instructions-button{align-self:flex-start;margin-top:auto;padding:13px 20px;background:var(--soft);color:var(--ink);border:1px solid var(--line);border-radius:9px;min-height:46px;font-weight:700}.room-instructions-button:hover{border-color:var(--accent)}.room-next:not([hidden]){margin-bottom:16px}.room-instructions{width:min(570px,calc(100% - 32px));padding:30px;max-height:85dvh}.room-instructions h2{font-size:32px;margin-top:0}.room-instructions ul{padding-left:22px;margin-bottom:0}.room-instructions li{font-size:15px;line-height:1.75;margin-top:15px;color:var(--muted)}.room-instructions li strong{color:var(--ink)}.room-instructions .primary{width:100%;gap:12px}@media(max-width:850px){.room-instructions-button{margin-top:20px}.room-instructions{padding:24px}}
+
+/* Escala uniforme: a física continua no espaço lógico de 800 × 425. */
+.room-page.room-dialog {
+  --room-top-gap: clamp(5px, .75vw, 12px);
+  padding: var(--room-top-gap) clamp(12px, 1vw, 20px) 12px;
+  min-height: 0;
+}
+.room-page .room-layout {
+  grid-template-columns: minmax(0, 1fr) clamp(290px, 18vw, 340px);
+  gap: clamp(16px, 1.2vw, 24px);
+}
+.room-page .room-layout > div { min-width: 0; }
+.room-page .room-world {
+  width: min(100%, calc(var(--room-available-height, 75dvh) * 800 / 425));
+  aspect-ratio: 800 / 425;
+  height: auto;
+  margin-inline: auto;
+}
+.room-page .room-puzzle {
+  max-height: var(--room-available-height, 85dvh);
+  overflow-y: auto;
+  min-width: 0;
+  padding-right: 4px;
+  scrollbar-width: thin;
+}
+.room-page .room-instructions-button { flex-shrink: 0; }
+@media(max-width:850px) {
+  .room-page .room-layout { grid-template-columns: minmax(0, 1fr); }
+  .room-page .room-puzzle { max-height: none; overflow: visible; padding-right: 0; }
+}
+
+/* Sala 800 × 425: 85 unidades extras acima da geometria original.
+   As distâncias entre piso e plataformas e o tamanho do personagem são preservados. */
+.room-player { height: 7.529412%; }
+.room-floor { top: 95.294118%; }
+.platform-one { top: 72.705882%; }
+.platform-two { top: 66.588235%; }
+.room-platform { height: 3.2%; }
+.room-console { top: 72%; height: 18.56%; }
+.room-door { top: 79.6%; height: 15.68%; width: 5%; }
+/* Plataformas e perigos desenhados pelas mesmas coordenadas usadas pela física. */
+.room-world{--electric:#87e9ff;--electric-ray:#ff3b3b;--electric-ray-core:#ffe0e0}
+.room-platform.lab-ledge{border:0;border-top:3px solid var(--room-stone);border-radius:3px;background:var(--room-line);box-shadow:0 4px 0 var(--room-dark);z-index:1}
+.lab-ledge::after{content:'';position:absolute;top:35%;bottom:0;left:9%;right:9%;border-left:3px solid var(--room-stone);border-right:3px solid var(--room-stone);opacity:.45}
+.room-console{left:46%;top:41.647%;height:8.941%;width:8%;border-width:2px;z-index:2}
+.room-console span{font-size:clamp(12px,2vw,24px);line-height:1}.room-console small{font-size:clamp(5px,.6vw,8px)}
+.room-window{left:29%;top:9%;width:9%;height:17%}.room-wire{left:50%;top:29%;height:39%}
+.room-wall-note{left:6%;top:46%;font-size:clamp(22px,3vw,44px)}
+.electric-arc{position:absolute;z-index:2;pointer-events:none;filter:drop-shadow(0 0 5px var(--electric-ray))}
+.electric-arc svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.arc-glow,.arc-core{fill:none;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.arc-glow{stroke:var(--electric-ray);stroke-width:5;opacity:.55}.arc-core{stroke:var(--electric-ray-core);stroke-width:2;stroke-dasharray:12 3;animation:arc-flow 1.2s linear infinite}
+.arc-emitter{position:absolute;top:30%;height:70%;width:9%;border:1px solid var(--electric);background:var(--room-stone);z-index:1;border-radius:3px 3px 0 0}.arc-left{left:0}.arc-right{right:0}
+.electric-arc--hanging .arc-emitter{top:0;transform:rotate(180deg);transform-origin:center}
+.room-player.electrocuted{background:var(--electric);box-shadow:0 0 0 5px var(--electric),0 0 22px var(--electric);transform:rotate(-12deg);opacity:.7}
+
+/* Computador sem rótulo: o botão continua identificado para leitores de tela. */
+.room-console{left:46%;top:41.647%;height:8.941%;width:8%;background:transparent;border:0;padding:0;overflow:visible}
+.room-console .room-computer{position:absolute;left:-10%;bottom:-37%;width:120%;height:auto;max-width:none;display:block;background:transparent}
+.room-door{left:91%}
+.room-player.walking .player-book{animation:player-book-step .22s steps(2,end) infinite}
+
+@keyframes arc-flow{to{stroke-dashoffset:-30}}
+@keyframes player-book-step{50%{bottom:20%}}
+@media(prefers-reduced-motion:reduce){.arc-core,.room-player.walking .player-book{animation:none}.room-player.electrocuted{transform:none}}
