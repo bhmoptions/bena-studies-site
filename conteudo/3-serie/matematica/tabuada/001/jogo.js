@@ -1,85 +1,167 @@
-// Configuração deste jogo: altere os números abaixo se quiser ajustar a prática.
-window.BENA_JOGO = {
-  iniciar(container, voltar) {
-    const quantidade = 10;
-    const tabuadas = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+(() => {
+  const gamePage = new URL('./index.html', document.currentScript.src);
 
-    let contas = [];
-    let indice = 0;
-    let acertosDePrimeira = 0;
-    let erros = 0;
-    let rodada = 0;
-    let inicio = 0;
-    let fim = 0;
-    const chavePontuacao = '3-serie/matematica/tabuada/001';
-    const configPontuacao = window.BENA_CONFIG_PONTUACAO[chavePontuacao];
-    function embaralhar(lista) {
-      for (let i = lista.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [lista[i], lista[j]] = [lista[j], lista[i]];
+  // Se for carregado diretamente pelo shell do site sem redirecionar, move para a página própria
+  if (location.pathname !== gamePage.pathname) {
+    window.BENA_JOGO = {
+      iniciar() {
+        location.href = gamePage.href;
+        return () => {};
       }
-      return lista;
-    }
-    function iniciarRodada() {
-      contas = embaralhar(Array.from({length: quantidade}, (_, i) => ({
-        a: tabuadas[Math.floor(Math.random() * tabuadas.length)], b: i + 1
-      })));
-      indice = 0;
-      acertosDePrimeira = 0;
-      erros = 0;
-      rodada = window.BenaPontuacao.iniciarRodada(chavePontuacao);
-      inicio = performance.now();
-      fim = 0;
-      mostrarConta();
-    }
-    function mostrarMascote(estado, detalhe = '') {
-      window.BenaFeedback.mostrar(container.querySelector('.feedback'), estado, detalhe);
-    }
-
-    function mostrarConta() {
-      const {a, b} = contas[indice];
-      const resultado = a * b;
-      const alternativas = embaralhar([resultado, resultado + a, resultado - a]);
-      let tentou = false;
-      let concluida = false;
-      container.innerHTML = `<div class="eyebrow">TABUADAS MISTURADAS • CONTA ${indice + 1} DE ${quantidade}</div><progress value="${indice}" max="${quantidade}" aria-label="Contas concluídas"></progress><h2 class="multiplication" tabindex="-1">${a} × ${b} = ?</h2><p>Qual é o resultado?</p>${configPontuacao.tempoAtivo ? '<p class="timing-note">Nesta rodada, o tempo vale um pequeno bônus. Pense com calma!</p>' : ''}<div class="feedback" role="status" aria-live="polite" aria-atomic="true"></div><div class="answers">${alternativas.map(n => `<button data-value="${n}">${n}</button>`).join('')}</div><button class="primary game-next" hidden>${indice === quantidade - 1 ? 'Ver meu resultado' : 'Próxima conta'} →</button><button class="topic game-back">← Voltar aos jogos</button>`;
-      mostrarMascote('ready');
-      container.querySelector('.multiplication').focus();
-      container.querySelectorAll('[data-value]').forEach(button => button.onclick = () => {
-        if (concluida) return;
-        if (Number(button.dataset.value) !== resultado) {
-          tentou = true;
-          erros++;
-          button.classList.add('retry');
-          button.disabled = true;
-          button.textContent = `× ${button.dataset.value}`; button.setAttribute('aria-label', `${button.dataset.value}, resposta incorreta`); mostrarMascote('error', `${a} × ${b} é o mesmo que somar ${Array(b).fill(a).join(' + ')}.`);
-          return;
-        }
-        concluida = true;
-        if (indice === quantidade - 1) fim = performance.now();
-        if (!tentou) acertosDePrimeira++;
-        button.classList.add('correct');
-        container.querySelectorAll('[data-value]').forEach(item => item.disabled = true);
-        button.textContent = `✓ ${resultado}`; button.setAttribute('aria-label', `${resultado}, resposta correta`); mostrarMascote('success', `${a} × ${b} = ${resultado}`);
-        container.querySelector('progress').value = indice + 1;
-        container.querySelector('.game-next').hidden = false;
-        container.querySelector('.game-next').focus();
-      });
-      container.querySelector('.game-next').onclick = () => { indice++; if (indice < quantidade) mostrarConta(); else mostrarResultado(); };
-      container.querySelector('.game-back').onclick = voltar;
-    }
-    function mostrarResultado() {
-      const resultado = window.BenaPontuacao.calcular({
-        total: quantidade, acertosPrimeira: acertosDePrimeira, erros, rodada, concluida: true,
-        tempoAtivo: configPontuacao.tempoAtivo,
-        segundos: configPontuacao.tempoAtivo ? (fim - inicio) / 1000 : null,
-        referenciaSegundos: configPontuacao.tempoReferenciaSegundos
-      });
-      container.innerHTML = `<div class="modal-symbol" aria-hidden="true">✦</div><div class="eyebrow">RODADA CONCLUÍDA</div><h2 tabindex="-1">Você completou as 10 contas!</h2><p>Acertos na primeira tentativa: <strong>${acertosDePrimeira} de ${quantidade}</strong>.</p><p>${acertosDePrimeira === quantidade ? 'Mandou muito bem! Que tal jogar mais uma rodada?' : 'Cada tentativa ajuda a aprender. Vamos praticar mais um pouco?'}</p><div class="score-summary"><strong class="score-value">${resultado.pontos} pontos</strong><p>${resultado.percentualAcertos}% de acertos na primeira tentativa · ${erros} ${erros === 1 ? 'erro' : 'erros'}</p><p>Rodada ${rodada} deste jogo nesta aba${resultado.somenteTreino ? ' · somente treino' : ''}</p>${resultado.tempoAtivo ? `<p>Tempo: ${resultado.segundos.toFixed(1)} s · bônus: ${Math.round(resultado.bonusTempo * 100)}%</p>` : '<p>Tempo não vale pontos neste jogo.</p>'}</div><p class="notice">Pontuação de demonstração, sem ranking de alunos. Repetições contam nesta aba; ao atualizar a página, a contagem recomeça.</p><button class="primary game-again">Jogar de novo →</button><button class="topic game-back">← Voltar aos jogos</button>`;
-      container.querySelector('h2').focus();
-      container.querySelector('.game-again').onclick = iniciarRodada;
-      container.querySelector('.game-back').onclick = voltar;
-    }
-    iniciarRodada();
+    };
+    return;
   }
-};
+
+  const moduleUrl = new URL('./helix-app.mjs', document.currentScript.src).href;
+  const CHAVE_PONTUACAO = '3-serie/matematica/tabuada/001';
+
+  window.BENA_JOGO = {
+    iniciar(container, voltar) {
+      let helixInstance = null;
+      let round = 1;
+
+      // Elementos do DOM
+      const hudLevel = container.querySelector('#hud-level');
+      const hudProgress = container.querySelector('#hud-progress');
+      const hudScore = container.querySelector('#hud-score');
+      const currentQuestion = container.querySelector('#current-question');
+      const feedbackEl = container.querySelector('.feedback');
+      const floatingScore = container.querySelector('#floating-score');
+      const activeSection = container.querySelector('#helix-active-section');
+      const questionCard = container.querySelector('#helix-question-card');
+      const resultCard = container.querySelector('#helix-result-card');
+      const resultFeedback = container.querySelector('.result-feedback');
+      const resGameScore = container.querySelector('#res-game-score');
+      const resScoreSummary = container.querySelector('#res-score-summary');
+      const btnPlayAgain = container.querySelector('#btn-play-again');
+
+      // Exibição do feedback flutuante (+3, +2, -1)
+      let floatTimeout = null;
+      function triggerFloatingScore(text, className) {
+        if (!floatingScore) return;
+        clearTimeout(floatTimeout);
+        floatingScore.textContent = text;
+        floatingScore.className = `floating-score pop-up ${className}`;
+        floatTimeout = setTimeout(() => {
+          floatingScore.className = 'floating-score';
+        }, 800);
+      }
+
+      function startRound() {
+        if (helixInstance) {
+          helixInstance.dispose();
+          helixInstance = null;
+        }
+
+        // Inicia contador de rodada oficial
+        if (window.BenaPontuacao) {
+          round = window.BenaPontuacao.iniciarRodada(CHAVE_PONTUACAO);
+        }
+
+        // Restaura painel e HUD
+        if (activeSection) activeSection.hidden = false;
+        if (resultCard) resultCard.hidden = true;
+        if (hudLevel) hudLevel.textContent = '1';
+        if (hudProgress) hudProgress.value = 1;
+        if (hudScore) hudScore.textContent = '0';
+
+        import(moduleUrl).then(({ createHelixGame }) => {
+          helixInstance = createHelixGame(container, {
+            onQuestionChange(platformIndex, problem) {
+              const num = platformIndex + 1;
+              if (hudLevel) hudLevel.textContent = String(num);
+              if (hudProgress) hudProgress.value = num;
+              if (currentQuestion) {
+                currentQuestion.textContent = `${problem.a} × ${problem.b} = ?`;
+              }
+              if (window.BenaFeedback && feedbackEl) {
+                window.BenaFeedback.mostrar(feedbackEl, 'ready');
+              }
+            },
+
+            onScoreChange(newScore) {
+              if (hudScore) hudScore.textContent = String(newScore);
+            },
+
+            onFloatingScore(text, className) {
+              triggerFloatingScore(text, className);
+            },
+
+            onErrorHit(problem, wrongValue) {
+              if (window.BenaFeedback && feedbackEl) {
+                const hint = problem.hint || `${problem.a} × ${problem.b} = ${problem.correct}`;
+                window.BenaFeedback.mostrar(feedbackEl, 'error', hint, 'Gire a torre para encontrar a resposta certa!');
+              }
+            },
+
+            onSuccessHit(problem) {
+              if (window.BenaFeedback && feedbackEl) {
+                window.BenaFeedback.mostrar(feedbackEl, 'success', `${problem.a} × ${problem.b} = ${problem.correct}`);
+              }
+            },
+
+            onGameComplete(stats) {
+              // Conclusão das 10 plataformas
+              if (activeSection) activeSection.hidden = true;
+              if (resultCard) resultCard.hidden = false;
+              if (resGameScore) resGameScore.textContent = String(stats.gameScore);
+
+              const configPontuacao = (window.BENA_CONFIG_PONTUACAO && window.BENA_CONFIG_PONTUACAO[CHAVE_PONTUACAO]) || {};
+              const resOficial = window.BenaPontuacao ? window.BenaPontuacao.calcular({
+                total: stats.totalPlatforms,
+                acertosPrimeira: stats.firstHits,
+                erros: stats.totalErrors,
+                rodada: round,
+                concluida: true,
+                tempoAtivo: false
+              }) : { pontos: stats.gameScore, percentualAcertos: Math.round((stats.firstHits / stats.totalPlatforms) * 100) };
+
+              if (resScoreSummary) {
+                resScoreSummary.innerHTML = `
+                  <strong class="score-value">${resOficial.pontos} pontos (Ranking Bena)</strong>
+                  <p><strong>Pontuação da Torre:</strong> ${stats.gameScore} de 30 pontos acumulados</p>
+                  <p><strong>Acertos de 1ª tentativa:</strong> ${stats.firstHits} de ${stats.totalPlatforms} plataformas</p>
+                  <p><strong>Impactos em respostas erradas:</strong> ${stats.totalErrors} ${stats.totalErrors === 1 ? 'vez' : 'vezes'}</p>
+                  <p>Precisão de primeira: ${resOficial.percentualAcertos}% · Rodada ${round} nesta aba</p>
+                `;
+              }
+
+              if (window.BenaFeedback && resultFeedback) {
+                window.BenaFeedback.mostrar(resultFeedback, 'success', 'Parabéns! Você completou toda a descida pela torre Helix!');
+              }
+
+              if (resultCard.querySelector('h2')) {
+                resultCard.querySelector('h2').focus();
+              }
+            }
+          });
+        }).catch(err => {
+          console.error('Falha ao carregar o módulo Helix Jump:', err);
+          container.querySelector('.helix-canvas-container').innerHTML = `
+            <div style="padding: 30px; text-align: center; color: #fff;">
+              <h3>Não foi possível carregar a visualização 3D</h3>
+              <p>Verifique se o navegador suporta WebGL ou tente recarregar.</p>
+              <button type="button" onclick="location.reload()" class="primary">Tentar novamente</button>
+            </div>
+          `;
+        });
+      }
+
+      // Botão de jogar de novo
+      if (btnPlayAgain) {
+        btnPlayAgain.onclick = () => {
+          startRound();
+        };
+      }
+
+      startRound();
+
+      return () => {
+        if (helixInstance) {
+          helixInstance.dispose();
+          helixInstance = null;
+        }
+      };
+    }
+  };
+})();

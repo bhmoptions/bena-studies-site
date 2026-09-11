@@ -10,8 +10,9 @@ window.BENA_CONTEUDO = {
         nome: 'Multiplicação e Divisão',
         jogos: [{
           id: '001', nome: 'Tabuada Race',
-          descricao: 'Dez contas para praticar no seu ritmo.',
-          arquivo: 'matematica/tabuada/001/jogo.js'
+          descricao: 'Desça pela torre Helix acertando os produtos da tabuada.',
+          arquivo: 'matematica/tabuada/001/jogo.js',
+          pagina: 'matematica/tabuada/001/index.html'
         }, {
           id: '002', nome: 'De novo essa fase?',
           descricao: 'A mesma sala. Uma nova regra a cada vez.',
@@ -22,11 +23,6 @@ window.BENA_CONTEUDO = {
           descricao: 'Quatro mecanismos, frascos e um segredo em uma oficina 3D.',
           arquivo: 'matematica/tabuada/003/jogo.js',
           pagina: 'matematica/tabuada/003/index.html'
-        }, {
-          id: '004', nome: 'Tabuada Race2',
-          descricao: 'Desça pela torre Helix acertando os produtos da tabuada.',
-          arquivo: 'matematica/tabuada/004/jogo.js',
-          pagina: 'matematica/tabuada/004/index.html'
         }]
       }]
     }]
