@@ -1,20 +1,24 @@
 // Keep the data-driven modules on the same cache version. A stale scene paired
 // with the new puzzle logic would otherwise fail while importing.
-import { SIDES, generatePuzzle, signature, createState, act, scoreInput } from './logica.mjs?v=puzzles-json-3';
-import { createScene } from './cena.mjs?v=puzzles-json-3';
+import { SIDES, generatePuzzle, signature, createState, act, scoreInput } from './logica.mjs?v=puzzles-json-4';
+import { createScene } from './cena.mjs?v=puzzles-json-4';
 import { LABELS, COLORS } from './modelos.mjs';
 import { createAudio } from './audio.mjs';
 import { connectInteraction } from './interacao.mjs';
 const KEY='3-serie/matematica/tabuada/003';
 const PUZZLE_SOURCE=new URL('../../../../../assets/files/3rd grade/math/003/Multiplication Box Puzzle.json',import.meta.url);
-async function loadPuzzleEntries() {
-  const response=await fetch(PUZZLE_SOURCE,{cache:'no-store'});
-  if(!response.ok)throw new Error('Não foi possível carregar as configurações da caixa.');
-  return response.json();
+const CONTAS_SOURCE=new URL('../../../../../assets/files/3rd grade/math/003/Contas.json',import.meta.url);
+async function loadData() {
+  const [puzzleResponse, contasResponse] = await Promise.all([
+    fetch(PUZZLE_SOURCE, { cache: 'no-store' }),
+    fetch(CONTAS_SOURCE, { cache: 'no-store' })
+  ]);
+  if (!puzzleResponse.ok || !contasResponse.ok) throw new Error('Não foi possível carregar as configurações da caixa.');
+  return Promise.all([puzzleResponse.json(), contasResponse.json()]);
 }
 export function start(container, voltar) {
   const abort=new AbortController(), audio=createAudio(), motion=matchMedia('(prefers-reduced-motion: reduce)');
-  let state,active='blue',scene=null,interaction=null,disposed=false,toastTimer=null,history=[],puzzleEntries=null;
+  let state,active='blue',scene=null,interaction=null,disposed=false,toastTimer=null,history=[],puzzleEntries=null,contasEntries=null;
   try { const saved=JSON.parse(sessionStorage.getItem('bena-caixa-puzzles')||'[]'); if(Array.isArray(saved))history=saved.filter(v=>typeof v==='string').slice(-8); } catch {}
   container.innerHTML=`
     <section class="workshop">
@@ -67,7 +71,7 @@ export function start(container, voltar) {
   function drop(value,destination){apply({type:'add',...destination,value});}
   function newRound() {
     interaction?.dispose();scene?.dispose();
-    active='blue';const config=generatePuzzle(puzzleEntries,Math.random,history);
+    active='blue';const config=generatePuzzle(puzzleEntries,Math.random,history,contasEntries);
     history.push(signature(config));history=history.slice(-8);
     try{sessionStorage.setItem('bena-caixa-puzzles',JSON.stringify(history));}catch{}
     // Consume the round only after a usable scene has been created.
@@ -128,9 +132,10 @@ export function start(container, voltar) {
     if(!disposed)container.innerHTML='<div class="load-error" role="alert"><h1>A oficina não conseguiu abrir</h1><p>'+message+'</p><button type="button">Tentar novamente</button></div>';
     container.querySelector('.load-error button')?.addEventListener('click',()=>location.reload(),{once:true});
   }
-  loadPuzzleEntries().then(entries=>{
+  loadData().then(([entries, contas])=>{
     if(disposed)return;
     puzzleEntries=entries;
+    contasEntries=contas;
     try {
       newRound();
       // Snapshot only; browser tests still perform all gameplay through the real controls.

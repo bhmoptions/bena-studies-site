@@ -2,8 +2,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { test } from 'node:test';
-import {generatePuzzle,dialSolutions,purpleSolutions,validateDial,validatePurple,validateConfiguredDial,balanceTilt,createState,act,isComplete,scoreInput,SIDES,signature,valuesForSide} from '../conteudo/3-serie/matematica/tabuada/003/logica.mjs';
+import {generatePuzzle,generateHints,OPERATION_META,dialSolutions,purpleSolutions,validateDial,validatePurple,validateConfiguredDial,balanceTilt,createState,act,isComplete,scoreInput,SIDES,signature,valuesForSide} from '../conteudo/3-serie/matematica/tabuada/003/logica.mjs';
 const entries=JSON.parse(readFileSync(new URL('../assets/files/3rd grade/math/003/Multiplication Box Puzzle.json',import.meta.url),'utf8'));
+const contasEntries=JSON.parse(readFileSync(new URL('../assets/files/3rd grade/math/003/Contas.json',import.meta.url),'utf8'));
 function seedRng(seed){return()=>((seed=(seed*16807)%2147483647)/2147483647);}
 const config=generatePuzzle(entries,()=>0);
 test('5.000 rodadas: o JSON seleciona três faixas distintas e cada balança recebe seus cinco frascos',()=>{
@@ -139,5 +140,39 @@ test('transferência inválida devolve o frasco à origem sem perda, mistura ou 
  assert.equal(scoreInput(s).erros,0);
  const complete=finish();assert.equal(act(complete,{type:'remove',side:'blue',index:0}).state,complete);
  assert.equal(act(complete,move).state,complete);
+});
+test('dicas de operação: soma, subtração e divisão são distribuídas sem repetição entre azul, amarela e vermelha',()=>{
+ const rng=seedRng(9281);
+ for(let i=0;i<2000;i++){
+  const c=generatePuzzle(entries,rng,[],contasEntries);
+  assert(c.hints);
+  const ops=Object.values(c.hints).map(h=>h.operation);
+  assert.equal(ops.length,3);
+  assert.deepEqual(new Set(ops),new Set(['soma','subtracao','divisao']));
+  assert.equal(c.hints.purple,undefined);
+  for(const side of ['blue','yellow','red']){
+   const hint=c.hints[side], target=c.targets[side];
+   assert(hint);
+   const entry=contasEntries.find(e=>e.target===target);
+   assert(entry);
+   const pairs=entry[hint.operation];
+   assert(pairs.some(([x,y])=>x===hint.x&&y===hint.y));
+   if(hint.operation==='soma'){
+    assert.equal(hint.title,'Essa é fácil...');
+    assert.equal(hint.expression,`${hint.x} + ${hint.y} = ?`);
+    assert.equal(hint.x+hint.y,target);
+   }else if(hint.operation==='subtracao'){
+    assert.equal(hint.title,'Vamos subtrair?');
+    assert.equal(hint.expression,`${hint.x} - ${hint.y} = ?`);
+    assert.equal(hint.x-hint.y,target);
+   }else if(hint.operation==='divisao'){
+    assert.equal(hint.title,'Você sabe dividir?');
+    assert.equal(hint.expression,`${hint.x} ÷ ${hint.y} = ?`);
+    assert.equal(hint.x/hint.y,target);
+   }
+  }
+ }
+ const withoutContas=generatePuzzle(entries,rng);
+ assert.equal(withoutContas.hints,undefined);
 });
 
