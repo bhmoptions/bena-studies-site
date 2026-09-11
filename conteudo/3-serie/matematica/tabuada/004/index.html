@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#191d29">
+  <link rel="icon" href="../../../../../assets/images/Ben%20Icon.PNG">
+  <title>Tabuada Race2 • Bena Studies</title>
+  <link rel="stylesheet" href="../../../../../assets/site.css">
+  <link rel="stylesheet" href="estilo.css">
+  <script type="importmap">{"imports":{"three":"../../../../../assets/vendor/three/three.module.js"}}</script>
+</head>
+<body data-design="caderno-dark" class="game-template-page helix-game-page">
+  <header class="game-template-header">
+    <a href="../../../../../index.html#jogos-tabuada">← Voltar aos jogos</a>
+    <span>Bena Studies <b>✦</b></span>
+    <span class="game-title-label">Tabuada Race 2</span>
+  </header>
+
+  <main id="game" class="game-template-layout" aria-label="Jogo Tabuada Race 2">
+    <section class="game-template-main helix-stage" aria-label="Torre Helix 3D">
+      <div class="helix-canvas-container" tabindex="0" role="region" aria-label="Torre Helix interativa. Arraste horizontalmente com o mouse ou toque, ou use as setas do teclado para girar a torre e alinhar a resposta correta com a bolinha."></div>
+      <div class="helix-canvas-overlay" aria-hidden="true">
+        <div class="floating-score" id="floating-score"></div>
+      </div>
+    </section>
+
+    <aside class="game-template-side helix-sidebar" aria-label="Painel de controle e feedback">
+      <div class="helix-sidebar-content">
+        <!-- HUD / Nível e Pontos -->
+        <div class="helix-hud">
+          <div class="hud-platform">
+            <span class="hud-label">PLATAFORMA</span>
+            <span class="hud-level-val"><b id="hud-level">1</b> de 10</span>
+            <progress id="hud-progress" value="1" max="10" aria-label="Progresso das plataformas"></progress>
+          </div>
+          <div class="hud-score-card">
+            <span class="hud-label">PONTOS</span>
+            <div class="hud-score-val" id="hud-score">0</div>
+            <div class="hud-score-rules">
+              <span class="score-rule-badge rule-3">+3 sem erro</span>
+              <span class="score-rule-badge rule-2">+2 após erro</span>
+              <span class="score-rule-badge rule-1">−1 erro</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conteúdo Ativo Durante a Partida -->
+        <div class="helix-active-section" id="helix-active-section">
+          <!-- Cartão da Pergunta Atual -->
+          <div class="helix-question-card" id="helix-question-card">
+            <span class="question-eyebrow">ENCONTRE O RESULTADO</span>
+            <h2 class="current-multiplication" id="current-question" tabindex="-1">2 × 3 = ?</h2>
+            <p class="question-guide">Gire a torre para que a bolinha caia na seção com a resposta certa!</p>
+          </div>
+
+          <!-- Feedback Oficial do Mascote do Caderno -->
+          <div class="feedback mascot-feedback ready" role="status" aria-live="polite" aria-atomic="true"></div>
+
+          <!-- Controles táteis de rotação para acessibilidade -->
+          <div class="helix-controls-bar" aria-label="Controles manuais de rotação">
+            <button type="button" class="helix-btn-rotate" id="btn-rotate-left" aria-label="Girar torre para a esquerda">⟵ Girar Esquerda</button>
+            <button type="button" class="helix-btn-rotate" id="btn-rotate-right" aria-label="Girar torre para a direita">Girar Direita ⟶</button>
+          </div>
+          <p class="controls-hint"><kbd>←</kbd> <kbd>→</kbd> ou arrastar para girar a torre</p>
+        </div>
+
+        <!-- Resultado final (oculto durante a partida) -->
+        <div class="helix-result-card" id="helix-result-card" hidden>
+          <div class="result-feedback feedback mascot-feedback success" role="status" aria-live="polite" aria-atomic="true"></div>
+          <div class="modal-symbol" aria-hidden="true">✦</div>
+          <div class="eyebrow">TORRE CONCLUÍDA!</div>
+          <h2 tabindex="-1">Você venceu as 10 plataformas!</h2>
+          <p class="result-highlight">Pontuação acumulada: <strong id="res-game-score">0</strong> pontos</p>
+          <div class="score-summary" id="res-score-summary"></div>
+          <div class="result-actions">
+            <button type="button" class="primary" id="btn-play-again">Jogar de novo →</button>
+            <a href="../../../../../index.html#jogos-tabuada" class="button topic">← Voltar aos jogos</a>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <script src="../../../../../config/site.js"></script>
+  <script src="../../../../../assets/componentes/feedback.js"></script>
+  <script src="../../../../../config/pontuacao.js"></script>
+  <script src="../../../../../assets/componentes/pontuacao.js"></script>
+  <script src="jogo.js"></script>
+  <script src="pagina.js"></script>
+</body>
+</html>

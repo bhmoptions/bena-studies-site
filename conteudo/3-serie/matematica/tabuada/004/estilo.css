@@ -1,0 +1,525 @@
+/* Estilos dedicados do jogo Tabuada Race 2 (Helix Jump 3D) */
+.helix-game-page {
+  --template-bg: #141721;
+  --template-ink: #f4ead6;
+  --template-muted: #b6c4bf;
+  --template-brass: #d7b36a;
+  --template-edge: #3a4253;
+  --template-side: #1c2230;
+  --template-side-ink: #f4ead6;
+  --template-side-muted: #9aa8b8;
+  --accent-blue: #2575fc;
+  --accent-gold: #f5b700;
+  --accent-green: #2ecc71;
+  --accent-red: #e74c3c;
+  background: var(--template-bg);
+  color: var(--template-ink);
+  margin: 0;
+  min-width: 320px;
+  overflow-x: hidden;
+  font-family: var(--body, system-ui, -apple-system, sans-serif);
+}
+
+.helix-game-page *,
+.helix-game-page *::before,
+.helix-game-page *::after {
+  box-sizing: border-box;
+}
+
+.helix-game-page a:focus-visible,
+.helix-game-page button:focus-visible {
+  outline: 3px solid var(--template-brass);
+  outline-offset: 3px;
+}
+
+/* Cabeçalho */
+.game-template-header {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 28px;
+  border-bottom: 1px solid var(--template-edge);
+  font-size: 13px;
+  background: #11141d;
+}
+
+.game-template-header a {
+  color: var(--template-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+.game-template-header a:hover {
+  color: var(--template-brass);
+}
+
+.game-template-header > span:nth-child(2) {
+  font-family: var(--display, Georgia), serif;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+}
+
+.game-template-header b {
+  color: var(--template-brass);
+}
+
+.game-title-label {
+  color: var(--template-brass);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+/* Layout de Duas Áreas */
+.game-template-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(320px, 380px);
+  gap: 20px;
+  height: calc(100dvh - 60px);
+  padding: 20px clamp(10px, 2vw, 24px);
+  max-width: 1560px;
+  margin: 0 auto;
+}
+
+/* Área Principal (Esquerda) - Viewport 3D */
+.helix-stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--template-edge);
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 30%, #1c2638 0%, #0d111a 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+.helix-canvas-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  cursor: grab;
+  touch-action: none;
+}
+
+.helix-canvas-container:active {
+  cursor: grabbing;
+}
+
+.helix-canvas-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* Efeito flutuante de pontos (+3, +2, -1) */
+.helix-canvas-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-score {
+  position: absolute;
+  font-size: 32px;
+  font-weight: 800;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  opacity: 0;
+  transform: translateY(0) scale(0.8);
+  transition: opacity 0.25s, transform 0.4s ease-out;
+  pointer-events: none;
+}
+
+.floating-score.pop-up {
+  opacity: 1;
+  transform: translateY(-60px) scale(1.2);
+}
+
+.floating-score.score-gain-3 {
+  color: #4cd964;
+}
+
+.floating-score.score-gain-2 {
+  color: #5ac8fa;
+}
+
+.floating-score.score-loss-1 {
+  color: #ff3b30;
+}
+
+/* Barra Lateral (Direita) */
+.helix-sidebar {
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--template-edge);
+  border-radius: 12px;
+  background: var(--template-side);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.helix-sidebar-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+}
+
+/* HUD Superior */
+.helix-hud {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.hud-label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--template-side-muted);
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.hud-level-val {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--template-side-ink);
+}
+
+.hud-level-val b {
+  font-size: 22px;
+  color: var(--template-brass);
+}
+
+.hud-platform progress {
+  width: 100%;
+  height: 6px;
+  margin-top: 6px;
+  border-radius: 4px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.hud-platform progress::-webkit-progress-bar {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hud-platform progress::-webkit-progress-value {
+  background: var(--template-brass);
+}
+
+.hud-platform progress::-moz-progress-bar {
+  background: var(--template-brass);
+}
+
+.hud-score-card {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.hud-score-val {
+  font-size: 26px;
+  font-weight: 800;
+  color: #ffea79;
+  line-height: 1;
+}
+
+.hud-score-rules {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.score-rule-badge {
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.2px;
+}
+
+.rule-3 { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.4); }
+.rule-2 { background: rgba(52, 152, 219, 0.2); color: #3498db; border: 1px solid rgba(52, 152, 219, 0.4); }
+.rule-1 { background: rgba(231, 76, 60, 0.2); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.4); }
+
+/* Cartão da Pergunta */
+.helix-question-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+.question-eyebrow {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--template-brass);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.current-multiplication {
+  font-size: 38px;
+  margin: 4px 0 8px;
+  font-family: var(--display, Georgia), serif;
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+
+.question-guide {
+  font-size: 12px;
+  color: var(--template-side-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Feedback do Mascote */
+.helix-sidebar .mascot-feedback {
+  margin: 0;
+  border-radius: 10px;
+}
+
+/* Controles Táteis de Rotação */
+.helix-controls-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.helix-btn-rotate {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--template-side-ink);
+  padding: 12px 8px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  touch-action: manipulation;
+}
+
+.helix-btn-rotate:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--template-brass);
+}
+
+.helix-btn-rotate:active {
+  transform: scale(0.96);
+  background: var(--template-brass);
+  color: #191d29;
+}
+
+.controls-hint {
+  text-align: center;
+  font-size: 11px;
+  color: var(--template-side-muted);
+  margin: 0;
+}
+
+.controls-hint kbd {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+.helix-active-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+}
+
+.helix-active-section[hidden],
+.helix-result-card[hidden] {
+  display: none !important;
+}
+
+/* Tela de Resultado Final */
+.helix-result-card {
+  text-align: center;
+  padding: 4px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.helix-result-card .mascot-feedback {
+  padding: 8px 12px;
+  margin: 0;
+}
+
+.helix-result-card .notebook-buddy {
+  width: 44px;
+  height: 44px;
+}
+
+.helix-result-card .mascot-message {
+  gap: 10px;
+}
+
+.helix-result-card .modal-symbol {
+  font-size: 28px;
+  color: var(--template-brass);
+  margin-bottom: 4px;
+}
+
+.helix-result-card .eyebrow {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--template-brass);
+  font-weight: 700;
+}
+
+.helix-result-card h2 {
+  font-size: 22px;
+  margin: 6px 0 12px;
+  color: #fff;
+}
+
+.result-highlight {
+  font-size: 16px;
+  color: var(--template-side-ink);
+  margin-bottom: 14px;
+}
+
+.result-highlight strong {
+  font-size: 28px;
+  color: #ffea79;
+}
+
+.score-summary {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.score-summary p {
+  margin: 4px 0;
+  color: var(--template-side-muted);
+}
+
+.score-summary strong.score-value {
+  display: block;
+  font-size: 18px;
+  color: var(--template-brass);
+  margin-bottom: 4px;
+}
+
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-actions button,
+.result-actions a.button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+  .game-template-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: calc(100dvh - 60px);
+    padding: 14px;
+    gap: 14px;
+  }
+
+  .helix-stage {
+    height: 440px;
+    min-height: 380px;
+  }
+
+  .helix-sidebar {
+    min-height: 380px;
+  }
+
+  .game-template-header {
+    padding: 0 16px;
+  }
+
+  .game-title-label {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-template-header {
+    height: 52px;
+    font-size: 11px;
+  }
+
+  .game-template-header > span:nth-child(2) {
+    font-size: 16px;
+  }
+
+  .game-template-layout {
+    padding: 10px 8px;
+  }
+
+  .helix-stage {
+    height: 380px;
+  }
+
+  .current-multiplication {
+    font-size: 30px;
+  }
+
+  .helix-hud {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .hud-score-card {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .hud-score-rules {
+    justify-content: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .helix-game-page * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

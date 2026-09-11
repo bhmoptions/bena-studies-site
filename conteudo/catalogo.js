@@ -24,8 +24,9 @@ window.BENA_CONTEUDO = {
           pagina: 'matematica/tabuada/003/index.html'
         }, {
           id: '004', nome: 'Tabuada Race2',
-          descricao: 'Dez contas para praticar no seu ritmo.',
-          arquivo: 'matematica/tabuada/004/jogo.js'
+          descricao: 'Desça pela torre Helix acertando os produtos da tabuada.',
+          arquivo: 'matematica/tabuada/004/jogo.js',
+          pagina: 'matematica/tabuada/004/index.html'
         }]
       }]
     }]
