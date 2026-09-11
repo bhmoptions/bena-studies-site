@@ -1,4 +1,4 @@
-﻿const mysql = require("mysql2/promise");
+const mysql = require("mysql2/promise");
 
 let pool;
 
@@ -12,7 +12,7 @@ function getPool() {
       database:           process.env.MYSQL_DATABASE,
       waitForConnections: true,
       connectionLimit:    5,
-      ssl:                { rejectUnauthorized: true },
+      ssl:                { rejectUnauthorized: false },
     });
   }
   return pool;
