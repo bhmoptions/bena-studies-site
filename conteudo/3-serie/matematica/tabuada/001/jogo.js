@@ -126,6 +126,17 @@
                 `;
               }
 
+              if (window.BENA_AUTH && typeof window.BENA_AUTH.salvarPartida === 'function') {
+                window.BENA_AUTH.salvarPartida({
+                  jogo_id: CHAVE_PONTUACAO,
+                  total_questoes: stats.totalPlatforms,
+                  acertos_primeira: stats.firstHits,
+                  erros_validos: stats.totalErrors,
+                  pontuacao: resOficial.pontos
+                }).then(r => console.log('[Ranking] Partida salva:', r))
+                  .catch(e => console.warn('[Ranking] Erro ao salvar partida:', e));
+              }
+
               if (window.BenaFeedback && resultFeedback) {
                 window.BenaFeedback.mostrar(resultFeedback, 'success', 'Parabéns! Você completou toda a descida pela torre Helix!');
               }

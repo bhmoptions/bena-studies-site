@@ -320,7 +320,9 @@ function updateLoginBtn(user, nomeOverride) {
 }
 
 /* Auth state listener */
-loginBtn.onclick = showLoginModal;
+if (loginBtn) {
+  loginBtn.onclick = showLoginModal;
+}
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {

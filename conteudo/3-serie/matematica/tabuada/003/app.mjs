@@ -85,6 +85,17 @@ export function start(container, voltar) {
       rewardReady(){
         if(disposed)return;
         state.reward='revealed';audio.play('scroll');const score=window.BenaPontuacao.calcular(scoreInput(state));
+        if (window.BENA_AUTH && typeof window.BENA_AUTH.salvarPartida === 'function') {
+          const inp = scoreInput(state);
+          window.BENA_AUTH.salvarPartida({
+            jogo_id: KEY,
+            total_questoes: inp.total,
+            acertos_primeira: inp.acertosPrimeira,
+            erros_validos: inp.erros,
+            pontuacao: score.pontos
+          }).then(r => console.log('[Ranking] Partida salva:', r))
+            .catch(e => console.warn('[Ranking] Erro ao salvar partida:', e));
+        }
         q('.reward-summary').hidden=false;
         q('.reward-summary').innerHTML=`<p class="panel-kicker">SEU PERGAMINHO</p><h2>Caixa desvendada!</h2><p class="reward-points"><strong>${score.pontos}</strong> pontos</p>
         <dl><div><dt>De primeira</dt><dd>${score.acertosPrimeira} de 4</dd></div><div><dt>Respostas erradas</dt><dd>${score.erros}</dd></div><div><dt>Precisão</dt><dd>${score.percentualAcertos}%</dd></div><div><dt>Rodada</dt><dd>${score.rodada}</dd></div></dl>

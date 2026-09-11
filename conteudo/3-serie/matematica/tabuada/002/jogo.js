@@ -131,6 +131,16 @@
       function finish(){
         target=null;held.clear();
         const result=window.BenaPontuacao.calcular({total:levels.length,acertosPrimeira:first,erros:errors,rodada:round,concluida:true,tempoAtivo:false});
+        if (window.BENA_AUTH && typeof window.BENA_AUTH.salvarPartida === 'function') {
+          window.BENA_AUTH.salvarPartida({
+            jogo_id: key,
+            total_questoes: levels.length,
+            acertos_primeira: first,
+            erros_validos: errors,
+            pontuacao: result.pontos
+          }).then(r => console.log('[Ranking] Partida salva:', r))
+            .catch(e => console.warn('[Ranking] Erro ao salvar partida:', e));
+        }
         container.innerHTML=`<div class="room-finish"><div class="eyebrow">CINCO REGRAS. UMA GRANDE DESCOBERTA.</div><h2 tabindex="-1">Você escapou da mesma sala!</h2><p>A sala era igual. Seu jeito de pensar mudou a cada porta.</p><div class="score-summary"><strong class="score-value">${result.pontos} pontos</strong><p>${first} de ${levels.length} fases resolvidas de primeira · ${result.percentualAcertos}%</p><p>${errors} erros · Rodada ${round}${result.somenteTreino?' · somente treino':''}</p><p>Sem tempo valendo pontos.</p></div><p class="notice">Pontuação de demonstração nesta aba. Não é salva por aluno; atualizar a página reinicia as repetições.</p><button class="primary room-replay">Voltar à mesma sala →</button><button class="topic room-back">← Voltar aos jogos</button></div>`;
         container.querySelector('.room-finish h2').focus();container.querySelector('.room-replay').onclick=start;container.querySelector('.room-back').onclick=()=>{cleanup();voltar();};
       }
