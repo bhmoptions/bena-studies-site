@@ -1,0 +1,13 @@
+Gate Runner - 
+Whack-a-Mole / Mole Hunt — aparecem respostas em vários buracos e a criança precisa acertar rapidamente a correta. Acho excelente para esse jogo.
+Fruit Ninja — números/respostas são lançados pela tela; precisa cortar a resposta correta e evitar as erradas. Combina perfeitamente com mouse e partidas rápidas.
+Crossy Road / Frogger — personagem avança continuamente e precisa escolher o caminho/posição correspondente à resposta correta. A própria mecânica já é baseada em decisões rápidas enquanto se evitam obstáculos.
+Helix Jump — a resposta correta determina por qual abertura/plataforma a bola deve passar; permite combos e aceleração conforme os acertos.
+Stack / Tower Builder — cada resposta correta adiciona um bloco à torre; erros colocam blocos desalinhados ou removem partes da construção.
+Space Invaders / Shooting Gallery — respostas aparecem como inimigos/alvos e o jogador precisa atirar na correta.
+Catch Game — personagem/cesta se move horizontalmente para pegar a resposta correta entre vários objetos caindo.
+Endless Runner / Subway Surfers-style — três pistas com respostas/portais; o jogador muda de pista para escolher a correta.
+Basketball / Soccer Target — gols/cestas/alvos representam respostas; acertar a conta permite chutar no alvo correspondente.
+Mining / Digging Game — respostas aparecem como pedras/minérios; acertar a correta faz o personagem cavar cada vez mais fundo.
+Balloon Pop — balões com possíveis respostas sobem pela tela e o jogador precisa estourar a correta.
+Monster Battle — cada resposta correta dispara automaticamente um ataque; erros permitem que o monstro contra-ataque.
