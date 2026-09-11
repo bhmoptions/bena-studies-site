@@ -2,6 +2,8 @@ import * as THREE from 'three';
 
 // Configurações do jogo e dimensões da torre 3D
 const NUM_PLATFORMS = 10;
+const SECTORS_PER_PLATFORM = 8;
+const SECTOR_SPAN = (Math.PI * 2) / SECTORS_PER_PLATFORM; // 45 graus por seção
 const PLATFORM_SPACING = 5.0;
 const POLE_RADIUS = 0.95;
 const PLATFORM_INNER_R = 1.05;
@@ -81,6 +83,10 @@ export function createHelixGame(container, callbacks) {
       if (correct > 2) wrongPool.add(correct - 2);
       wrongPool.add(correct + 10);
       if (correct > 10) wrongPool.add(correct - 10);
+      wrongPool.add(correct + 4);
+      if (correct > 4) wrongPool.add(correct - 4);
+      wrongPool.add(correct + 1);
+      if (correct > 1) wrongPool.add(correct - 1);
       wrongPool.delete(correct);
 
       const wrongArr = Array.from(wrongPool).filter(v => v > 0);
@@ -88,19 +94,20 @@ export function createHelixGame(container, callbacks) {
         const j = Math.floor(Math.random() * (i + 1));
         [wrongArr[i], wrongArr[j]] = [wrongArr[j], wrongArr[i]];
       }
-      const wrong1 = wrongArr[0] || (correct + 3);
-      const wrong2 = wrongArr[1] || (correct - 3 > 0 ? correct - 3 : correct + 4);
+      const wrong1 = wrongArr[0] || (correct + 2);
+      const wrong2 = wrongArr[1] || (correct - 2 > 0 ? correct - 2 : correct + 4);
+      const wrong3 = wrongArr[2] || (correct + 10);
 
-      // Alternância obrigatória de 6 seções (3 vazias e 3 respostas intercaladas).
-      // Plataforma par (0, 2, 4...): vazias em [0, 2, 4], respostas em [1, 3, 5].
-      // Plataforma ímpar (1, 3, 5...): vazias em [1, 3, 5], respostas em [0, 2, 4].
+      // Alternância obrigatória de 8 seções (4 vazias e 4 respostas intercaladas):
+      // Plataforma par (0, 2, 4...): vazias em [0, 2, 4, 6], respostas em [1, 3, 5, 7].
+      // Plataforma ímpar (1, 3, 5...): vazias em [1, 3, 5, 7], respostas em [0, 2, 4, 6].
       // Desta forma, a seção logo abaixo da resposta certa da plataforma anterior é 100% garantida como VAZIA!
       const isEvenPlat = platformIndex % 2 === 0;
-      const answerIndices = isEvenPlat ? [1, 3, 5] : [0, 2, 4];
+      const answerIndices = isEvenPlat ? [1, 3, 5, 7] : [0, 2, 4, 6];
       const correctIndex = answerIndices[Math.floor(Math.random() * answerIndices.length)];
       const remainingIndices = answerIndices.filter(i => i !== correctIndex);
 
-      const sectors = Array(6).fill(null).map((_, idx) => {
+      const sectors = Array(SECTORS_PER_PLATFORM).fill(null).map((_, idx) => {
         const isEmpty = isEvenPlat ? (idx % 2 === 0) : (idx % 2 === 1);
         const isCorrect = idx === correctIndex;
         let value = null;
@@ -108,6 +115,7 @@ export function createHelixGame(container, callbacks) {
           if (idx === correctIndex) value = correct;
           else if (idx === remainingIndices[0]) value = wrong1;
           else if (idx === remainingIndices[1]) value = wrong2;
+          else if (idx === remainingIndices[2]) value = wrong3;
         }
         return {
           index: idx,
@@ -135,12 +143,12 @@ export function createHelixGame(container, callbacks) {
     ctx.clearRect(0, 0, 512, 512);
 
     // Contorno escuro espesso para contraste impecável sobre o azul
-    ctx.font = '900 200px system-ui, -apple-system, sans-serif';
+    ctx.font = '900 175px system-ui, -apple-system, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
     ctx.strokeStyle = 'rgba(0, 15, 45, 0.95)';
-    ctx.lineWidth = 22;
+    ctx.lineWidth = 20;
     ctx.strokeText(String(number), 256, 256);
 
     // Texto em branco puro
@@ -232,10 +240,10 @@ export function createHelixGame(container, callbacks) {
   pole.position.y = - (NUM_PLATFORMS * PLATFORM_SPACING) / 2;
   tower.add(pole);
 
-  // Geometria de um Setor (fatia de 60° centralizada no eixo +Z frontal)
+  // Geometria de um Setor (fatia de 45° centralizada no eixo +Z frontal)
   function createSectorMesh(sectorData, sectorIndex) {
     const shape = new THREE.Shape();
-    const halfSpan = (Math.PI / 3) * 0.478; // folga sutil entre seções
+    const halfSpan = SECTOR_SPAN * 0.478; // folga sutil entre seções de 45°
     const midAngle = -Math.PI / 2; // centralizado no eixo -Y do plano 2D (que vira +Z em 3D)
     shape.absarc(0, 0, PLATFORM_OUTER_R, midAngle - halfSpan, midAngle + halfSpan, false);
     shape.absarc(0, 0, PLATFORM_INNER_R, midAngle + halfSpan, midAngle - halfSpan, true);
@@ -264,7 +272,7 @@ export function createHelixGame(container, callbacks) {
     // Se tiver número, adiciona o rótulo de texto nítido na superfície superior (plano e sem afundar)
     let labelMesh = null;
     if (sectorData.value !== null && sectorData.value !== undefined) {
-      const labelGeom = new THREE.PlaneGeometry(1.85, 1.85);
+      const labelGeom = new THREE.PlaneGeometry(1.5, 1.5);
       labelGeom.rotateX(-Math.PI / 2); // plano sobre o topo, com topo do número apontando para o centro (leitura natural de frente)
       const labelMat = new THREE.MeshBasicMaterial({
         map: createNumberTexture(sectorData.value),
@@ -281,7 +289,7 @@ export function createHelixGame(container, callbacks) {
       group.add(labelMesh);
     }
 
-    group.rotation.y = sectorIndex * (Math.PI / 3);
+    group.rotation.y = sectorIndex * SECTOR_SPAN;
     group.userData = { ...sectorData, sectorIndex, baseMesh: mesh, labelMesh };
     return group;
   }
@@ -419,9 +427,8 @@ export function createHelixGame(container, callbacks) {
     let angle = (-towerRotation) % (Math.PI * 2);
     if (angle < 0) angle += Math.PI * 2;
 
-    const sectorSpan = Math.PI / 3; // 60 graus
-    const shifted = (angle + sectorSpan / 2) % (Math.PI * 2);
-    const sectorIndex = Math.floor(shifted / sectorSpan) % 6;
+    const shifted = (angle + SECTOR_SPAN / 2) % (Math.PI * 2);
+    const sectorIndex = Math.floor(shifted / SECTOR_SPAN) % SECTORS_PER_PLATFORM;
     const plat = platforms[activePlatform];
     return plat.sectors[sectorIndex];
   }
@@ -458,9 +465,9 @@ export function createHelixGame(container, callbacks) {
 
   function onKeyDown(e) {
     if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-      targetRotation -= 0.18;
+      targetRotation -= 0.16;
     } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-      targetRotation += 0.18;
+      targetRotation += 0.16;
     }
   }
   window.addEventListener('keydown', onKeyDown);
@@ -624,8 +631,8 @@ export function createHelixGame(container, callbacks) {
   requestAnimationFrame(animate);
 
   return {
-    rotateLeft: () => rotateBy(-0.35),
-    rotateRight: () => rotateBy(0.35),
+    rotateLeft: () => rotateBy(-0.25),
+    rotateRight: () => rotateBy(0.25),
     dispose: () => {
       disposed = true;
       canvasHolder.removeEventListener('mousedown', onPointerDown);
