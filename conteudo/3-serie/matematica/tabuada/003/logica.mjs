@@ -63,8 +63,42 @@ export function validateConfiguredDial(values, puzzle) {
   return uniform(values) && bounded(values)
     && puzzle.correct.some(([count, value]) => values.length === count && values[0] === value);
 }
+export const OPERATION_META = Object.freeze({
+  soma: { title: 'Essa é fácil...', symbol: '+', calc: (x, y) => x + y },
+  subtracao: { title: 'Vamos subtrair?', symbol: '-', calc: (x, y) => x - y },
+  divisao: { title: 'Você sabe dividir?', symbol: '÷', calc: (x, y) => x / y }
+});
+export function generateHints(targets, contasEntries, rng = Math.random) {
+  if (!contasEntries || !Array.isArray(contasEntries)) return null;
+  const sides = ['blue', 'yellow', 'red'];
+  const ops = ['soma', 'subtracao', 'divisao'];
+  for (let i = ops.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.max(0, Math.min(0.999999999, rng())) * (i + 1));
+    const tmp = ops[i]; ops[i] = ops[j]; ops[j] = tmp;
+  }
+  const contasByTarget = new Map(contasEntries.map(entry => [entry.target, entry]));
+  const hints = {};
+  for (let i = 0; i < sides.length; i++) {
+    const side = sides[i], target = targets[side], operation = ops[i], meta = OPERATION_META[operation];
+    const entry = contasByTarget.get(target);
+    if (!entry || !entry[operation] || !entry[operation].length) {
+      throw new Error('Faltam contas de ' + operation + ' para o alvo ' + target + '.');
+    }
+    const pairs = entry[operation];
+    const pickIndex = Math.floor(Math.max(0, Math.min(0.999999999, rng())) * pairs.length);
+    const [x, y] = pairs[pickIndex];
+    hints[side] = {
+      operation,
+      x,
+      y,
+      title: meta.title,
+      expression: `${x} ${meta.symbol} ${y} = ?`
+    };
+  }
+  return hints;
+}
 export const signature = config => JSON.stringify(SIDES.slice(0, 3).map(side => config.dialPuzzles[side]));
-export function generatePuzzle(entries, rng = Math.random, recent = []) {
+export function generatePuzzle(entries, rng = Math.random, recent = [], contasEntries = null) {
   const groups = validatePuzzleEntries(entries);
   for (let attempt = 0; ; attempt++) {
     const pick = group => group[(Math.floor(Math.max(0, Math.min(.999999999, rng())) * group.length) + attempt) % group.length];
@@ -75,7 +109,9 @@ export function generatePuzzle(entries, rng = Math.random, recent = []) {
     const valuesBySide = Object.fromEntries(Object.entries(dialPuzzles).map(([side, puzzle]) => [side, [...puzzle.ballsPerBottle]]));
     // The purple balance keeps its established free-equilibrium rule, using the blue shelf.
     valuesBySide.purple = [...valuesBySide.blue];
-    const config = { dialPuzzles, valuesBySide, targets: Object.fromEntries(Object.entries(dialPuzzles).map(([side, puzzle]) => [side, puzzle.target])) };
+    const targets = Object.fromEntries(Object.entries(dialPuzzles).map(([side, puzzle]) => [side, puzzle.target]));
+    const hints = contasEntries ? generateHints(targets, contasEntries, rng) : null;
+    const config = { dialPuzzles, valuesBySide, targets, ...(hints ? { hints } : {}) };
     if (!recent.includes(signature(config)) || attempt > recent.length + 20) return config;
   }
 }
