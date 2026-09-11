@@ -106,7 +106,8 @@ Além disso, as três balanças recebem aleatoriamente uma operação cada (1 so
 e 1 divisão, sem repetição) a partir de `assets/files/3rd grade/math/003/Contas.json`. O bilhete
 físico exibe a dica correspondente: "Essa é fácil..." com `X + Y = ?`, "Vamos subtrair?"
 com `X - Y = ?` ou "Você sabe dividir?" com `X ÷ Y = ?`. A balança roxa continua com
-sua regra própria de equilibrar dois tipos diferentes de frasco, usando os cinco frascos da prateleira azul.
+sua regra própria de equilibrar dois tipos diferentes de frasco, sorteando os seus cinco frascos
+entre quatro grupos autorizados: `[3, 4, 5, 7, 12]`, `[4, 6, 7, 9, 10]`, `[2, 3, 5, 7, 8]` ou `[2, 5, 6, 9, 12]`.
 As relações da roxa são verificadas entre tipos diferentes com no máximo
 dez frascos por prato. As oito configurações recentes orientam a antirrepetição.
 

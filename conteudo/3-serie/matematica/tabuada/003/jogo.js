@@ -8,7 +8,7 @@
     return;
   }
   // A versioned module avoids mixing a cached app with its updated data-driven logic.
-  const source = new URL('./app.mjs?v=puzzles-json-4', document.currentScript.src).href;
+  const source = new URL('./app.mjs?v=puzzles-json-5', document.currentScript.src).href;
   window.BENA_JOGO = {
     iniciar(container, voltar) {
       let disposed = false, cleanup;

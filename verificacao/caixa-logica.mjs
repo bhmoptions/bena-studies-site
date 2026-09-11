@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { test } from 'node:test';
-import {generatePuzzle,generateHints,OPERATION_META,dialSolutions,purpleSolutions,validateDial,validatePurple,validateConfiguredDial,balanceTilt,createState,act,isComplete,scoreInput,SIDES,signature,valuesForSide} from '../conteudo/3-serie/matematica/tabuada/003/logica.mjs';
+import {generatePuzzle,generateHints,OPERATION_META,dialSolutions,purpleSolutions,validateDial,validatePurple,validateConfiguredDial,balanceTilt,createState,act,isComplete,scoreInput,SIDES,signature,valuesForSide,PURPLE_BOTTLE_GROUPS} from '../conteudo/3-serie/matematica/tabuada/003/logica.mjs';
 const entries=JSON.parse(readFileSync(new URL('../assets/files/3rd grade/math/003/Multiplication Box Puzzle.json',import.meta.url),'utf8'));
 const contasEntries=JSON.parse(readFileSync(new URL('../assets/files/3rd grade/math/003/Contas.json',import.meta.url),'utf8'));
 function seedRng(seed){return()=>((seed=(seed*16807)%2147483647)/2147483647);}
@@ -19,8 +19,17 @@ test('5.000 rodadas: o JSON seleciona três faixas distintas e cada balança rec
    for(const [count,value] of puzzle.correct)assert(validateConfiguredDial(Array(count).fill(value),puzzle));
   }
   const purple=purpleSolutions(valuesForSide(c,'purple'));assert(purple.length);
+  assert(PURPLE_BOTTLE_GROUPS.some(g => JSON.stringify(g) === JSON.stringify(valuesForSide(c, 'purple'))));
   for(const s of purple)assert(validatePurple(Array(s.leftCount).fill(s.leftValue),Array(s.rightCount).fill(s.rightValue)));
  }
+});
+test('balança roxa sorteia exclusivamente entre os 4 grupos definidos',()=>{
+ assert.deepEqual(PURPLE_BOTTLE_GROUPS, [
+  [3,4,5,7,12],
+  [4,6,7,9,10],
+  [2,3,5,7,8],
+  [2,5,6,9,12]
+ ]);
 });
 test('anti-repetição funciona até com RNG constante',()=>{
  const a=generatePuzzle(entries,()=>0),b=generatePuzzle(entries,()=>0,[signature(a)]);assert.notEqual(signature(a),signature(b));

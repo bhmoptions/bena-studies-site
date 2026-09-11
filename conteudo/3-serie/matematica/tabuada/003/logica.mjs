@@ -1,5 +1,11 @@
 // Matemática e estado independentes do navegador e da apresentação 3D.
 export const SIDES = ['blue', 'red', 'yellow', 'purple'];
+export const PURPLE_BOTTLE_GROUPS = Object.freeze([
+  [3, 4, 5, 7, 12],
+  [4, 6, 7, 9, 10],
+  [2, 3, 5, 7, 8],
+  [2, 5, 6, 9, 12]
+]);
 export const MAX_FLASKS = 10;
 export const MAX_TOTAL = 100;
 export const total = values => values.reduce((sum, value) => sum + value, 0);
@@ -55,8 +61,8 @@ export function validatePuzzleEntries(entries) {
   };
   if (Object.values(groups).some(group => !group.length))
     throw new Error('Falta uma configuração para uma das balanças coloridas.');
-  if (groups.blue.some(entry => !purpleSolutions(entry.ballsPerBottle).length))
-    throw new Error('Uma configuração azul não permite resolver a balança roxa.');
+  if (PURPLE_BOTTLE_GROUPS.some(group => !purpleSolutions(group).length))
+    throw new Error('Uma configuração roxa não permite resolver a balança roxa.');
   return groups;
 }
 export function validateConfiguredDial(values, puzzle) {
@@ -97,7 +103,10 @@ export function generateHints(targets, contasEntries, rng = Math.random) {
   }
   return hints;
 }
-export const signature = config => JSON.stringify(SIDES.slice(0, 3).map(side => config.dialPuzzles[side]));
+export const signature = config => JSON.stringify([
+  SIDES.slice(0, 3).map(side => config.dialPuzzles[side]),
+  config.valuesBySide?.purple
+]);
 export function generatePuzzle(entries, rng = Math.random, recent = [], contasEntries = null) {
   const groups = validatePuzzleEntries(entries);
   for (let attempt = 0; ; attempt++) {
@@ -107,8 +116,8 @@ export function generatePuzzle(entries, rng = Math.random, recent = [], contasEn
       return [side, { target: entry.target, ballsPerBottle: [...entry.ballsPerBottle], correct: entry.correct.map(pair => [...pair]) }];
     }));
     const valuesBySide = Object.fromEntries(Object.entries(dialPuzzles).map(([side, puzzle]) => [side, [...puzzle.ballsPerBottle]]));
-    // The purple balance keeps its established free-equilibrium rule, using the blue shelf.
-    valuesBySide.purple = [...valuesBySide.blue];
+    const purpleGroup = PURPLE_BOTTLE_GROUPS[(Math.floor(Math.max(0, Math.min(.999999999, rng())) * PURPLE_BOTTLE_GROUPS.length) + attempt) % PURPLE_BOTTLE_GROUPS.length];
+    valuesBySide.purple = [...purpleGroup];
     const targets = Object.fromEntries(Object.entries(dialPuzzles).map(([side, puzzle]) => [side, puzzle.target]));
     const hints = contasEntries ? generateHints(targets, contasEntries, rng) : null;
     const config = { dialPuzzles, valuesBySide, targets, ...(hints ? { hints } : {}) };

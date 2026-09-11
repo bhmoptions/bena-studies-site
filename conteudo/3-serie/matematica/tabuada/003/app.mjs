@@ -1,7 +1,7 @@
 // Keep the data-driven modules on the same cache version. A stale scene paired
 // with the new puzzle logic would otherwise fail while importing.
-import { SIDES, generatePuzzle, signature, createState, act, scoreInput } from './logica.mjs?v=puzzles-json-4';
-import { createScene } from './cena.mjs?v=puzzles-json-4';
+import { SIDES, generatePuzzle, signature, createState, act, scoreInput } from './logica.mjs?v=puzzles-json-5';
+import { createScene } from './cena.mjs?v=puzzles-json-5';
 import { LABELS, COLORS } from './modelos.mjs';
 import { createAudio } from './audio.mjs';
 import { connectInteraction } from './interacao.mjs';
