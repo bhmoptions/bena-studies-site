@@ -24,7 +24,7 @@ const modal = document.querySelector('#modal');
 const content = document.querySelector('#modal-content');
 modal.querySelector('.close').onclick = () => modal.close();
 modal.addEventListener('click', e => {if(e.target===modal) { const r=modal.getBoundingClientRect(); if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom) modal.close(); }});
-document.querySelector('[data-login]').onclick = () => {content.innerHTML='<div class="modal-symbol">☺</div><div class="eyebrow">SEU CANTINHO NA TURMA</div><h2>Que bom ter você aqui!</h2><p>Em breve, cada amigo terá seu próprio acesso para estudar e guardar suas descobertas.</p><p class="notice">Esta é uma prévia. O login ainda não está disponível.</p><button class="primary" id="explore">Explorar os jogos →</button>';modal.showModal();document.querySelector('#explore').onclick=()=>{modal.close();location.hash='materias';};};
+document.querySelector('[data-login]').onclick = () => {}; // Firebase Auth — ver assets/componentes/auth.js
 document.querySelectorAll('[data-subject]').forEach(button => button.onclick = () => {
   showTopics(materias[Number(button.dataset.subject)]);
   modal.showModal();

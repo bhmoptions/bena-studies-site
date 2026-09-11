@@ -136,3 +136,32 @@ dialog .timing-note { font-size: 12px; margin-top: 6px; }
   color: #d7b36a;
 }
 
+
+/* Formulario de login (Firebase Auth) */
+.auth-form { margin-top: 8px; }
+.auth-form input {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--white);
+}
+.auth-form input:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 3px;
+}
+.auth-form .primary { width: 100%; margin-top: 20px; }
+.auth-error {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--orange);
+  background: var(--soft);
+  padding: 10px 14px;
+  border-radius: 8px;
+  line-height: 1.5;
+}
