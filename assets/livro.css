@@ -1,0 +1,911 @@
+/* ==========================================================================
+   Bena Studies — Livro Mágico de Descobertas (Landing Page Imersiva)
+   Estilos dedicados com 3D CSS, iluminação mágica e tema Caderno Dark
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&family=Kalam:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap');
+
+:root {
+  color-scheme: dark;
+  --paper: #191d29;
+  --ink: #f3ecdc;
+  --muted: #b6bac9;
+  --accent: #f3ac8e;
+  --accent-ink: #241e24;
+  --line: #303646;
+  --white: #242b3c;
+  --soft: #222837;
+  --yellow: #e9c675;
+  --gold: #d7b36a;
+  --pink: #dcabc3;
+  --blue: #9ebfd3;
+  --orange: #f3ac8e;
+  --shadow: #10131c;
+  --ruled-line: #394358;
+  --highlight: #564536;
+
+  --display: 'Fredoka', sans-serif;
+  --hand: 'Kalam', cursive;
+  --body: 'DM Sans', sans-serif;
+
+  --book-w: clamp(290px, 30vw, 380px);
+  --book-h: clamp(400px, 42vw, 530px);
+  --book-spine: 48px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--paper);
+  background-image: 
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-position: center top;
+  color: var(--ink);
+  font-family: var(--body);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* --------------------------------------------------------------------------
+   Cabeçalho Padrão Bena Studies (Minimalista & Elegante)
+   -------------------------------------------------------------------------- */
+.livro-header {
+  position: relative;
+  z-index: 100;
+  height: 68px;
+  background-color: #191d29;
+  border-bottom: 1px solid #303646;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(20px, 4vw, 48px);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--display);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  transition: transform 0.2s;
+}
+
+.brand:hover {
+  transform: translateY(-1px);
+}
+
+.brand-icon {
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 28px;
+  width: 38px;
+  height: 40px;
+  border-radius: 12px;
+  position: relative;
+  font-weight: 700;
+}
+
+.brand-icon span {
+  font-size: 15px;
+  position: absolute;
+  right: -5px;
+  top: -4px;
+  color: var(--gold);
+}
+
+.brand-light {
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: 3px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sound-btn {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  border-radius: 20px;
+  padding: 8px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.sound-btn:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.login-btn {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-radius: 30px;
+  padding: 10px 22px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.login-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(215, 179, 106, 0.08);
+}
+
+/* --------------------------------------------------------------------------
+   Palco Principal (Stage)
+   -------------------------------------------------------------------------- */
+.main-stage {
+  min-height: calc(100vh - 68px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 30px 16px 60px;
+  perspective: 1800px;
+}
+
+/* Canvas de Partículas Mágicas e Símbolos em Vórtice */
+#particles-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 40;
+}
+
+/* Halo de luz ambiente atrás do livro */
+.ambient-halo {
+  position: absolute;
+  width: clamp(400px, 60vw, 850px);
+  height: clamp(400px, 60vw, 850px);
+  background: radial-gradient(circle, rgba(215, 179, 106, 0.16) 0%, rgba(243, 172, 142, 0.08) 35%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  animation: halo-pulse 5s ease-in-out infinite alternate;
+}
+
+@keyframes halo-pulse {
+  0% { transform: scale(0.92); opacity: 0.6; }
+  100% { transform: scale(1.08); opacity: 1; }
+}
+
+/* --------------------------------------------------------------------------
+   Estrutura 3D do Livro
+   -------------------------------------------------------------------------- */
+.book-wrap {
+  position: relative;
+  z-index: 10;
+  transform-style: preserve-3d;
+  transition: transform 1.2s cubic-bezier(0.25, 1, 0.3, 1);
+}
+
+/* Centralização suave quando o livro se abre em duas páginas */
+.book-wrap.is-open {
+  transform: translateX(calc(var(--book-w) / 2));
+}
+
+@media (max-width: 860px) {
+  .book-wrap.is-open {
+    transform: translateX(0);
+  }
+}
+
+.book {
+  position: relative;
+  width: var(--book-w);
+  height: var(--book-h);
+  transform-style: preserve-3d;
+  cursor: pointer;
+  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: rotateX(12deg) rotateY(-18deg) rotateZ(1deg);
+}
+
+/* Estado Fechado: Flutuação Mágica e Respiração */
+.book-wrap.is-closed .book {
+  animation: book-levitate 4.5s ease-in-out infinite alternate;
+}
+
+.book-wrap.is-closed .book:hover {
+  transform: rotateX(8deg) rotateY(-10deg) scale(1.03);
+}
+
+@keyframes book-levitate {
+  0% {
+    transform: rotateX(14deg) rotateY(-19deg) translateY(-8px);
+    box-shadow: 0 35px 50px -15px rgba(0, 0, 0, 0.8);
+  }
+  100% {
+    transform: rotateX(10deg) rotateY(-14deg) translateY(8px);
+    box-shadow: 0 45px 65px -12px rgba(0, 0, 0, 0.65), 0 0 40px rgba(215, 179, 106, 0.25);
+  }
+}
+
+/* Estado Aberto do Livro */
+.book-wrap.is-open .book {
+  transform: rotateX(20deg) rotateY(0deg) rotateZ(0deg);
+  cursor: default;
+  animation: none;
+}
+
+/* --------------------------------------------------------------------------
+   Páginas Base (Base Pages / Bloco de Folhas)
+   -------------------------------------------------------------------------- */
+.book-base {
+  position: absolute;
+  inset: 0;
+  background: #f4ecda;
+  border-radius: 4px 14px 14px 4px;
+  box-shadow: 
+    inset 4px 0 15px rgba(0, 0, 0, 0.35),
+    12px 14px 0px #1e1b18,
+    18px 20px 0px #151311,
+    22px 25px 25px rgba(0, 0, 0, 0.7);
+  transform: translateZ(-25px);
+  transform-style: preserve-3d;
+}
+
+/* Efeito de corte das folhas (Page edges) douradas/envelhecidas */
+.book-edges-right {
+  position: absolute;
+  top: 4px;
+  right: -24px;
+  width: 24px;
+  height: calc(100% - 8px);
+  background: repeating-linear-gradient(
+    to right,
+    #2a241f 0px,
+    #d7b36a 2px,
+    #4a3a2d 4px,
+    #f4ecda 6px
+  );
+  transform-origin: left center;
+  transform: rotateY(90deg);
+  border-radius: 2px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.7);
+}
+
+.book-edges-bottom {
+  position: absolute;
+  bottom: -24px;
+  left: 6px;
+  height: 24px;
+  width: calc(100% - 8px);
+  background: repeating-linear-gradient(
+    to bottom,
+    #2a241f 0px,
+    #d7b36a 2px,
+    #4a3a2d 4px,
+    #f4ecda 6px
+  );
+  transform-origin: center top;
+  transform: rotateX(-90deg);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.7);
+}
+
+/* Lombada (Spine) */
+.book-spine {
+  position: absolute;
+  top: 0;
+  left: -28px;
+  width: 32px;
+  height: 100%;
+  background: linear-gradient(90deg, #101520 0%, #1c2333 40%, #101520 100%);
+  transform-origin: right center;
+  transform: rotateY(-90deg);
+  border-radius: 4px 0 0 4px;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.85);
+  border-left: 2px solid var(--gold);
+}
+
+/* --------------------------------------------------------------------------
+   Capa Frontal do Livro (Front Cover)
+   -------------------------------------------------------------------------- */
+.book-cover {
+  position: absolute;
+  inset: 0;
+  background-color: #121824;
+  border-radius: 4px 14px 14px 4px;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform 1.5s cubic-bezier(0.3, 0.95, 0.25, 1);
+  z-index: 25;
+  box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.6);
+}
+
+.book-cover-front,
+.book-cover-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px 14px 14px 4px;
+  backface-visibility: hidden;
+}
+
+.book-cover-front {
+  background-image: url('images/livro-capa.jpg');
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.6);
+}
+
+/* Brilho reluzente dourado sobre a capa */
+.cover-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, transparent 45%, rgba(215, 179, 106, 0.2) 80%);
+  pointer-events: none;
+  opacity: 0.8;
+  mix-blend-mode: overlay;
+}
+
+/* Verso da capa (dentro do livro quando aberto) */
+.book-cover-back {
+  background: #1e2638;
+  background-image: 
+    radial-gradient(circle at center, #263045 0%, #182030 100%),
+    linear-gradient(#303a50 1px, transparent 1px),
+    linear-gradient(90deg, #303a50 1px, transparent 1px);
+  background-size: auto, 24px 24px, 24px 24px;
+  transform: rotateY(180deg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 3px solid #141b28;
+}
+
+.page-interior-left {
+  height: 100%;
+  border: 1px dashed rgba(215, 179, 106, 0.4);
+  border-radius: 6px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: var(--ink);
+}
+
+.page-interior-left h3 {
+  font-family: var(--display);
+  font-size: 20px;
+  color: var(--gold);
+}
+
+.page-interior-left p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.page-doodle {
+  font-family: var(--hand);
+  font-size: 15px;
+  color: var(--accent);
+  transform: rotate(-3deg);
+}
+
+/* Abertura da capa */
+.book-wrap.is-open .book-cover {
+  transform: rotateY(-180deg);
+}
+
+/* Folha com canto tremulando no estado fechado */
+.flutter-corner {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, transparent 50%, rgba(244, 236, 218, 0.95) 50%);
+  border-radius: 0 0 14px 0;
+  transform-origin: right bottom;
+  filter: drop-shadow(-2px -2px 3px rgba(0,0,0,0.3));
+  animation: flutter-corner-anim 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes flutter-corner-anim {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.15) rotate(-3deg); }
+}
+
+/* --------------------------------------------------------------------------
+   Folhas que viram rapidamente ("Leaf through" / "Page through")
+   -------------------------------------------------------------------------- */
+.turning-page {
+  position: absolute;
+  inset: 2px 2px 2px 0;
+  background: linear-gradient(to right, #e2d7c0 0%, #f7f1e3 85%, #eae0cb 100%);
+  border-radius: 2px 10px 10px 2px;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  opacity: 0;
+  border-left: 1px solid #baa887;
+}
+
+.page-sheet-content {
+  position: absolute;
+  inset: 12px;
+  opacity: 0.6;
+  background-image: repeating-linear-gradient(transparent 0 20px, #b9cbdc 21px 22px);
+}
+
+/* Cascata de folheamento ativada por classe */
+.turning-page.leafing-1 {
+  animation: leaf-page 0.7s 0.15s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.turning-page.leafing-2 {
+  animation: leaf-page 0.75s 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.turning-page.leafing-3 {
+  animation: leaf-page 0.8s 0.48s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.turning-page.leafing-4 {
+  animation: leaf-page 0.85s 0.68s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes leaf-page {
+  0% {
+    opacity: 1;
+    transform: rotateY(0deg) skewY(0deg);
+  }
+  40% {
+    opacity: 1;
+    transform: rotateY(-90deg) skewY(-3deg) scale(1.02);
+    box-shadow: -15px 10px 25px rgba(0,0,0,0.5);
+  }
+  100% {
+    opacity: 0.95;
+    transform: rotateY(-179deg) skewY(0deg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Página Aberta da Direita (Right Spread)
+   -------------------------------------------------------------------------- */
+.open-spread-right {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, #dcd2bd 0%, #f6f0e2 8%, #fffdf8 92%, #e5dbc6 100%);
+  border-radius: 0 14px 14px 0;
+  box-shadow: inset 18px 0 24px -10px rgba(0, 0, 0, 0.35);
+  padding: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dobra central iluminada */
+.book-gutter {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 24px;
+  background: linear-gradient(to right, rgba(0,0,0,0.4) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 30;
+}
+
+/* --------------------------------------------------------------------------
+   Cenário Pop-Up 3D (Storybook Diorama Pop-Up)
+   -------------------------------------------------------------------------- */
+.popup-diorama {
+  position: absolute;
+  left: -90%;
+  right: -10%;
+  bottom: 12px;
+  height: 94%;
+  transform-style: preserve-3d;
+  transform-origin: center bottom;
+  pointer-events: none;
+  opacity: 0;
+  transform: rotateX(85deg) scale(0.4) translateZ(-40px);
+  transition: transform 1.3s cubic-bezier(0.18, 0.89, 0.32, 1.25), opacity 0.8s ease;
+  z-index: 35;
+}
+
+.book-wrap.is-open .popup-diorama {
+  opacity: 1;
+  transform: rotateX(0deg) scale(1) translateZ(30px);
+  pointer-events: auto;
+}
+
+/* Camada da imagem pop-up */
+.popup-art {
+  position: absolute;
+  inset: 0;
+  background-image: url('images/livro-popup-cenario.jpg');
+  background-size: cover;
+  background-position: center bottom;
+  border-radius: 12px 12px 4px 4px;
+  box-shadow: 
+    0 -15px 35px rgba(0, 0, 0, 0.6),
+    0 15px 30px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  border: 2px solid rgba(215, 179, 106, 0.4);
+}
+
+.popup-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(25, 29, 41, 0.1) 0%,
+    rgba(25, 29, 41, 0.25) 60%,
+    rgba(25, 29, 41, 0.85) 100%
+  );
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Destinos Selecionáveis de Navegação (Dentro do Cenário Pop-Up)
+   -------------------------------------------------------------------------- */
+.destinations-overlay {
+  position: absolute;
+  bottom: 14px;
+  left: 12px;
+  right: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  z-index: 50;
+}
+
+@media (max-width: 600px) {
+  .destinations-overlay {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    bottom: 8px;
+  }
+}
+
+.destination-card {
+  background: rgba(25, 29, 41, 0.88);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.destination-card:hover {
+  transform: translateY(-4px) scale(1.03);
+  border-color: var(--gold);
+  background: rgba(36, 43, 60, 0.95);
+  box-shadow: 0 8px 20px rgba(215, 179, 106, 0.35);
+}
+
+.destination-card:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.destination-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+  background: var(--yellow);
+  color: var(--shadow);
+}
+
+.dest-math .destination-icon {
+  background: #f4cd65;
+}
+.dest-port .destination-icon {
+  background: #dcabc3;
+}
+.dest-scie .destination-icon {
+  background: #9ebfd3;
+}
+.dest-geog .destination-icon {
+  background: #a9e6b6;
+}
+.dest-engl .destination-icon {
+  background: #f3ac8e;
+}
+.dest-hist .destination-icon {
+  background: #e2c08d;
+}
+
+.destination-info {
+  overflow: hidden;
+}
+
+.destination-title {
+  display: block;
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.destination-sub {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+/* Badge especial para Matemática (Disponível agora) */
+.badge-active {
+  display: inline-block;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  background: #26684e;
+  color: #a9e6b6;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 2px;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   Guia / Convite de Interação (Idle Callout)
+   -------------------------------------------------------------------------- */
+.instruction-callout {
+  margin-top: 40px;
+  text-align: center;
+  z-index: 20;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.instruction-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(36, 43, 60, 0.7);
+  border: 1px solid var(--line);
+  padding: 10px 22px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  animation: pulse-pill 2.5s ease-in-out infinite;
+}
+
+.instruction-pill span {
+  color: var(--gold);
+  font-size: 18px;
+}
+
+@keyframes pulse-pill {
+  0%, 100% { transform: translateY(0); border-color: var(--line); }
+  50% { transform: translateY(-3px); border-color: var(--gold); box-shadow: 0 0 16px rgba(215, 179, 106, 0.25); }
+}
+
+/* Barra de controles quando o livro está aberto */
+.open-controls {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 14px;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.open-controls.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ctrl-btn {
+  background: rgba(25, 29, 41, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-radius: 24px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+
+.ctrl-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-2px);
+}
+
+/* --------------------------------------------------------------------------
+   Modal / Dialog de Jogos & Matérias (Harmonizado com site.css)
+   -------------------------------------------------------------------------- */
+dialog#game-dialog {
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 36px 30px;
+  width: min(540px, calc(100% - 32px));
+  max-height: 85vh;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(215, 179, 106, 0.2);
+  z-index: 200;
+}
+
+dialog#game-dialog::backdrop {
+  background: rgba(10, 14, 22, 0.8);
+  backdrop-filter: blur(6px);
+}
+
+.dialog-close {
+  position: absolute;
+  right: 18px;
+  top: 14px;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  font-size: 28px;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transition: color 0.2s, background 0.2s;
+}
+
+.dialog-close:hover {
+  color: var(--ink);
+  background: var(--soft);
+}
+
+.dialog-symbol {
+  font-size: 40px;
+  margin-bottom: 8px;
+  color: var(--gold);
+}
+
+.dialog-eyebrow {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.dialog-title {
+  font-family: var(--display);
+  font-size: 26px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.dialog-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 22px;
+}
+
+.game-card-list {
+  display: grid;
+  gap: 12px;
+}
+
+.dialog-game-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.dialog-game-btn:hover {
+  border-color: var(--gold);
+  background: var(--white);
+  transform: translateX(4px);
+}
+
+.dialog-game-name {
+  display: block;
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.dialog-game-sub {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.dialog-game-arrow {
+  color: var(--gold);
+  font-size: 20px;
+  margin-left: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   Ajustes Responsivos
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .instruction-callout {
+    margin-top: 24px;
+  }
+  .instruction-pill {
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+  .popup-diorama {
+    left: -20%;
+    right: -20%;
+    height: 90%;
+  }
+}
