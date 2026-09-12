@@ -53,7 +53,8 @@ html, body {
   background-position: center top;
   color: var(--ink);
   font-family: var(--body);
-  overflow-x: hidden;
+  /* Clip the 3D artwork without turning html/body into two vertical scrollers. */
+  overflow-x: clip;
   position: relative;
 }
 
