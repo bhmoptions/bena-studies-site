@@ -148,8 +148,10 @@
 
   const sizeChoices = ['13px', '15px', '17px', '20px', '23px', '27px'];
 
+  let skipFlowingElements = false;
+
   function triggerPage1And2Flow(isVariantA) {
-    if (!flowingElementsLayer) return;
+    if (!flowingElementsLayer || skipFlowingElements) return;
     clearFlowingElements();
 
     const frag = document.createDocumentFragment();
@@ -458,7 +460,7 @@
   // Erupção Mágica — Elementos das Páginas 3 e 4 (Matemática + Universo + Animais)
   // ==========================================================================
   function triggerPage3And4Flow() {
-    if (!flowingElementsLayer) return;
+    if (!flowingElementsLayer || skipFlowingElements) return;
     clearFlowingElements();
 
     const frag = document.createDocumentFragment();
@@ -802,7 +804,7 @@
   // Erupção Mágica — Elementos das Páginas 5 e 6 (Esportes + Veículos + Palavras EN)
   // ==========================================================================
   function triggerPage5And6Flow() {
-    if (!flowingElementsLayer) return;
+    if (!flowingElementsLayer || skipFlowingElements) return;
     clearFlowingElements();
 
     const frag = document.createDocumentFragment();
@@ -1281,6 +1283,10 @@
   function accelerateOpening() {
     if (!isAnimating || isBookOpen || currentSpeed >= 3) return;
 
+    // Pula e remove imediatamente os elementos mágicos que fluem das páginas
+    skipFlowingElements = true;
+    clearFlowingElements();
+
     const now = performance.now();
     const elapsedReal = now - animStartTime;
     const elapsedVirtual = elapsedReal * currentSpeed;
@@ -1311,6 +1317,13 @@
       setTimeout(() => p.classList.remove('is-flipping'), (timings.flipDuration * 1000) / 3);
     });
 
+    // Cancela qualquer passo futuro de erupção de elementos mágicos
+    pendingSequence.forEach(item => {
+      if (item.isFlowStep) {
+        item.executed = true;
+      }
+    });
+
     scheduleAllSequenceItems();
   }
 
@@ -1318,6 +1331,7 @@
     if (isBookOpen || isAnimating) return;
     isAnimating = true;
     currentSpeed = 1;
+    skipFlowingElements = false;
 
     clearPageTimers();
     playRustleSound();
@@ -1358,6 +1372,7 @@
       {
         time: timings.animStart0 * 1000,
         executed: false,
+        isFlowStep: true,
         action: () => triggerPage1And2Flow(currentPairIsA)
       },
       {
@@ -1377,6 +1392,7 @@
       {
         time: tPage1 + timings.animStart * 1000,
         executed: false,
+        isFlowStep: true,
         action: () => triggerPage3And4Flow()
       },
       {
@@ -1396,6 +1412,7 @@
       {
         time: tPage2 + timings.animStart * 1000,
         executed: false,
+        isFlowStep: true,
         action: () => triggerPage5And6Flow()
       },
       {
@@ -1422,6 +1439,7 @@
             bookWrap.classList.remove('is-speed-3x');
           }
           currentSpeed = 1;
+          skipFlowingElements = false;
           applyTimingsToCSS();
           isBookOpen = true;
           isAnimating = false;
@@ -1436,6 +1454,7 @@
     if (!isBookOpen || isAnimating) return;
     isAnimating = true;
     currentSpeed = 1;
+    skipFlowingElements = false;
 
     clearPageTimers();
     clearFlowingElements();
