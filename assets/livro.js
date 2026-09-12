@@ -43,10 +43,10 @@
     pauseCover: 0.3,
     flipDuration: 1.5,
     sheetInterval: 0.3,
-    endPause: 0.1,
-    animStart0: 0.15,
-    animDuration0: 1.8,
-    animStart: 0.15,
+    endPause: 0,
+    animStart0: 0.2,
+    animDuration0: 1.85,
+    animStart: 0.50,
     animDuration: 1.8
   };
 
