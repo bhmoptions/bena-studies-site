@@ -1023,6 +1023,17 @@ html, body {
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
+@media (min-width: 1024px) {
+  .instruction-callout {
+    position: absolute;
+    left: calc(50% + (var(--book-w) / 2) + 36px);
+    top: 50%;
+    transform: translateY(-50%);
+    margin-top: 0;
+    white-space: nowrap;
+  }
+}
+
 .instruction-pill {
   display: inline-flex;
   align-items: center;
