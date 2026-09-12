@@ -360,7 +360,7 @@ html, body {
 }
 
 .book-cover-front {
-  background-image: url('images/livro-capa.jpg');
+  background-image: url('images/Landing%20Page/Cover.jpg');
   background-size: cover;
   background-position: center;
   overflow: hidden;
@@ -567,7 +567,7 @@ html, body {
 .final-spread-left {
   position: absolute;
   inset: 0;
-  background-image: url('images/livro-popup-left.jpg');
+  background-image: url('images/Landing%20Page/livro-popup-left.jpg');
   background-size: cover;
   background-position: right center;
   border-radius: 12px 2px 2px 12px;
@@ -577,7 +577,7 @@ html, body {
 .final-spread-right {
   position: absolute;
   inset: 0;
-  background-image: url('images/livro-popup-right.jpg');
+  background-image: url('images/Landing%20Page/livro-popup-right.jpg');
   background-size: cover;
   background-position: left center;
   border-radius: 2px 14px 14px 2px;
