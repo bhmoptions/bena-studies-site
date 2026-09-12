@@ -169,10 +169,10 @@ html, body {
   justify-content: center;
   position: relative;
   padding: 30px 16px 60px;
-  perspective: 1800px;
+  perspective: 2000px;
 }
 
-/* Canvas de Partículas Mágicas e Símbolos em Vórtice */
+/* Canvas de Partículas Mágicas (temporariamente desativado) */
 #particles-canvas {
   position: absolute;
   inset: 0;
@@ -206,7 +206,7 @@ html, body {
   position: relative;
   z-index: 10;
   transform-style: preserve-3d;
-  transition: transform 1.2s cubic-bezier(0.25, 1, 0.3, 1);
+  transition: transform 1.6s cubic-bezier(0.25, 1, 0.3, 1);
 }
 
 /* Centralização suave quando o livro se abre em duas páginas */
@@ -252,7 +252,7 @@ html, body {
 
 /* Estado Aberto do Livro */
 .book-wrap.is-open .book {
-  transform: rotateX(20deg) rotateY(0deg) rotateZ(0deg);
+  transform: rotateX(18deg) rotateY(0deg) rotateZ(0deg);
   cursor: default;
   animation: none;
 }
@@ -329,6 +329,7 @@ html, body {
 
 /* --------------------------------------------------------------------------
    Capa Frontal do Livro (Front Cover)
+   Item 4: Cover opening takes 3.0s (transition: transform 3s cubic-bezier(...))
    -------------------------------------------------------------------------- */
 .book-cover {
   position: absolute;
@@ -337,7 +338,7 @@ html, body {
   border-radius: 4px 14px 14px 4px;
   transform-origin: left center;
   transform-style: preserve-3d;
-  transition: transform 1.5s cubic-bezier(0.3, 0.95, 0.25, 1);
+  transition: transform 3s cubic-bezier(0.3, 0.95, 0.25, 1);
   z-index: 25;
   box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.6);
 }
@@ -368,50 +369,30 @@ html, body {
   mix-blend-mode: overlay;
 }
 
-/* Verso da capa (dentro do livro quando aberto) */
+/* Verso da capa (dentro do livro quando aberto)
+   Item 5: Book Page 1.png com vinco de encadernação central */
 .book-cover-back {
-  background: #1e2638;
-  background-image: 
-    radial-gradient(circle at center, #263045 0%, #182030 100%),
-    linear-gradient(#303a50 1px, transparent 1px),
-    linear-gradient(90deg, #303a50 1px, transparent 1px);
-  background-size: auto, 24px 24px, 24px 24px;
+  background-image: url('images/Landing%20Page/Book%20Page%201.png');
+  background-size: cover;
+  background-position: center;
   transform: rotateY(180deg);
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border-right: 3px solid #141b28;
+  overflow: hidden;
+  border-right: 2px solid #1a1612;
+  box-shadow: inset -10px 0 22px rgba(0, 0, 0, 0.4);
 }
 
-.page-interior-left {
-  height: 100%;
-  border: 1px dashed rgba(215, 179, 106, 0.4);
-  border-radius: 6px;
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  color: var(--ink);
-}
-
-.page-interior-left h3 {
-  font-family: var(--display);
-  font-size: 20px;
-  color: var(--gold);
-}
-
-.page-interior-left p {
-  font-size: 13px;
-  color: var(--muted);
-  line-height: 1.6;
-}
-
-.page-doodle {
-  font-family: var(--hand);
-  font-size: 15px;
-  color: var(--accent);
-  transform: rotate(-3deg);
+/* Sombra e vinco da encadernação central (Gutter Crease) na página esquerda */
+.book-cover-back::after,
+.page-back::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 32px;
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 30%, transparent 100%);
+  pointer-events: none;
+  z-index: 5;
 }
 
 /* Abertura da capa */
@@ -440,74 +421,196 @@ html, body {
 }
 
 /* --------------------------------------------------------------------------
-   Folhas que viram rapidamente ("Leaf through" / "Page through")
+   Folhas 3D Individuais (3 Pages)
+   Item 1: Exactly 3 pages flipping sequentially
    -------------------------------------------------------------------------- */
 .turning-page {
   position: absolute;
-  inset: 2px 2px 2px 0;
-  background: linear-gradient(to right, #e2d7c0 0%, #f7f1e3 85%, #eae0cb 100%);
-  border-radius: 2px 10px 10px 2px;
+  inset: 1px 2px 2px 0;
   transform-origin: left center;
   transform-style: preserve-3d;
   box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.35);
   pointer-events: none;
-  opacity: 0;
-  border-left: 1px solid #baa887;
+  border-radius: 2px 12px 12px 2px;
+  transition: transform 1.5s cubic-bezier(0.35, 0, 0.25, 1);
 }
 
-.page-sheet-content {
+.page-front,
+.page-back {
   position: absolute;
-  inset: 12px;
-  opacity: 0.6;
-  background-image: repeating-linear-gradient(transparent 0 20px, #b9cbdc 21px 22px);
+  inset: 0;
+  border-radius: 2px 12px 12px 2px;
+  backface-visibility: hidden;
+  overflow: hidden;
 }
 
-/* Cascata de folheamento ativada por classe */
-.turning-page.leafing-1 {
-  animation: leaf-page 0.7s 0.15s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-.turning-page.leafing-2 {
-  animation: leaf-page 0.75s 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-.turning-page.leafing-3 {
-  animation: leaf-page 0.8s 0.48s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-.turning-page.leafing-4 {
-  animation: leaf-page 0.85s 0.68s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+/* Vinco de encadernação central na página direita */
+.page-front::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 32px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 30%, transparent 100%);
+  pointer-events: none;
+  z-index: 5;
 }
 
-@keyframes leaf-page {
-  0% {
-    opacity: 1;
-    transform: rotateY(0deg) skewY(0deg);
-  }
-  40% {
-    opacity: 1;
-    transform: rotateY(-90deg) skewY(-3deg) scale(1.02);
-    box-shadow: -15px 10px 25px rgba(0,0,0,0.5);
-  }
-  100% {
-    opacity: 0.95;
-    transform: rotateY(-179deg) skewY(0deg);
-  }
+.page-back {
+  transform: rotateY(180deg);
+  border-radius: 12px 2px 2px 12px;
+}
+
+/* Página 1: Frente tem Book Page 2.png (Item 5) */
+.page-1 {
+  z-index: 20;
+}
+.page-1 .page-front {
+  background-image: url('images/Landing%20Page/Book%20Page%202.png');
+  background-size: cover;
+  background-position: center;
+  border-left: 1px solid #baa887;
+  box-shadow: inset 10px 0 22px rgba(0, 0, 0, 0.4);
+}
+.page-1 .page-back {
+  background: linear-gradient(to left, #e0d4be 0%, #f7f1e3 90%, #eae0cb 100%);
+  background-image: repeating-linear-gradient(transparent 0 24px, #b9cbdc 25px 26px);
+  border-right: 1px solid #baa887;
+  padding: 30px;
+}
+
+/* Página 2 */
+.page-2 {
+  z-index: 18;
+}
+.page-2 .page-front {
+  background: linear-gradient(to right, #e0d4be 0%, #f7f1e3 90%, #eae0cb 100%);
+  background-image: repeating-linear-gradient(transparent 0 24px, #b9cbdc 25px 26px);
+  border-left: 1px solid #baa887;
+  padding: 30px;
+}
+.page-2 .page-back {
+  background: linear-gradient(to left, #e0d4be 0%, #f7f1e3 90%, #eae0cb 100%);
+  background-image: repeating-linear-gradient(transparent 0 24px, #b9cbdc 25px 26px);
+  border-right: 1px solid #baa887;
+  padding: 30px;
+}
+
+/* Página 3: Última página que vira antes do spread final */
+.page-3 {
+  z-index: 16;
+}
+.page-3 .page-front {
+  background: linear-gradient(to right, #e0d4be 0%, #f7f1e3 90%, #eae0cb 100%);
+  background-image: repeating-linear-gradient(transparent 0 24px, #b9cbdc 25px 26px);
+  border-left: 1px solid #baa887;
+  padding: 30px;
+}
+/* O verso da página 3 (quando ela termina de virar) vira a página esquerda do spread final! */
+.page-3 .page-back {
+  background: #191d29;
+}
+
+/* Classe de virada de página ativada via JS */
+.turning-page.is-flipped {
+  transform: rotateY(-180deg);
 }
 
 /* --------------------------------------------------------------------------
-   Página Aberta da Direita (Right Spread)
+   Item 3 & Item 7:
+   Cenário Final Dividido Simetricamente em Duas Metades (Left Page / Right Page)
+   com Vinco de Encadernação e Revelado Somente Após a Última Página Virar (Item 2)
    -------------------------------------------------------------------------- */
+
+/* Metade Esquerda: Revelada no verso da Página 3 quando ela termina de virar */
+.final-spread-left {
+  position: absolute;
+  inset: 0;
+  background-image: url('images/livro-popup-left.jpg');
+  background-size: cover;
+  background-position: right center;
+  border-radius: 12px 2px 2px 12px;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+/* Metade Direita: Revelada na base direita aberta */
+.final-spread-right {
+  position: absolute;
+  inset: 0;
+  background-image: url('images/livro-popup-right.jpg');
+  background-size: cover;
+  background-position: left center;
+  border-radius: 2px 14px 14px 2px;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+/* Vinco de encadernação central realista sobre as duas metades */
+.final-spread-left::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 36px;
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.3) 35%, transparent 100%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.final-spread-right::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 36px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.3) 35%, transparent 100%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Efeito vinheta sutil sobre as bordas externas das páginas */
+.final-spread-left::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, transparent 60%, rgba(0,0,0,0.5) 100%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.final-spread-right::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, transparent 60%, rgba(0,0,0,0.5) 100%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Item 2: Exibido SOMENTE quando ativado após a última página virar */
+.spread-revealed .final-spread-left,
+.spread-revealed .final-spread-right {
+  opacity: 1;
+}
+
+/* Página base direita quando o livro está aberto */
 .open-spread-right {
   position: absolute;
   inset: 0;
   background: linear-gradient(to right, #dcd2bd 0%, #f6f0e2 8%, #fffdf8 92%, #e5dbc6 100%);
   border-radius: 0 14px 14px 0;
   box-shadow: inset 18px 0 24px -10px rgba(0, 0, 0, 0.35);
-  padding: 16px;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  z-index: 12;
 }
 
-/* Dobra central iluminada */
+/* Dobra central da base */
 .book-gutter {
   position: absolute;
   left: 0;
@@ -520,76 +623,37 @@ html, body {
 }
 
 /* --------------------------------------------------------------------------
-   Cenário Pop-Up 3D (Storybook Diorama Pop-Up)
+   Destinos Selecionáveis de Navegação (Dentro do Cenário Final)
+   Alinhados perfeitamente à largura do spread aberto (duas páginas)
    -------------------------------------------------------------------------- */
-.popup-diorama {
+.destinations-container {
   position: absolute;
-  left: -90%;
-  right: -10%;
-  bottom: 12px;
-  height: 94%;
-  transform-style: preserve-3d;
-  transform-origin: center bottom;
-  pointer-events: none;
-  opacity: 0;
-  transform: rotateX(85deg) scale(0.4) translateZ(-40px);
-  transition: transform 1.3s cubic-bezier(0.18, 0.89, 0.32, 1.25), opacity 0.8s ease;
-  z-index: 35;
-}
-
-.book-wrap.is-open .popup-diorama {
-  opacity: 1;
-  transform: rotateX(0deg) scale(1) translateZ(30px);
-  pointer-events: auto;
-}
-
-/* Camada da imagem pop-up */
-.popup-art {
-  position: absolute;
-  inset: 0;
-  background-image: url('images/livro-popup-cenario.jpg');
-  background-size: cover;
-  background-position: center bottom;
-  border-radius: 12px 12px 4px 4px;
-  box-shadow: 
-    0 -15px 35px rgba(0, 0, 0, 0.6),
-    0 15px 30px rgba(0, 0, 0, 0.7);
-  overflow: hidden;
-  border: 2px solid rgba(215, 179, 106, 0.4);
-}
-
-.popup-art::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(25, 29, 41, 0.1) 0%,
-    rgba(25, 29, 41, 0.25) 60%,
-    rgba(25, 29, 41, 0.85) 100%
-  );
-  pointer-events: none;
-}
-
-/* --------------------------------------------------------------------------
-   Destinos Selecionáveis de Navegação (Dentro do Cenário Pop-Up)
-   -------------------------------------------------------------------------- */
-.destinations-overlay {
-  position: absolute;
-  bottom: 14px;
-  left: 12px;
-  right: 12px;
+  left: -100%;
+  right: 0;
+  bottom: 16px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 12px;
+  padding: 0 18px;
   z-index: 50;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-@media (max-width: 600px) {
-  .destinations-overlay {
+.spread-revealed .destinations-container {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+@media (max-width: 650px) {
+  .destinations-container {
     grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
-    bottom: 8px;
+    gap: 8px;
+    bottom: 10px;
+    padding: 0 10px;
   }
 }
 
@@ -606,14 +670,14 @@ html, body {
   display: flex;
   align-items: center;
   gap: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .destination-card:hover {
   transform: translateY(-4px) scale(1.03);
   border-color: var(--gold);
   background: rgba(36, 43, 60, 0.95);
-  box-shadow: 0 8px 20px rgba(215, 179, 106, 0.35);
+  box-shadow: 0 8px 20px rgba(215, 179, 106, 0.4);
 }
 
 .destination-card:focus-visible {
@@ -902,10 +966,5 @@ dialog#game-dialog::backdrop {
   .instruction-pill {
     font-size: 13px;
     padding: 8px 16px;
-  }
-  .popup-diorama {
-    left: -20%;
-    right: -20%;
-    height: 90%;
   }
 }

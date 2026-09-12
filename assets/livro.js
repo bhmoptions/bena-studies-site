@@ -1,6 +1,6 @@
 /**
  * Bena Studies — Livro Mágico de Descobertas
- * Controlador de Animações 3D, Vórtice de Partículas & Navegação Interativa
+ * Controlador de Animações 3D, Sequência de 3 Páginas & Navegação Interativa
  */
 
 (function () {
@@ -15,8 +15,6 @@
   const btnClose = document.getElementById('btnClose');
   const soundToggle = document.getElementById('soundToggle');
   const soundIcon = document.getElementById('soundIcon');
-  const canvas = document.getElementById('particles-canvas');
-  const ctx = canvas.getContext('2d');
 
   // Dialog & Modal
   const gameDialog = document.getElementById('game-dialog');
@@ -31,6 +29,7 @@
   let isAnimating = false;
   let soundEnabled = true;
   let audioCtx = null;
+  let pageFlipTimers = [];
 
   // --- Web Audio Efeitos Sintetizados ---
   function getAudioContext() {
@@ -53,11 +52,11 @@
       const actx = getAudioContext();
       if (!actx) return;
 
-      const bufferSize = actx.sampleRate * 0.4;
+      const bufferSize = actx.sampleRate * 0.45;
       const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
       const data = buffer.getChannelData(0);
       for (let i = 0; i < bufferSize; i++) {
-        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (actx.sampleRate * 0.1));
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (actx.sampleRate * 0.12));
       }
 
       const noise = actx.createBufferSource();
@@ -65,24 +64,22 @@
 
       const filter = actx.createBiquadFilter();
       filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(800, actx.currentTime);
-      filter.frequency.exponentialRampToValueAtTime(300, actx.currentTime + 0.4);
+      filter.frequency.setValueAtTime(750, actx.currentTime);
+      filter.frequency.exponentialRampToValueAtTime(280, actx.currentTime + 0.45);
       filter.Q.setValueAtTime(3, actx.currentTime);
 
       const gain = actx.createGain();
-      gain.gain.setValueAtTime(0.2, actx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.4);
+      gain.gain.setValueAtTime(0.22, actx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.45);
 
       noise.connect(filter);
       filter.connect(gain);
       gain.connect(actx.destination);
       noise.start();
-    } catch (e) {
-      // Audio não suportado ou bloqueado pelo navegador
-    }
+    } catch (e) {}
   }
 
-  // Efeito sonoro de magia / carrilhão ascendente (Pentatônica mágica)
+  // Efeito sonoro de carrilhão ascendente quando a última página se assenta
   function playChimeSequence() {
     if (!soundEnabled) return;
     try {
@@ -93,233 +90,100 @@
       notes.forEach((freq, idx) => {
         const osc = actx.createOscillator();
         const gain = actx.createGain();
-        const startTime = actx.currentTime + idx * 0.09;
+        const startTime = actx.currentTime + idx * 0.1;
 
         osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, startTime);
 
         gain.gain.setValueAtTime(0.001, startTime);
         gain.gain.linearRampToValueAtTime(0.12, startTime + 0.03);
-        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.5);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.55);
 
         osc.connect(gain);
         gain.connect(actx.destination);
 
         osc.start(startTime);
-        osc.stop(startTime + 0.6);
+        osc.stop(startTime + 0.65);
       });
     } catch (e) {}
   }
 
-  // --- Motor de Partículas (Canvas) ---
-  let width = 0;
-  let height = 0;
-  const particles = [];
-  const ambientStars = [];
-
-  function resizeCanvas() {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
-
-  // Inicializa estrelas ambientes suaves de fundo
-  for (let i = 0; i < 40; i++) {
-    ambientStars.push({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      size: Math.random() * 2 + 1,
-      alpha: Math.random() * 0.7 + 0.3,
-      speed: Math.random() * 0.02 + 0.01,
-      phase: Math.random() * Math.PI * 2
-    });
-  }
-
-  // Símbolos temáticos para o vórtice que escapa do livro
-  const mathSymbols = ['√x', 'π', '∑', '7×8=56', '∞', '12÷4', 'x²', 'Δ', '+', '×', '÷', '%', '≠', '≈'];
-  const scienceSymbols = ['H₂O', 'CO₂', 'atom', 'dna', '⚗️', '🧪'];
-  const spaceSymbols = ['planet', 'moon', '✦', '✧', '🚀', '⭐'];
-  const languageSymbols = ['A', 'B', 'Z', 'Aa', '🪶', '📜', '♪', '♫', 'Palavra'];
-  const geographySymbols = ['🧭', '🌍', '⛰️'];
-
-  const allSymbolTypes = [
-    ...mathSymbols.map(s => ({ text: s, type: 'math', color: '#f4cd65' })),
-    ...scienceSymbols.map(s => ({ text: s, type: s === 'atom' || s === 'dna' ? s : 'text', color: '#9ebfd3' })),
-    ...spaceSymbols.map(s => ({ text: s, type: s === 'planet' ? 'planet' : 'text', color: '#f3ac8e' })),
-    ...languageSymbols.map(s => ({ text: s, type: 'text', color: '#dcabc3' })),
-    ...geographySymbols.map(s => ({ text: s, type: 'text', color: '#a9e6b6' }))
-  ];
-
-  // Disparo do vórtice ao abrir o livro
-  function spawnKnowledgeVortex() {
-    const rect = book.getBoundingClientRect();
-    const originX = rect.left + rect.width * 0.45;
-    const originY = rect.top + rect.height * 0.4;
-
-    const count = 130; // Grande erupção de conhecimento
-    for (let i = 0; i < count; i++) {
-      const symDef = allSymbolTypes[Math.floor(Math.random() * allSymbolTypes.length)];
-      const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.5; // Apontado para cima em leque
-      const speed = Math.random() * 11 + 3;
-
-      particles.push({
-        x: originX + (Math.random() - 0.5) * 40,
-        y: originY + (Math.random() - 0.5) * 30,
-        vx: Math.cos(angle) * speed * (Math.random() > 0.5 ? 1 : -1) * 0.9,
-        vy: Math.sin(angle) * speed,
-        gravity: 0.04,
-        drag: 0.985,
-        curlSpeed: (Math.random() - 0.5) * 0.06,
-        size: Math.random() * 14 + 14,
-        rot: Math.random() * Math.PI * 2,
-        rotSpeed: (Math.random() - 0.5) * 0.08,
-        alpha: 1,
-        life: 1,
-        decay: Math.random() * 0.008 + 0.007,
-        data: symDef,
-        age: 0,
-        orbitAngle: Math.random() * Math.PI * 2
-      });
-    }
-  }
-
-  // Renderização das partículas no Canvas
-  function drawPlanet(ctx, p) {
-    const r = p.size * 0.5;
-    // Corpo do planeta
-    ctx.beginPath();
-    ctx.arc(0, 0, r, 0, Math.PI * 2);
-    ctx.fillStyle = p.data.color;
-    ctx.fill();
-
-    // Anel orbital de Saturno
-    ctx.save();
-    ctx.rotate(0.4);
-    ctx.beginPath();
-    ctx.ellipse(0, 0, r * 1.9, r * 0.5, 0, 0, Math.PI * 2);
-    ctx.lineWidth = 2.5;
-    ctx.strokeStyle = 'rgba(233, 198, 117, 0.85)';
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  function drawAtom(ctx, p) {
-    const r = p.size * 0.45;
-    // Núcleo
-    ctx.beginPath();
-    ctx.arc(0, 0, 3.5, 0, Math.PI * 2);
-    ctx.fillStyle = '#f4cd65';
-    ctx.fill();
-
-    // Órbitas de elétrons
-    ctx.strokeStyle = 'rgba(158, 191, 211, 0.7)';
-    ctx.lineWidth = 1.5;
-
-    ctx.beginPath();
-    ctx.ellipse(0, 0, r, r * 0.38, Math.PI / 4, 0, Math.PI * 2);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.ellipse(0, 0, r, r * 0.38, -Math.PI / 4, 0, Math.PI * 2);
-    ctx.stroke();
-  }
-
-  function renderParticles() {
-    ctx.clearRect(0, 0, width, height);
-
-    // 1. Estrelas ambientes
-    for (let s of ambientStars) {
-      s.phase += s.speed;
-      const curAlpha = s.alpha * (0.6 + 0.4 * Math.sin(s.phase));
-      ctx.fillStyle = `rgba(215, 179, 106, ${curAlpha})`;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // 2. Partículas do Vórtice
-    for (let i = particles.length - 1; i >= 0; i--) {
-      const p = particles[i];
-      p.age++;
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += p.gravity;
-      p.vx *= p.drag;
-      p.vy *= p.drag;
-      p.rot += p.rotSpeed;
-      p.vx += Math.sin(p.age * 0.05) * 0.35; // Efeito de brisa/espiral mágica
-      p.life -= p.decay;
-
-      if (p.life <= 0) {
-        particles.splice(i, 1);
-        continue;
-      }
-
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rot);
-      ctx.globalAlpha = Math.max(0, p.life);
-
-      // Brilho neon sutil
-      ctx.shadowColor = p.data.color;
-      ctx.shadowBlur = 12;
-
-      if (p.data.type === 'planet') {
-        drawPlanet(ctx, p);
-      } else if (p.data.type === 'atom') {
-        drawAtom(ctx, p);
-      } else {
-        // Texto / Símbolo matemático / Letra
-        ctx.font = `bold ${Math.round(p.size)}px 'Fredoka', 'DM Sans', sans-serif`;
-        ctx.fillStyle = p.data.color;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(p.data.text, 0, 0);
-      }
-
-      ctx.restore();
-    }
-
-    requestAnimationFrame(renderParticles);
-  }
-  requestAnimationFrame(renderParticles);
-
   // --- Sequência de Abertura do Livro ---
+  // Requisitos:
+  // 1. Capa leva 3s para abrir (Item 4)
+  // 2. Além da capa, viram exatamente 3 páginas (Item 1)
+  // 3. Tempo aumentado e espaçado entre as viradas de página (Item 2)
+  // 4. Cenário final e destinos só são revelados após a última página assentar (Item 2 & 3)
+  // 5. Partículas flutuantes temporariamente desativadas (Item 1)
+
   function openBook() {
     if (isBookOpen || isAnimating) return;
     isAnimating = true;
 
-    // Inicia áudio
+    // Limpa quaisquer timers pendentes
+    clearPageTimers();
+
+    // 1. Som de abertura da capa pesada
     playRustleSound();
-    setTimeout(playChimeSequence, 300);
 
     // Oculta callout de instrução
     instructionCallout.style.opacity = '0';
     instructionCallout.style.transform = 'translateY(15px)';
 
-    // 1. Capa se abre
+    // Garante que o cenário final não esteja visível prematuramente (Item 2)
+    bookWrap.classList.remove('spread-revealed');
+
+    // 2. Abertura da Capa (Duração de 3s conforme Item 4)
     bookWrap.classList.remove('is-closed');
     bookWrap.classList.add('is-open');
 
-    // 2. Páginas folheiam em cascata
-    const pages = book.querySelectorAll('.turning-page');
-    pages.forEach((p, idx) => {
-      p.classList.add(`leafing-1`, `leafing-${idx + 1}`);
-      setTimeout(playRustleSound, 200 * idx);
-    });
+    const page1 = book.querySelector('.page-1');
+    const page2 = book.querySelector('.page-2');
+    const page3 = book.querySelector('.page-3');
 
-    // 3. Erupção do Vórtice de Símbolos Mágicos
-    setTimeout(() => {
-      spawnKnowledgeVortex();
-    }, 280);
+    // Garante estado inicial não virado
+    [page1, page2, page3].forEach(p => p && p.classList.remove('is-flipped'));
 
-    // 4. Cenário Pop-up se ergue e se estabiliza
-    setTimeout(() => {
+    // Sequência espaçada de viradas:
+    // A capa começa em t=0 e abre até t=3.0s.
+    // Permite contemplar a página 1 e 2 por um instante antes de iniciar o folheamento.
+
+    // t=3.3s: Página 1 vira (leva 1.5s -> termina em 4.8s)
+    scheduleTimer(() => {
+      playRustleSound();
+      if (page1) page1.classList.add('is-flipped');
+    }, 3300);
+
+    // t=5.1s: Página 2 vira (leva 1.5s -> termina em 6.6s)
+    scheduleTimer(() => {
+      playRustleSound();
+      if (page2) page2.classList.add('is-flipped');
+    }, 5100);
+
+    // t=6.9s: Página 3 vira (leva 1.5s -> termina em 8.4s)
+    scheduleTimer(() => {
+      playRustleSound();
+      if (page3) page3.classList.add('is-flipped');
+    }, 6900);
+
+    // t=8.5s: Após a Página 3 assentar completamente, revela o cenário final com as matérias!
+    scheduleTimer(() => {
+      playChimeSequence();
+      bookWrap.classList.add('spread-revealed');
       isBookOpen = true;
       isAnimating = false;
       openControls.classList.add('is-visible');
-    }, 1500);
+    }, 8500);
+  }
+
+  function scheduleTimer(fn, delay) {
+    const id = setTimeout(fn, delay);
+    pageFlipTimers.push(id);
+  }
+
+  function clearPageTimers() {
+    pageFlipTimers.forEach(id => clearTimeout(id));
+    pageFlipTimers = [];
   }
 
   // Fechar o livro de volta ao estado de repouso
@@ -327,36 +191,45 @@
     if (!isBookOpen || isAnimating) return;
     isAnimating = true;
 
+    clearPageTimers();
     playRustleSound();
     openControls.classList.remove('is-visible');
 
-    // Remove classes de folheamento
-    const pages = book.querySelectorAll('.turning-page');
-    pages.forEach(p => {
-      p.className = 'turning-page';
-    });
+    // Oculta o cenário final
+    bookWrap.classList.remove('spread-revealed');
 
-    bookWrap.classList.remove('is-open');
-    bookWrap.classList.add('is-closed');
+    // Desvira as páginas na ordem inversa com intervalo
+    const page1 = book.querySelector('.page-1');
+    const page2 = book.querySelector('.page-2');
+    const page3 = book.querySelector('.page-3');
 
-    setTimeout(() => {
+    if (page3) page3.classList.remove('is-flipped');
+    scheduleTimer(() => { if (page2) page2.classList.remove('is-flipped'); }, 300);
+    scheduleTimer(() => { if (page1) page1.classList.remove('is-flipped'); }, 600);
+
+    // Fecha a capa
+    scheduleTimer(() => {
+      bookWrap.classList.remove('is-open');
+      bookWrap.classList.add('is-closed');
+    }, 900);
+
+    scheduleTimer(() => {
       isBookOpen = false;
       isAnimating = false;
       instructionCallout.style.opacity = '1';
       instructionCallout.style.transform = 'translateY(0)';
-    }, 1200);
+    }, 3900); // 900ms + 3000ms da transição da capa
   }
 
   // Refolhear o livro (Replay da animação completa)
   function replayBookAnimation() {
     if (isAnimating) return;
     closeBook();
-    setTimeout(openBook, 1300);
+    scheduleTimer(openBook, 4100);
   }
 
   // --- Eventos de Abertura ---
   book.addEventListener('click', (e) => {
-    // Se o livro já estiver aberto e o clique não for nos destinos, não faz nada
     if (isBookOpen) return;
     openBook();
   });
