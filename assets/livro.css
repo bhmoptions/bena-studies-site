@@ -648,14 +648,14 @@ html, body {
   z-index: 50;
   pointer-events: none;
   opacity: 0;
-  transform: translateY(15px);
+  transform: translateY(15px) translateZ(30px);
   transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .spread-revealed .destinations-container {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
+  transform: translateY(0) translateZ(30px);
 }
 
 @media (max-width: 650px) {
