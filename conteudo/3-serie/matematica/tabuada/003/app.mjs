@@ -31,15 +31,9 @@ export function start(container, voltar) {
           <p class="toast" role="status" aria-live="polite"></p>
         </section>
         <aside class="puzzle-panel" aria-label="Mecanismos da caixa">
-          <section class="box-intro" aria-labelledby="box-intro-title">
-            <p class="box-game-title">De novo essa fase?</p>
-            <h2 id="box-intro-title">A caixa gosta de produtos</h2>
-            <p class="box-clue">Forme os grupos certos para ativar os quatro lados da caixa e revelar o pergaminho.</p>
-          </section>
-          <button type="button" class="box-instructions-button" aria-haspopup="dialog">ⓘ Instruções</button>
-          <dialog class="game-instructions" aria-labelledby="game-instructions-title">
+          <section class="game-instructions" aria-labelledby="game-instructions-title">
             <p class="panel-kicker">GUIA DA MISSÃO</p>
-            <h2 id="game-instructions-title">Como jogar</h2>
+            <h2 id="game-instructions-title">Instruções</h2>
             <p>Para vencer o jogo, você precisa <strong>ativar os 4 lados da Caixa Misteriosa!</strong></p>
             <div class="instruction-block">
               <h3>Sua missão</h3>
@@ -59,8 +53,7 @@ export function start(container, voltar) {
               </ul>
             </div>
             <p class="instruction-good-luck">Boa sorte e divirta-se!</p>
-            <button type="button" class="instructions-close">Entendi! Vamos jogar →</button>
-          </dialog>
+          </section>
           <section class="reward-summary" hidden tabindex="-1" aria-label="Seu pergaminho"></section>
         </aside>
       </div>
@@ -127,8 +120,6 @@ export function start(container, voltar) {
             .catch(e => console.warn('[Ranking] Erro ao salvar partida:', e));
         }
         q('.game-instructions').hidden=true;
-        q('.box-intro').hidden=true;
-        q('.box-instructions-button').hidden=true;
         q('.reward-summary').hidden=false;
         q('.reward-summary').innerHTML=`<p class="panel-kicker">SEU PERGAMINHO</p><h2>Caixa desvendada!</h2><p class="reward-points"><strong>${score.pontos}</strong> pontos</p>
         <dl><div><dt>De primeira</dt><dd>${score.acertosPrimeira} de 4</dd></div><div><dt>Respostas erradas</dt><dd>${score.erros}</dd></div><div><dt>Precisão</dt><dd>${score.percentualAcertos}%</dd></div><div><dt>Rodada</dt><dd>${score.rodada}</dd></div></dl>
@@ -145,8 +136,6 @@ export function start(container, voltar) {
     state=createState(config,window.BenaPontuacao.iniciarRodada(KEY));
     q('.game-instructions').hidden=false;
     q('.reward-summary').hidden=true;
-    q('.box-intro').hidden=false;
-    q('.box-instructions-button').hidden=false;
     q('.scene-caption').textContent='Explore a caixa';
     interaction=connectInteraction(container,()=>scene,{
       select(value,sourceSide){if(sourceSide&&sourceSide!==active)selectSide(sourceSide,false);},
@@ -173,8 +162,6 @@ export function start(container, voltar) {
       case 'reload':location.reload();break;
     }
   },{signal:abort.signal});
-  q('.box-instructions-button').addEventListener('click',()=>q('.game-instructions').showModal(),{signal:abort.signal});
-  q('.instructions-close').addEventListener('click',()=>q('.game-instructions').close(),{signal:abort.signal});
   motion.addEventListener('change',()=>scene?.setReducedMotion(motion.matches),{signal:abort.signal});
   function showLoadError(error, message) {
     console.error(error);
