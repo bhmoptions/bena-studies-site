@@ -329,7 +329,6 @@ html, body {
 
 /* --------------------------------------------------------------------------
    Capa Frontal do Livro (Front Cover)
-   Item 4: Cover opening takes 3.0s (transition: transform 3s cubic-bezier(...))
    -------------------------------------------------------------------------- */
 .book-cover {
   position: absolute;
@@ -338,9 +337,16 @@ html, body {
   border-radius: 4px 14px 14px 4px;
   transform-origin: left center;
   transform-style: preserve-3d;
-  transition: transform 3s cubic-bezier(0.3, 0.95, 0.25, 1);
-  z-index: 25;
+  transition: transform 3s cubic-bezier(0.3, 0.95, 0.25, 1), z-index 0s 0s;
+  z-index: 30; /* No topo à direita quando fechado */
   box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.6);
+}
+
+/* Quando aberto, a capa vai para o fundo da pilha na esquerda com atraso para não cortar folhas no ar */
+.book-wrap.is-open .book-cover {
+  transform: rotateY(-180deg);
+  z-index: 2;
+  transition: transform 3s cubic-bezier(0.3, 0.95, 0.25, 1), z-index 0s 2.9s;
 }
 
 .book-cover-front,
@@ -348,7 +354,9 @@ html, body {
   position: absolute;
   inset: 0;
   border-radius: 4px 14px 14px 4px;
+  background-color: #121824; /* 100% OPACO */
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .book-cover-front {
@@ -357,6 +365,7 @@ html, body {
   background-position: center;
   overflow: hidden;
   box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.6);
+  transform: rotateY(0deg) translateZ(1px);
 }
 
 /* Brilho reluzente dourado sobre a capa */
@@ -369,19 +378,20 @@ html, body {
   mix-blend-mode: overlay;
 }
 
-/* Verso da capa (dentro do livro quando aberto)
-   Item 5: Book Page 1.png com vinco de encadernação central */
+/* Verso da capa (Dentro do livro quando aberto):
+   Contém Book Page 1.png com 100% de opacidade */
 .book-cover-back {
+  background-color: #f7f1e3;
   background-image: url('images/Landing%20Page/Book%20Page%201.png');
   background-size: cover;
   background-position: center;
-  transform: rotateY(180deg);
+  transform: rotateY(180deg) translateZ(1px);
   overflow: hidden;
   border-right: 2px solid #1a1612;
   box-shadow: inset -10px 0 22px rgba(0, 0, 0, 0.4);
 }
 
-/* Sombra e vinco da encadernação central (Gutter Crease) na página esquerda */
+/* Vinco de encadernação central (Gutter Crease) na página esquerda */
 .book-cover-back::after,
 .page-back::after {
   content: '';
@@ -389,15 +399,10 @@ html, body {
   right: 0;
   top: 0;
   bottom: 0;
-  width: 32px;
-  background: linear-gradient(to left, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 30%, transparent 100%);
+  width: 34px;
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.25) 35%, transparent 100%);
   pointer-events: none;
   z-index: 5;
-}
-
-/* Abertura da capa */
-.book-wrap.is-open .book-cover {
-  transform: rotateY(-180deg);
 }
 
 /* Folha com canto tremulando no estado fechado */
@@ -421,8 +426,8 @@ html, body {
 }
 
 /* --------------------------------------------------------------------------
-   Folhas 3D Individuais (3 Pages)
-   Item 1: Exactly 3 pages flipping sequentially
+   Folhas 3D Individuais (Sheets)
+   Cada folha (sheet) tem 2 páginas (front e back), 100% opacas
    -------------------------------------------------------------------------- */
 .turning-page {
   position: absolute;
@@ -440,8 +445,20 @@ html, body {
   position: absolute;
   inset: 0;
   border-radius: 2px 12px 12px 2px;
+  background-color: #f7f1e3; /* FUNDO BASE 100% OPACO - SEM TRANSPARÊNCIA */
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   overflow: hidden;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.15);
+}
+
+.page-front {
+  transform: rotateY(0deg) translateZ(1px);
+}
+
+.page-back {
+  transform: rotateY(180deg) translateZ(1px);
+  border-radius: 12px 2px 2px 12px;
 }
 
 /* Vinco de encadernação central na página direita */
@@ -451,22 +468,47 @@ html, body {
   left: 0;
   top: 0;
   bottom: 0;
-  width: 32px;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 30%, transparent 100%);
+  width: 34px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.25) 35%, transparent 100%);
   pointer-events: none;
   z-index: 5;
 }
 
-.page-back {
-  transform: rotateY(180deg);
-  border-radius: 12px 2px 2px 12px;
-}
-
-/* Página 1: Frente tem Book Page 2.png (Item 5) */
+/* Stacking order à direita antes de virar */
 .page-1 {
   z-index: 20;
 }
+.page-2 {
+  z-index: 18;
+}
+.page-3 {
+  z-index: 16;
+}
+
+/* Enquanto a folha está virando no ar, sobrepõe as demais */
+.turning-page.is-flipping {
+  z-index: 35 !important;
+}
+
+/* Stacking order à esquerda após virar */
+.page-1.is-flipped {
+  transform: rotateY(-180deg);
+  z-index: 4;
+}
+.page-2.is-flipped {
+  transform: rotateY(-180deg);
+  z-index: 6;
+}
+.page-3.is-flipped {
+  transform: rotateY(-180deg);
+  z-index: 12; /* No topo de todas as páginas da esquerda! */
+}
+
+/* Folha 1:
+   Frente (Página 2): Book Page 2.png
+   Verso (Página 3): Book Page 3.png (Matemática) */
 .page-1 .page-front {
+  background-color: #f7f1e3;
   background-image: url('images/Landing%20Page/Book%20Page%202.png');
   background-size: cover;
   background-position: center;
@@ -474,56 +516,54 @@ html, body {
   box-shadow: inset 10px 0 22px rgba(0, 0, 0, 0.4);
 }
 .page-1 .page-back {
-  background: linear-gradient(to left, #e0d4be 0%, #f7f1e3 90%, #eae0cb 100%);
-  background-image: repeating-linear-gradient(transparent 0 24px, #b9cbdc 25px 26px);
+  background-color: #f7f1e3;
+  background-image: url('images/Landing%20Page/Book%20Page%203.png');
+  background-size: cover;
+  background-position: center;
   border-right: 1px solid #baa887;
-  padding: 30px;
+  box-shadow: inset -10px 0 22px rgba(0, 0, 0, 0.4);
 }
 
-/* Página 2 */
-.page-2 {
-  z-index: 18;
-}
+/* Folha 2:
+   Frente (Página 4): Book Page 4.png (Ciências)
+   Verso (Página 5): Book Page 5.png (História e Geografia) */
 .page-2 .page-front {
-  background: linear-gradient(to right, #e0d4be 0%, #f7f1e3 90%, #eae0cb 100%);
-  background-image: repeating-linear-gradient(transparent 0 24px, #b9cbdc 25px 26px);
+  background-color: #f7f1e3;
+  background-image: url('images/Landing%20Page/Book%20Page%204.png');
+  background-size: cover;
+  background-position: center;
   border-left: 1px solid #baa887;
-  padding: 30px;
+  box-shadow: inset 10px 0 22px rgba(0, 0, 0, 0.4);
 }
 .page-2 .page-back {
-  background: linear-gradient(to left, #e0d4be 0%, #f7f1e3 90%, #eae0cb 100%);
-  background-image: repeating-linear-gradient(transparent 0 24px, #b9cbdc 25px 26px);
+  background-color: #f7f1e3;
+  background-image: url('images/Landing%20Page/Book%20Page%205.png');
+  background-size: cover;
+  background-position: center;
   border-right: 1px solid #baa887;
-  padding: 30px;
+  box-shadow: inset -10px 0 22px rgba(0, 0, 0, 0.4);
 }
 
-/* Página 3: Última página que vira antes do spread final */
-.page-3 {
-  z-index: 16;
-}
+/* Folha 3:
+   Frente (Página 6): Book Page 6.png (Inglês)
+   Verso (Página 7): Metade Esquerda do Cenário Final (livro-popup-left.jpg) */
 .page-3 .page-front {
-  background: linear-gradient(to right, #e0d4be 0%, #f7f1e3 90%, #eae0cb 100%);
-  background-image: repeating-linear-gradient(transparent 0 24px, #b9cbdc 25px 26px);
+  background-color: #f7f1e3;
+  background-image: url('images/Landing%20Page/Book%20Page%206.png');
+  background-size: cover;
+  background-position: center;
   border-left: 1px solid #baa887;
-  padding: 30px;
+  box-shadow: inset 10px 0 22px rgba(0, 0, 0, 0.4);
 }
-/* O verso da página 3 (quando ela termina de virar) vira a página esquerda do spread final! */
 .page-3 .page-back {
-  background: #191d29;
-}
-
-/* Classe de virada de página ativada via JS */
-.turning-page.is-flipped {
-  transform: rotateY(-180deg);
+  background-color: #191d29;
+  border-right: 1px solid #baa887;
 }
 
 /* --------------------------------------------------------------------------
-   Item 3 & Item 7:
-   Cenário Final Dividido Simetricamente em Duas Metades (Left Page / Right Page)
-   com Vinco de Encadernação e Revelado Somente Após a Última Página Virar (Item 2)
+   Cenário Final Dividido Simetricamente em Duas Metades
+   (Left Page = Verso da Folha 3 / Right Page = Base Aberta da Direita)
    -------------------------------------------------------------------------- */
-
-/* Metade Esquerda: Revelada no verso da Página 3 quando ela termina de virar */
 .final-spread-left {
   position: absolute;
   inset: 0;
@@ -532,11 +572,8 @@ html, body {
   background-position: right center;
   border-radius: 12px 2px 2px 12px;
   overflow: hidden;
-  opacity: 0;
-  transition: opacity 0.5s ease;
 }
 
-/* Metade Direita: Revelada na base direita aberta */
 .final-spread-right {
   position: absolute;
   inset: 0;
@@ -545,11 +582,9 @@ html, body {
   background-position: left center;
   border-radius: 2px 14px 14px 2px;
   overflow: hidden;
-  opacity: 0;
-  transition: opacity 0.5s ease;
 }
 
-/* Vinco de encadernação central realista sobre as duas metades */
+/* Vinco de encadernação central realista */
 .final-spread-left::after {
   content: '';
   position: absolute;
@@ -574,40 +609,15 @@ html, body {
   z-index: 10;
 }
 
-/* Efeito vinheta sutil sobre as bordas externas das páginas */
-.final-spread-left::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, transparent 60%, rgba(0,0,0,0.5) 100%);
-  pointer-events: none;
-  z-index: 5;
-}
-
-.final-spread-right::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, transparent 60%, rgba(0,0,0,0.5) 100%);
-  pointer-events: none;
-  z-index: 5;
-}
-
-/* Item 2: Exibido SOMENTE quando ativado após a última página virar */
-.spread-revealed .final-spread-left,
-.spread-revealed .final-spread-right {
-  opacity: 1;
-}
-
-/* Página base direita quando o livro está aberto */
+/* Página base direita aberta */
 .open-spread-right {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to right, #dcd2bd 0%, #f6f0e2 8%, #fffdf8 92%, #e5dbc6 100%);
+  background-color: #191d29;
   border-radius: 0 14px 14px 0;
   box-shadow: inset 18px 0 24px -10px rgba(0, 0, 0, 0.35);
   overflow: hidden;
-  z-index: 12;
+  z-index: 10;
 }
 
 /* Dobra central da base */

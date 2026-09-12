@@ -1,6 +1,6 @@
 /**
  * Bena Studies — Livro Mágico de Descobertas
- * Controlador de Animações 3D, Sequência de 3 Páginas & Navegação Interativa
+ * Controlador de Animações 3D, Sequência de 3 Folhas (Sheets) & Navegação Interativa
  */
 
 (function () {
@@ -109,31 +109,21 @@
   }
 
   // --- Sequência de Abertura do Livro ---
-  // Requisitos:
-  // 1. Capa leva 3s para abrir (Item 4)
-  // 2. Além da capa, viram exatamente 3 páginas (Item 1)
-  // 3. Tempo aumentado e espaçado entre as viradas de página (Item 2)
-  // 4. Cenário final e destinos só são revelados após a última página assentar (Item 2 & 3)
-  // 5. Partículas flutuantes temporariamente desativadas (Item 1)
-
   function openBook() {
     if (isBookOpen || isAnimating) return;
     isAnimating = true;
 
-    // Limpa quaisquer timers pendentes
     clearPageTimers();
-
-    // 1. Som de abertura da capa pesada
     playRustleSound();
 
     // Oculta callout de instrução
     instructionCallout.style.opacity = '0';
     instructionCallout.style.transform = 'translateY(15px)';
 
-    // Garante que o cenário final não esteja visível prematuramente (Item 2)
+    // Oculta destinos até a última folha assentar
     bookWrap.classList.remove('spread-revealed');
 
-    // 2. Abertura da Capa (Duração de 3s conforme Item 4)
+    // 1. Capa se abre (Leva 3s)
     bookWrap.classList.remove('is-closed');
     bookWrap.classList.add('is-open');
 
@@ -141,32 +131,53 @@
     const page2 = book.querySelector('.page-2');
     const page3 = book.querySelector('.page-3');
 
-    // Garante estado inicial não virado
-    [page1, page2, page3].forEach(p => p && p.classList.remove('is-flipped'));
+    [page1, page2, page3].forEach(p => {
+      if (p) {
+        p.classList.remove('is-flipped', 'is-flipping');
+        p.style.zIndex = '';
+      }
+    });
 
-    // Sequência espaçada de viradas:
-    // A capa começa em t=0 e abre até t=3.0s.
-    // Permite contemplar a página 1 e 2 por um instante antes de iniciar o folheamento.
-
-    // t=3.3s: Página 1 vira (leva 1.5s -> termina em 4.8s)
+    // t=3.3s: Folha 1 vira (Sheet 1)
+    // Mostra Página 2 virando e revelando Página 3 (Matemática) na esquerda e Página 4 (Ciências) na direita
     scheduleTimer(() => {
       playRustleSound();
-      if (page1) page1.classList.add('is-flipped');
+      if (page1) {
+        page1.classList.add('is-flipping');
+        page1.classList.add('is-flipped');
+        setTimeout(() => {
+          page1.classList.remove('is-flipping');
+        }, 1500);
+      }
     }, 3300);
 
-    // t=5.1s: Página 2 vira (leva 1.5s -> termina em 6.6s)
+    // t=5.1s: Folha 2 vira (Sheet 2)
+    // Revela Página 5 (História e Geografia) na esquerda e Página 6 (Inglês) na direita
     scheduleTimer(() => {
       playRustleSound();
-      if (page2) page2.classList.add('is-flipped');
+      if (page2) {
+        page2.classList.add('is-flipping');
+        page2.classList.add('is-flipped');
+        setTimeout(() => {
+          page2.classList.remove('is-flipping');
+        }, 1500);
+      }
     }, 5100);
 
-    // t=6.9s: Página 3 vira (leva 1.5s -> termina em 8.4s)
+    // t=6.9s: Folha 3 vira (Sheet 3)
+    // Revela no verso a metade esquerda do cenário final, encontrando a metade direita da base!
     scheduleTimer(() => {
       playRustleSound();
-      if (page3) page3.classList.add('is-flipped');
+      if (page3) {
+        page3.classList.add('is-flipping');
+        page3.classList.add('is-flipped');
+        setTimeout(() => {
+          page3.classList.remove('is-flipping');
+        }, 1500);
+      }
     }, 6900);
 
-    // t=8.5s: Após a Página 3 assentar completamente, revela o cenário final com as matérias!
+    // t=8.5s: Cenário assentado -> ativa destinos e sinfonia
     scheduleTimer(() => {
       playChimeSequence();
       bookWrap.classList.add('spread-revealed');
@@ -195,37 +206,66 @@
     playRustleSound();
     openControls.classList.remove('is-visible');
 
-    // Oculta o cenário final
+    // Oculta os destinos
     bookWrap.classList.remove('spread-revealed');
 
-    // Desvira as páginas na ordem inversa com intervalo
     const page1 = book.querySelector('.page-1');
     const page2 = book.querySelector('.page-2');
     const page3 = book.querySelector('.page-3');
 
-    if (page3) page3.classList.remove('is-flipped');
-    scheduleTimer(() => { if (page2) page2.classList.remove('is-flipped'); }, 300);
-    scheduleTimer(() => { if (page1) page1.classList.remove('is-flipped'); }, 600);
+    // Folha 3 vira de volta para a direita
+    if (page3) {
+      page3.classList.add('is-flipping');
+      page3.classList.remove('is-flipped');
+      setTimeout(() => {
+        page3.classList.remove('is-flipping');
+      }, 1500);
+    }
+
+    // Folha 2 vira de volta para a direita
+    scheduleTimer(() => {
+      playRustleSound();
+      if (page2) {
+        page2.classList.add('is-flipping');
+        page2.classList.remove('is-flipped');
+        setTimeout(() => {
+          page2.classList.remove('is-flipping');
+        }, 1500);
+      }
+    }, 380);
+
+    // Folha 1 vira de volta para a direita
+    scheduleTimer(() => {
+      playRustleSound();
+      if (page1) {
+        page1.classList.add('is-flipping');
+        page1.classList.remove('is-flipped');
+        setTimeout(() => {
+          page1.classList.remove('is-flipping');
+        }, 1500);
+      }
+    }, 760);
 
     // Fecha a capa
     scheduleTimer(() => {
+      playRustleSound();
       bookWrap.classList.remove('is-open');
       bookWrap.classList.add('is-closed');
-    }, 900);
+    }, 1250);
 
     scheduleTimer(() => {
       isBookOpen = false;
       isAnimating = false;
       instructionCallout.style.opacity = '1';
       instructionCallout.style.transform = 'translateY(0)';
-    }, 3900); // 900ms + 3000ms da transição da capa
+    }, 4300);
   }
 
   // Refolhear o livro (Replay da animação completa)
   function replayBookAnimation() {
     if (isAnimating) return;
     closeBook();
-    scheduleTimer(openBook, 4100);
+    scheduleTimer(openBook, 4500);
   }
 
   // --- Eventos de Abertura ---
