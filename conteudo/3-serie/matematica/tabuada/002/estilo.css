@@ -23,15 +23,22 @@ body.standalone-game{background:var(--paper);min-height:100dvh}
   min-height: 0;
 }
 .room-page .room-layout {
-  grid-template-columns: minmax(0, 1fr) clamp(290px, 18vw, 340px);
-  gap: clamp(16px, 1.2vw, 24px);
+  --room-gap: clamp(16px, 1.2vw, 24px);
+  --room-panel-width: clamp(290px, 18vw, 340px);
+  grid-template-columns: minmax(0, min(calc(100% - var(--room-panel-width) - var(--room-gap)), calc(var(--room-available-height, 75dvh) * 750 / 425))) minmax(var(--room-panel-width), 1fr);
+  gap: var(--room-gap);
 }
 .room-page .room-layout > div { min-width: 0; }
 .room-page .room-world {
-  width: min(100%, calc(var(--room-available-height, 75dvh) * 800 / 425));
-  aspect-ratio: 800 / 425;
-  height: auto;
-  margin-inline: auto;
+  width: 100%;
+  aspect-ratio: 750 / 425;
+  margin: 0;
+}
+.room-page .room-scene {
+  position: relative;
+  width: 100%;
+  height: calc(100% * 750 / 800);
+  overflow: hidden;
 }
 .room-page .room-puzzle {
   max-height: var(--room-available-height, 85dvh);
