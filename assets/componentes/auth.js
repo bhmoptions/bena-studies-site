@@ -41,8 +41,8 @@ window.BENA_AUTH = {
   },
   logout: () => signOut(auth),
 
-  // Sincroniza o usuario com MySQL (chamado automaticamente apos login/nome)
-  sincronizarAluno: async (nome, serie) => {
+  // Sincroniza o usuario com MySQL (chamado automaticamente apos login/nome/escola)
+  sincronizarAluno: async (nome, escola, serie) => {
     const user = auth.currentUser;
     if (!user) return;
     try {
@@ -50,7 +50,11 @@ window.BENA_AUTH = {
       const res = await fetch('/api/registro-aluno', {
         method:  'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ nome, serie: serie ?? window.BENA_CONFIG?.serieAtual ?? null }),
+        body:    JSON.stringify({
+          nome,
+          escola: escola ?? null,
+          serie: serie ?? window.BENA_CONFIG?.serieAtual ?? null
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -110,17 +114,25 @@ async function nomeDisponivel(nome, uid) {
   return snap.data().uid === uid;
 }
 
-async function salvarPerfil(uid, email, nome) {
+async function salvarPerfil(uid, email, nome, escola) {
   await setDoc(doc(db, 'nomes', nome.toLowerCase()), { uid });
-  await setDoc(doc(db, 'usuarios', uid), { nome, email, criadoEm: serverTimestamp() });
+  await setDoc(doc(db, 'usuarios', uid), {
+    nome,
+    escola: escola || '',
+    email,
+    criadoEm: serverTimestamp()
+  }, { merge: true });
 }
 
-async function atualizarNome(uid, nomeAntigo, nomeNovo) {
+async function atualizarPerfil(uid, nomeAntigo, nomeNovo, escolaNova) {
   if (nomeAntigo && nomeAntigo.toLowerCase() !== nomeNovo.toLowerCase()) {
     await deleteDoc(doc(db, 'nomes', nomeAntigo.toLowerCase()));
   }
   await setDoc(doc(db, 'nomes', nomeNovo.toLowerCase()), { uid });
-  await setDoc(doc(db, 'usuarios', uid), { nome: nomeNovo }, { merge: true });
+  await setDoc(doc(db, 'usuarios', uid), {
+    nome: nomeNovo,
+    escola: escolaNova || ''
+  }, { merge: true });
 }
 
 /* UI helpers */
@@ -180,12 +192,13 @@ function showLoginModal(onSuccess) {
     try {
       const cred = await signInWithEmailAndPassword(auth, email, pass);
       const snap = await getDoc(doc(db, 'usuarios', cred.user.uid));
-      if (snap.exists()) {
-        window.BENA_AUTH.sincronizarAluno(snap.data().nome); // sync com MySQL (non-blocking)
+      const perfil = snap.exists() ? snap.data() : null;
+      if (perfil && perfil.nome && perfil.escola) {
+        window.BENA_AUTH.sincronizarAluno(perfil.nome, perfil.escola); // sync com MySQL (non-blocking)
         modal.close();
         if (typeof onSuccess === 'function') onSuccess();
       } else {
-        showNomeModal(cred.user, onSuccess);
+        showPerfilModal(cred.user, perfil, onSuccess);
       }
     } catch (err) {
       setError('auth-error', friendlyError(err.code));
@@ -223,7 +236,7 @@ function showSignupModal(onSuccess) {
     setError('auth-error', '');
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, pass);
-      showNomeModal(cred.user, onSuccess);
+      showPerfilModal(cred.user, null, onSuccess);
     } catch (err) {
       setError('auth-error', friendlyError(err.code));
       setLoading(btn, false, 'Cadastrar <span>\u2192</span>');
@@ -231,45 +244,52 @@ function showSignupModal(onSuccess) {
   };
 }
 
-/* VIEW: Escolher nome (primeira vez) */
-function showNomeModal(user, onSuccess) {
+/* VIEW: Escolher nome e escola (primeira vez ou perfil incompleto) */
+function showPerfilModal(user, perfilExistente, onSuccess) {
+  const nomePadrao   = perfilExistente?.nome || '';
+  const escolaPadrao = perfilExistente?.escola || '';
   content.innerHTML = `
     <div class="modal-symbol">\u270f\ufe0f</div>
-    <div class="eyebrow"><span></span>QUASE L\u00c1!</div>
-    <h2>Como voc\u00ea quer ser chamado?</h2>
-    <p>Escolha um nome \u00fanico que aparecer\u00e1 no ranking e nos jogos.</p>
-    <form id="nome-form" class="auth-form">
-      <input type="text" id="auth-nome" placeholder="Seu nome" autocomplete="off"
-             required minlength="2" maxlength="30">
-      <p class="auth-error" id="nome-error" role="alert" hidden></p>
+    <div class="eyebrow"><span></span>COMPLETE SEU PERFIL</div>
+    <h2>Quase l\u00e1!</h2>
+    <p>Escolha um nome \u00fanico para o ranking e conte para n\u00f3s o nome da sua escola.</p>
+    <form id="perfil-form" class="auth-form">
+      <input type="text" id="auth-nome" placeholder="Seu nome \u00fanico" autocomplete="off"
+             value="${nomePadrao}" required minlength="2" maxlength="30">
+      <input type="text" id="auth-escola" placeholder="Nome da sua escola" autocomplete="off"
+             value="${escolaPadrao}" required minlength="2" maxlength="80">
+      <p class="auth-error" id="perfil-error" role="alert" hidden></p>
       <button type="submit" class="primary">Salvar e entrar <span>\u2192</span></button>
     </form>
   `;
   modal.showModal();
-  document.querySelector('#auth-nome').focus();
+  const inputFoco = nomePadrao ? document.querySelector('#auth-escola') : document.querySelector('#auth-nome');
+  inputFoco?.focus();
 
-  document.querySelector('#nome-form').onsubmit = async (e) => {
+  document.querySelector('#perfil-form').onsubmit = async (e) => {
     e.preventDefault();
-    const nome = document.querySelector('#auth-nome').value.trim();
-    const btn  = e.target.querySelector('[type="submit"]');
-    if (nome.length < 2) { setError('nome-error', 'Nome muito curto. Use pelo menos 2 caracteres.'); return; }
+    const nome   = document.querySelector('#auth-nome').value.trim();
+    const escola = document.querySelector('#auth-escola').value.trim();
+    const btn    = e.target.querySelector('[type="submit"]');
+    if (nome.length < 2) { setError('perfil-error', 'Nome muito curto. Use pelo menos 2 caracteres.'); return; }
+    if (escola.length < 2) { setError('perfil-error', 'Informe o nome da sua escola.'); return; }
     setLoading(btn, true, 'Salvar e entrar <span>\u2192</span>');
-    setError('nome-error', '');
+    setError('perfil-error', '');
     try {
       const disponivel = await nomeDisponivel(nome, user.uid);
       if (!disponivel) {
-        setError('nome-error', 'Este nome j\u00e1 est\u00e1 em uso. Escolha outro.');
+        setError('perfil-error', 'Este nome j\u00e1 est\u00e1 em uso. Escolha outro.');
         setLoading(btn, false, 'Salvar e entrar <span>\u2192</span>');
         return;
       }
-      await salvarPerfil(user.uid, user.email, nome);
-      window.BENA_AUTH.sincronizarAluno(nome); // sync com MySQL (non-blocking)
+      await salvarPerfil(user.uid, user.email, nome, escola);
+      window.BENA_AUTH.sincronizarAluno(nome, escola); // sync com MySQL (non-blocking)
       updateLoginBtn(user, nome);
       modal.close();
       if (typeof onSuccess === 'function') onSuccess();
     } catch (err) {
       console.error(err);
-      setError('nome-error', 'Erro ao salvar. Tente novamente.');
+      setError('perfil-error', 'Erro ao salvar. Tente novamente.');
       setLoading(btn, false, 'Salvar e entrar <span>\u2192</span>');
     }
   };
@@ -277,58 +297,68 @@ function showNomeModal(user, onSuccess) {
 
 /* VIEW: Minha Conta */
 function showContaModal(user, perfil) {
-  const nome = perfil?.nome || user.email.split('@')[0];
+  const nome   = perfil?.nome || user.email.split('@')[0];
+  const escola = perfil?.escola || 'Escola n\u00e3o informada';
   content.innerHTML = `
     <div class="modal-symbol">\u263a</div>
     <div class="eyebrow"><span></span>MINHA CONTA</div>
     <h2>${nome}</h2>
     <p class="auth-email-label">${user.email}</p>
+    <p class="auth-escola-badge">\ud83c\udfeb ${escola}</p>
     <div id="conta-body">
-      <button class="topic" id="btn-editar-nome">\u270f\ufe0f Editar nome <span>\u2192</span></button>
+      <button class="topic" id="btn-editar-perfil">\u270f\ufe0f Editar perfil <span>\u2192</span></button>
       <button class="topic auth-sair" id="btn-sair">Sair <span>\u2192</span></button>
     </div>
   `;
   modal.showModal();
-  document.querySelector('#btn-editar-nome').onclick = () => showEditarNomeModal(user, perfil);
+  document.querySelector('#btn-editar-perfil').onclick = () => showEditarPerfilModal(user, perfil);
   document.querySelector('#btn-sair').onclick = async () => { await signOut(auth); modal.close(); };
 }
 
-/* VIEW: Editar nome */
-function showEditarNomeModal(user, perfil) {
-  const nomeAtual = perfil?.nome || '';
+/* VIEW: Editar perfil */
+function showEditarPerfilModal(user, perfil) {
+  const nomeAtual   = perfil?.nome || '';
+  const escolaAtual = perfil?.escola || '';
   document.querySelector('#conta-body').innerHTML = `
-    <form id="editar-nome-form" class="auth-form">
-      <input type="text" id="novo-nome" value="${nomeAtual}" placeholder="Novo nome" autocomplete="off"
+    <form id="editar-perfil-form" class="auth-form">
+      <input type="text" id="novo-nome" value="${nomeAtual}" placeholder="Seu nome \u00fanico" autocomplete="off"
              required minlength="2" maxlength="30">
-      <p class="auth-error" id="nome-edit-error" role="alert" hidden></p>
-      <button type="submit" class="primary">Salvar nome <span>\u2192</span></button>
+      <input type="text" id="nova-escola" value="${escolaAtual}" placeholder="Nome da sua escola" autocomplete="off"
+             required minlength="2" maxlength="80">
+      <p class="auth-error" id="perfil-edit-error" role="alert" hidden></p>
+      <button type="submit" class="primary">Salvar altera\u00e7\u00f5es <span>\u2192</span></button>
     </form>
-    <button class="topic" id="btn-cancelar-nome" style="margin-top:8px">\u2190 Voltar</button>
+    <button class="topic" id="btn-cancelar-perfil" style="margin-top:8px">\u2190 Voltar</button>
   `;
-  document.querySelector('#btn-cancelar-nome').onclick = () => showContaModal(user, perfil);
+  document.querySelector('#btn-cancelar-perfil').onclick = () => showContaModal(user, perfil);
 
-  document.querySelector('#editar-nome-form').onsubmit = async (e) => {
+  document.querySelector('#editar-perfil-form').onsubmit = async (e) => {
     e.preventDefault();
-    const novoNome = document.querySelector('#novo-nome').value.trim();
-    const btn      = e.target.querySelector('[type="submit"]');
-    if (novoNome === nomeAtual) { modal.close(); return; }
-    setLoading(btn, true, 'Salvar nome <span>\u2192</span>');
-    setError('nome-edit-error', '');
+    const novoNome   = document.querySelector('#novo-nome').value.trim();
+    const novaEscola = document.querySelector('#nova-escola').value.trim();
+    const btn        = e.target.querySelector('[type="submit"]');
+    if (novoNome.length < 2) { setError('perfil-edit-error', 'Nome muito curto. Use pelo menos 2 caracteres.'); return; }
+    if (novaEscola.length < 2) { setError('perfil-edit-error', 'Informe o nome da sua escola.'); return; }
+    if (novoNome === nomeAtual && novaEscola === escolaAtual) { modal.close(); return; }
+    setLoading(btn, true, 'Salvar altera\u00e7\u00f5es <span>\u2192</span>');
+    setError('perfil-edit-error', '');
     try {
-      const disponivel = await nomeDisponivel(novoNome, user.uid);
-      if (!disponivel) {
-        setError('nome-edit-error', 'Este nome j\u00e1 est\u00e1 em uso. Escolha outro.');
-        setLoading(btn, false, 'Salvar nome <span>\u2192</span>');
-        return;
+      if (novoNome.toLowerCase() !== nomeAtual.toLowerCase()) {
+        const disponivel = await nomeDisponivel(novoNome, user.uid);
+        if (!disponivel) {
+          setError('perfil-edit-error', 'Este nome j\u00e1 est\u00e1 em uso. Escolha outro.');
+          setLoading(btn, false, 'Salvar altera\u00e7\u00f5es <span>\u2192</span>');
+          return;
+        }
       }
-      await atualizarNome(user.uid, nomeAtual, novoNome);
-      window.BENA_AUTH.sincronizarAluno(novoNome); // sync com MySQL (non-blocking)
+      await atualizarPerfil(user.uid, nomeAtual, novoNome, novaEscola);
+      window.BENA_AUTH.sincronizarAluno(novoNome, novaEscola); // sync com MySQL (non-blocking)
       updateLoginBtn(user, novoNome);
       modal.close();
     } catch (err) {
       console.error(err);
-      setError('nome-edit-error', 'Erro ao salvar. Tente novamente.');
-      setLoading(btn, false, 'Salvar nome <span>\u2192</span>');
+      setError('perfil-edit-error', 'Erro ao salvar. Tente novamente.');
+      setLoading(btn, false, 'Salvar altera\u00e7\u00f5es <span>\u2192</span>');
     }
   };
 }
@@ -363,10 +393,15 @@ onAuthStateChanged(auth, async (user) => {
   }
   if (user) {
     const snap = await getDoc(doc(db, 'usuarios', user.uid));
-    const nome = snap.exists() ? snap.data().nome : null;
+    const perfil = snap.exists() ? snap.data() : null;
+    const nome   = perfil?.nome || null;
+    const escola = perfil?.escola || null;
     updateLoginBtn(user, nome);
-    if (nome) {
-      window.BENA_AUTH.sincronizarAluno(nome);
+    if (nome && escola) {
+      window.BENA_AUTH.sincronizarAluno(nome, escola);
+    } else if (modal && !modal.open) {
+      // Usuario existente sem nome ou escola cadastrados
+      showPerfilModal(user, perfil);
     }
   } else {
     updateLoginBtn(null, null);

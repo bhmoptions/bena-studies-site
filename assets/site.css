@@ -169,5 +169,17 @@ dialog .timing-note { font-size: 12px; margin-top: 6px; }
 /* Auth: toggle login/signup e elementos de conta */
 .auth-toggle { margin-top: 18px; font-size: 13px; color: var(--muted); text-align: center; }
 .auth-link { background: none; color: var(--accent); font-weight: 700; font-size: 13px; padding: 0; text-decoration: underline; cursor: pointer; border: 0; font-family: inherit; }
-.auth-email-label { font-size: 13px; color: var(--muted); margin-top: -8px !important; margin-bottom: 16px; }
+.auth-email-label { font-size: 13px; color: var(--muted); margin-top: -8px !important; margin-bottom: 12px; }
+.auth-escola-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
 .auth-sair { color: var(--orange); }
