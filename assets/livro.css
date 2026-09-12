@@ -28,11 +28,11 @@
   --hand: 'Kalam', cursive;
   --body: 'DM Sans', sans-serif;
 
-  --book-w: clamp(290px, 30vw, 380px);
-  --book-h: clamp(400px, 42vw, 530px);
-  --book-spine: 48px;
+  --book-w: clamp(406px, 42vw, 532px);
+  --book-h: clamp(560px, 59vw, 742px);
+  --book-spine: 67px;
 
-  --cover-duration: 3s;
+  --cover-duration: 1.5s;
   --flip-duration: 1.5s;
 }
 
@@ -188,8 +188,8 @@ html, body {
 /* Halo de luz ambiente atrás do livro */
 .ambient-halo {
   position: absolute;
-  width: clamp(400px, 60vw, 850px);
-  height: clamp(400px, 60vw, 850px);
+  width: clamp(560px, 84vw, 1190px);
+  height: clamp(560px, 84vw, 1190px);
   background: radial-gradient(circle, rgba(215, 179, 106, 0.16) 0%, rgba(243, 172, 142, 0.08) 35%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
@@ -273,7 +273,7 @@ html, body {
     12px 14px 0px #1e1b18,
     18px 20px 0px #151311,
     22px 25px 25px rgba(0, 0, 0, 0.7);
-  transform: translateZ(-25px);
+  transform: translateZ(-35px);
   transform-style: preserve-3d;
 }
 
@@ -281,8 +281,8 @@ html, body {
 .book-edges-right {
   position: absolute;
   top: 4px;
-  right: -24px;
-  width: 24px;
+  right: -34px;
+  width: 34px;
   height: calc(100% - 8px);
   background: repeating-linear-gradient(
     to right,
@@ -299,9 +299,9 @@ html, body {
 
 .book-edges-bottom {
   position: absolute;
-  bottom: -24px;
+  bottom: -34px;
   left: 6px;
-  height: 24px;
+  height: 34px;
   width: calc(100% - 8px);
   background: repeating-linear-gradient(
     to bottom,
@@ -319,8 +319,8 @@ html, body {
 .book-spine {
   position: absolute;
   top: 0;
-  left: -28px;
-  width: 32px;
+  left: -39px;
+  width: 45px;
   height: 100%;
   background: linear-gradient(90deg, #101520 0%, #1c2333 40%, #101520 100%);
   transform-origin: right center;
@@ -414,10 +414,10 @@ html, body {
   position: absolute;
   right: 0;
   bottom: 0;
-  width: 48px;
-  height: 48px;
+  width: 67px;
+  height: 67px;
   background: linear-gradient(135deg, transparent 50%, rgba(244, 236, 218, 0.95) 50%);
-  border-radius: 0 0 14px 0;
+  border-radius: 0 0 18px 0;
   transform-origin: right bottom;
   filter: drop-shadow(-2px -2px 3px rgba(0,0,0,0.3));
   animation: flutter-corner-anim 3s ease-in-out infinite;
@@ -595,7 +595,7 @@ html, body {
   right: 0;
   top: 0;
   bottom: 0;
-  width: 36px;
+  width: 50px;
   background: linear-gradient(to left, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.3) 35%, transparent 100%);
   pointer-events: none;
   z-index: 10;
@@ -607,7 +607,7 @@ html, body {
   left: 0;
   top: 0;
   bottom: 0;
-  width: 36px;
+  width: 50px;
   background: linear-gradient(to right, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.3) 35%, transparent 100%);
   pointer-events: none;
   z-index: 10;
@@ -630,7 +630,7 @@ html, body {
   left: 0;
   top: 0;
   bottom: 0;
-  width: 24px;
+  width: 34px;
   background: linear-gradient(to right, rgba(0,0,0,0.4) 0%, transparent 100%);
   pointer-events: none;
   z-index: 30;
@@ -644,11 +644,11 @@ html, body {
   position: absolute;
   left: -100%;
   width: 200%;
-  bottom: 12px;
+  bottom: 18px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px 6px;
-  padding: 0 14px;
+  gap: 8px 10px;
+  padding: 0 20px;
   box-sizing: border-box;
   z-index: 50;
   pointer-events: none;
@@ -665,18 +665,18 @@ html, body {
 
 /* Espaçamento em torno da lombada/vinco central (entre coluna 2 e coluna 3) */
 .destination-card:nth-child(4n + 2) {
-  margin-right: 6px;
+  margin-right: 9px;
 }
 .destination-card:nth-child(4n + 3) {
-  margin-left: 6px;
+  margin-left: 9px;
 }
 
 @media (max-width: 650px) {
   .destinations-container {
     grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
-    bottom: 8px;
-    padding: 0 8px;
+    gap: 8px;
+    bottom: 10px;
+    padding: 0 10px;
   }
   .destination-card:nth-child(4n + 2),
   .destination-card:nth-child(4n + 3) {
@@ -689,15 +689,15 @@ html, body {
   background: rgba(25, 29, 41, 0.92);
   backdrop-filter: blur(8px);
   border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 6px 8px;
+  border-radius: 10px;
+  padding: 8px 11px;
   color: var(--ink);
   cursor: pointer;
   text-align: left;
   transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   min-width: 0;
 }
@@ -715,12 +715,12 @@ html, body {
 }
 
 .destination-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   display: grid;
   place-items: center;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
   flex-shrink: 0;
   background: var(--yellow);
@@ -755,7 +755,7 @@ html, body {
 .destination-title {
   display: block;
   font-family: var(--display);
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.15;
   font-weight: 600;
   color: #fff;
@@ -766,24 +766,24 @@ html, body {
 
 .destination-sub {
   display: block;
-  font-size: 9px;
+  font-size: 11px;
   line-height: 1.1;
   color: var(--muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 /* Badges automáticos de disponibilidade */
 .destination-badge {
   display: inline-block;
-  font-size: 7.5px;
+  font-size: 9px;
   letter-spacing: 0.6px;
   text-transform: uppercase;
-  padding: 1px 5px;
-  border-radius: 3px;
-  margin-top: 2px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 3px;
   font-weight: 700;
   white-space: nowrap;
   line-height: 1.2;

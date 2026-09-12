@@ -35,7 +35,7 @@
   // 1. Configurações de Tempos & Painel de Testes
   // ==========================================================================
   const defaultTimings = {
-    coverDuration: 3.0,
+    coverDuration: 1.5,
     pauseCover: 0.3,
     flipDuration: 1.5,
     sheetInterval: 0.3,
@@ -49,6 +49,11 @@
     const saved = localStorage.getItem('bena_book_timings');
     if (saved) {
       timings = Object.assign({}, defaultTimings, JSON.parse(saved));
+      // Se estava com o padrão anterior de 3s, atualiza para o novo padrão de 1.5s
+      if (timings.coverDuration === 3.0) {
+        timings.coverDuration = 1.5;
+        saveTimings();
+      }
     }
   } catch (e) {}
 
