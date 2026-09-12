@@ -11,6 +11,9 @@ O mascote do caderno foi aprovado pelo usuário. Reutilize `assets/componentes/f
 Conteúdo em `conteudo/{serie}-serie/{materia}/{tema}/{001,002,...}/`. Cada tema tem uma lista `jogos` em `conteudo/catalogo.js`. Atualize o catálogo ao adicionar ou remover conteúdo. A série ativa é definida em `config/site.js`.
 Leia também o `README.md` para navegação e execução local.
 
+## Root Folder
+Evite salvar/criar arquivos na pasta raiz do projeto. Se possível, a pasta raiz do projeto deve ter apenas os arquivos necessários (exemplos: ".env", ".gitignore") e o arquivo AGENTS.md
+
 ## Bancos de dados
 Se precisar consultar bancos e não houver instruções específicas no projeto, leia `{odfolder}/Personal/Trabalho/BHM/Python/Auxiliares/Shared/Databases/db instructions.md`, onde `odfolder` é a pasta do OneDrive. Não coloque credenciais nos arquivos públicos do site.
 
