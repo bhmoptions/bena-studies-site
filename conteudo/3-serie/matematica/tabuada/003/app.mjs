@@ -31,6 +31,29 @@ export function start(container, voltar) {
           <p class="toast" role="status" aria-live="polite"></p>
         </section>
         <aside class="puzzle-panel" aria-label="Mecanismos da caixa">
+          <section class="game-instructions" aria-labelledby="game-instructions-title">
+            <p class="panel-kicker">GUIA DA MISSÃO</p>
+            <h2 id="game-instructions-title">Instruções</h2>
+            <p>Para vencer o jogo, você precisa <strong>ativar os 4 lados da Caixa Misteriosa!</strong></p>
+            <div class="instruction-block">
+              <h3>Sua missão</h3>
+              <ol>
+                <li>Descubra qual desafio está escondido em cada lado da caixa.</li>
+                <li>Encontre a solução para cada desafio.</li>
+                <li>Depois de resolvê-lo, descubra <strong>como ativar aquele lado da caixa</strong>.</li>
+                <li>Ative os 4 lados para completar a missão!</li>
+              </ol>
+            </div>
+            <div class="instruction-block">
+              <h3>Como explorar o cenário</h3>
+              <ul>
+                <li><strong>Arraste o fundo</strong> para girar o cenário.</li>
+                <li><strong>Segure Shift e arraste</strong> para mover o cenário.</li>
+                <li><strong>Role a rodinha do mouse</strong> para aproximar ou afastar a visão.</li>
+              </ul>
+            </div>
+            <p class="instruction-good-luck">Boa sorte e divirta-se!</p>
+          </section>
           <section class="reward-summary" hidden tabindex="-1" aria-label="Seu pergaminho"></section>
         </aside>
       </div>
@@ -96,6 +119,7 @@ export function start(container, voltar) {
           }).then(r => console.log('[Ranking] Partida salva:', r))
             .catch(e => console.warn('[Ranking] Erro ao salvar partida:', e));
         }
+        q('.game-instructions').hidden=true;
         q('.reward-summary').hidden=false;
         q('.reward-summary').innerHTML=`<p class="panel-kicker">SEU PERGAMINHO</p><h2>Caixa desvendada!</h2><p class="reward-points"><strong>${score.pontos}</strong> pontos</p>
         <dl><div><dt>De primeira</dt><dd>${score.acertosPrimeira} de 4</dd></div><div><dt>Respostas erradas</dt><dd>${score.erros}</dd></div><div><dt>Precisão</dt><dd>${score.percentualAcertos}%</dd></div><div><dt>Rodada</dt><dd>${score.rodada}</dd></div></dl>
@@ -110,6 +134,7 @@ export function start(container, voltar) {
       }
     },motion.matches);
     state=createState(config,window.BenaPontuacao.iniciarRodada(KEY));
+    q('.game-instructions').hidden=false;
     q('.reward-summary').hidden=true;
     q('.scene-caption').textContent='Explore a caixa';
     interaction=connectInteraction(container,()=>scene,{
