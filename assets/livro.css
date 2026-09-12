@@ -860,6 +860,54 @@ html, body {
   }
 }
 
+/* --- Símbolos Matemáticos Flutuantes (Páginas 3 e 4) --- */
+.flow-math {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+  transform-style: preserve-3d;
+  animation: flow-word-away var(--dur, 2.8s) cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0s) forwards;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* --- Objetos Espaciais e Animais Flutuantes (Páginas 3 e 4) --- */
+.flow-space,
+.flow-animal {
+  position: absolute;
+  pointer-events: none;
+  transform-style: preserve-3d;
+  animation: flow-star-away var(--dur, 2.6s) cubic-bezier(0.2, 0.9, 0.3, 1) var(--delay, 0s) forwards;
+  opacity: 0;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.55));
+  will-change: transform, opacity;
+}
+
+/* --- Par Dançante (Páginas 3 e 4) --- */
+.duo-dance .anim-girl-dance {
+  transform-origin: 62px 120px;
+  animation: girl-dance-play 1.1s ease-in-out infinite alternate;
+}
+.duo-dance .anim-boy-dance {
+  transform-origin: 237px 110px;
+  animation: boy-dance-play 1.1s ease-in-out infinite alternate 0.2s;
+}
+
+@keyframes girl-dance-play {
+  0%   { transform: rotate(-14deg) translateY(0px); }
+  100% { transform: rotate(14deg)  translateY(-20px) scale(1.06); }
+}
+
+@keyframes boy-dance-play {
+  0%   { transform: rotate(12deg)  translateY(-4px); }
+  100% { transform: rotate(-12deg) translateY(-20px) scale(1.06); }
+}
+
+
+
 /* --------------------------------------------------------------------------
    Destinos Selecionáveis de Navegação (Dentro do Cenário Final)
    Alinhados perfeitamente à largura do spread aberto (duas páginas)

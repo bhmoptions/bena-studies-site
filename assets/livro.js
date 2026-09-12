@@ -44,8 +44,8 @@
     flipDuration: 1.5,
     sheetInterval: 0.3,
     endPause: 0.1,
-    animStart: 0.5,
-    animDuration: 0.75
+    animStart: 0.15,
+    animDuration: 1.8
   };
 
   let timings = { ...defaultTimings };
@@ -583,6 +583,350 @@
   }
 
   // ==========================================================================
+  // Erupção Mágica — Elementos das Páginas 3 e 4 (Matemática + Universo + Animais)
+  // ==========================================================================
+  function triggerPage3And4Flow() {
+    if (!flowingElementsLayer) return;
+    clearFlowingElements();
+
+    const frag = document.createDocumentFragment();
+
+    // Helper: compute dur/delay scaled to animDuration budget
+    function rdd() {
+      const delay = parseFloat((Math.random() * timings.animDuration * 0.32).toFixed(2));
+      const dur   = parseFloat((timings.animDuration - delay).toFixed(2));
+      return { dur, delay };
+    }
+
+    // Helper: random position on left or right page
+    function rpos(onLeft) {
+      const x = onLeft ? (7 + Math.random() * 36) : (57 + Math.random() * 36);
+      const y = 16 + Math.random() * 66;
+      return { x, y };
+    }
+
+    // Helper: build a flow-space or flow-animal div
+    function makeEl(cls, svg, w, h, onLeft, rot) {
+      const { x, y } = rpos(onLeft);
+      const { dur, delay } = rdd();
+      const el = document.createElement('div');
+      el.className = cls;
+      el.style.left  = `${x.toFixed(1)}%`;
+      el.style.top   = `${y.toFixed(1)}%`;
+      el.style.width  = `${w}px`;
+      el.style.height = `${h}px`;
+      el.innerHTML = svg;
+      const dx = (Math.random() * 80 - 40).toFixed(0);
+      const dy = (-(80 + Math.random() * 130)).toFixed(0);
+      const dz = (80 + Math.random() * 150).toFixed(0);
+      const r  = rot !== undefined ? rot : (Math.random() * 120 - 60).toFixed(0);
+      el.style.setProperty('--dx', `${dx}px`);
+      el.style.setProperty('--dy', `${dy}px`);
+      el.style.setProperty('--dz', `${dz}px`);
+      el.style.setProperty('--rot', `${r}deg`);
+      el.style.setProperty('--dur', `${dur}s`);
+      el.style.setProperty('--delay', `${delay}s`);
+      return el;
+    }
+
+    // ── 1. Dancing Boy & Girl Duo ─────────────────────────────────────────────
+    const duoDiv = document.createElement('div');
+    duoDiv.className = 'flow-character-duo duo-dance';
+    duoDiv.style.setProperty('--anim-duration', `${timings.animDuration}s`);
+    duoDiv.innerHTML = `
+      <svg class="duo-svg" viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="skinGrad3" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#fddab9"/>
+            <stop offset="100%" stop-color="#e8a870"/>
+          </linearGradient>
+          <linearGradient id="danceDress" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#7b1d82"/>
+            <stop offset="100%" stop-color="#4a0e52"/>
+          </linearGradient>
+          <linearGradient id="danceShirt" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#1a4b8c"/>
+            <stop offset="100%" stop-color="#0d3060"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Musical notes floating between them -->
+        <text x="148" y="48" font-size="22" fill="#7d6608" opacity="0.85" font-family="serif">♪</text>
+        <text x="168" y="34" font-size="15" fill="#5b2c6f" opacity="0.80" font-family="serif">♫</text>
+        <text x="136" y="66" font-size="13" fill="#196f3d" opacity="0.75" font-family="serif">♩</text>
+
+        <!-- ── Girl: twirling dance pose ── -->
+        <g class="anim-girl-dance">
+          <!-- Wide spinning skirt -->
+          <path d="M24 106 Q18 148 22 168 Q42 162 62 160 Q82 162 102 168 Q106 148 100 106 Z" fill="url(#danceDress)"/>
+          <ellipse cx="62" cy="140" rx="42" ry="13" fill="#9b2ba0" opacity="0.55"/>
+          <!-- Hem highlight -->
+          <path d="M22 168 Q42 174 62 172 Q82 174 102 168" stroke="#c060ca" stroke-width="2" fill="none" opacity="0.7"/>
+          <!-- Bodice -->
+          <path d="M46 84 L78 84 L84 108 L40 108 Z" fill="url(#danceDress)"/>
+          <!-- Left arm raised elegantly -->
+          <path d="M48 88 Q28 70 16 52" stroke="#e8a870" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="14" cy="50" r="4.5" fill="#e8a870"/>
+          <!-- Right arm gracefully out -->
+          <path d="M76 88 Q98 80 114 76" stroke="#e8a870" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="116" cy="75" r="4.5" fill="#e8a870"/>
+          <!-- Head -->
+          <circle cx="62" cy="62" r="18" fill="url(#skinGrad3)"/>
+          <!-- Hair -->
+          <path d="M44 58 Q62 38 80 58 Q70 48 62 46 Q54 48 44 58 Z" fill="#2d1b10"/>
+          <!-- Hair side flow -->
+          <path d="M44 58 Q30 54 26 70" stroke="#2d1b10" stroke-width="4" stroke-linecap="round" fill="none"/>
+          <path d="M80 58 Q94 54 98 68" stroke="#2d1b10" stroke-width="4" stroke-linecap="round" fill="none"/>
+          <!-- Eyes -->
+          <ellipse cx="55" cy="63" rx="2.5" ry="3" fill="#2d1b10"/>
+          <ellipse cx="69" cy="63" rx="2.5" ry="3" fill="#2d1b10"/>
+          <!-- Smile -->
+          <path d="M57 70 Q62 76 67 70" stroke="#c0392b" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <!-- Cheeks -->
+          <circle cx="49" cy="67" r="3.5" fill="#ff7eb3" opacity="0.6"/>
+          <circle cx="75" cy="67" r="3.5" fill="#ff7eb3" opacity="0.6"/>
+        </g>
+
+        <!-- ── Boy: dance pose with one arm raised ── -->
+        <g class="anim-boy-dance">
+          <!-- Left leg front step -->
+          <path d="M222 120 Q210 145 202 162" stroke="#e8a870" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="200" cy="164" r="5.5" fill="#1a4b8c"/>
+          <!-- Right leg back -->
+          <path d="M248 120 Q262 144 274 152" stroke="#e8a870" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="276" cy="153" r="5.5" fill="#1a4b8c"/>
+          <!-- Trousers -->
+          <path d="M216 108 L256 108 L260 124 L212 124 Z" fill="#0d1b2e"/>
+          <!-- Shirt -->
+          <path d="M214 84 L258 84 L256 110 L216 110 Z" fill="url(#danceShirt)"/>
+          <!-- Left arm raised HIGH -->
+          <path d="M216 88 Q194 64 178 42" stroke="#e8a870" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="176" cy="40" r="5" fill="#e8a870"/>
+          <!-- Right arm out to side -->
+          <path d="M256 88 Q282 96 298 102" stroke="#e8a870" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="300" cy="103" r="5" fill="#e8a870"/>
+          <!-- Head -->
+          <circle cx="237" cy="58" r="18" fill="url(#skinGrad3)"/>
+          <!-- Hair -->
+          <path d="M218 54 Q220 34 237 36 Q256 34 256 50 Q246 42 237 44 Q228 42 218 54 Z" fill="#4a2e1b"/>
+          <!-- Eyes -->
+          <ellipse cx="231" cy="58" rx="2.5" ry="3" fill="#2d1b10"/>
+          <ellipse cx="243" cy="58" rx="2.5" ry="3" fill="#2d1b10"/>
+          <!-- Big smile -->
+          <path d="M232 66 Q237 73 242 66" stroke="#c0392b" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <!-- Cheeks -->
+          <circle cx="225" cy="62" r="3.5" fill="#ff7eb3" opacity="0.6"/>
+          <circle cx="249" cy="62" r="3.5" fill="#ff7eb3" opacity="0.6"/>
+        </g>
+      </svg>
+    `;
+    frag.appendChild(duoDiv);
+
+    // ── 2. Math Symbols (+, −, ×, ÷) — 4 each ───────────────────────────────
+    const mathSigns = [
+      { char: '+', colors: ['#196f3d', '#0e6655', '#154360', '#7d6608'] },
+      { char: '−', colors: ['#78281f', '#641e16', '#4a235a', '#7b241c'] },
+      { char: '×', colors: ['#154360', '#1f3a5f', '#283747', '#1a252f'] },
+      { char: '÷', colors: ['#7d6608', '#8a5a1e', '#5c2a0e', '#6e4e1e'] }
+    ];
+    const mathSizes = ['30px', '38px', '46px', '54px'];
+    const mathFonts = ["'Space Grotesk', sans-serif", "Georgia, serif", "'DM Sans', sans-serif", "'Fredoka', sans-serif"];
+
+    mathSigns.forEach(({ char, colors }, signIdx) => {
+      for (let i = 0; i < 4; i++) {
+        const span = document.createElement('span');
+        span.className = 'flow-math';
+        span.textContent = char;
+        const onLeft = ((signIdx * 4 + i) % 2 === 0);
+        const { x, y } = rpos(onLeft);
+        const { dur, delay } = rdd();
+        const dx = (Math.random() * 90 - 45).toFixed(0);
+        const dy = (-(85 + Math.random() * 130)).toFixed(0);
+        const dz = (70 + Math.random() * 140).toFixed(0);
+        const rotStart = (Math.random() * 20 - 10).toFixed(1);
+        const rotEnd   = (Math.random() * 40 - 20).toFixed(1);
+        span.style.left       = `${x.toFixed(1)}%`;
+        span.style.top        = `${y.toFixed(1)}%`;
+        span.style.fontSize   = mathSizes[i];
+        span.style.fontFamily = mathFonts[i];
+        span.style.color      = colors[i];
+        span.style.setProperty('--dx', `${dx}px`);
+        span.style.setProperty('--dy', `${dy}px`);
+        span.style.setProperty('--dz', `${dz}px`);
+        span.style.setProperty('--rot-start', `${rotStart}deg`);
+        span.style.setProperty('--rot-end',   `${rotEnd}deg`);
+        span.style.setProperty('--dur',   `${dur}s`);
+        span.style.setProperty('--delay', `${delay}s`);
+        frag.appendChild(span);
+      }
+    });
+
+    // ── 3. Stars (10) ─────────────────────────────────────────────────────────
+    const starColors3 = ['#b7950b', '#9a7d0a', '#7d6608', '#8b4513', '#7b241c'];
+    for (let s = 0; s < 10; s++) {
+      const onLeft = s % 2 === 0;
+      const size = (10 + Math.random() * 18).toFixed(0);
+      const color = starColors3[s % starColors3.length];
+      const el = makeEl('flow-star', `
+        <svg viewBox="0 0 24 24" fill="${color}">
+          <path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z"/>
+        </svg>`, parseInt(size), parseInt(size), onLeft);
+      el.style.color = color;
+      frag.appendChild(el);
+    }
+
+    // ── 4. Astronomical Objects ───────────────────────────────────────────────
+
+    // The Sun
+    frag.appendChild(makeEl('flow-space', `
+      <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#b7790a" stroke-width="3" stroke-linecap="round">
+          <line x1="30" y1="4" x2="30" y2="13"/>
+          <line x1="30" y1="47" x2="30" y2="56"/>
+          <line x1="4" y1="30" x2="13" y2="30"/>
+          <line x1="47" y1="30" x2="56" y2="30"/>
+          <line x1="11" y1="11" x2="17" y2="17"/>
+          <line x1="43" y1="43" x2="49" y2="49"/>
+          <line x1="49" y1="11" x2="43" y2="17"/>
+          <line x1="17" y1="43" x2="11" y2="49"/>
+        </g>
+        <circle cx="30" cy="30" r="16" fill="#c8860a"/>
+        <circle cx="30" cy="30" r="12" fill="#e8b820"/>
+        <circle cx="26" cy="27" r="3" fill="#f4cd65" opacity="0.7"/>
+      </svg>`, 52, 52, true, 20));
+
+    // The Moon
+    frag.appendChild(makeEl('flow-space', `
+      <svg viewBox="0 0 50 60" xmlns="http://www.w3.org/2000/svg">
+        <path d="M40 5 Q14 12 14 30 Q14 48 40 55 Q16 52 10 30 Q10 8 40 5 Z" fill="#a8b8c8"/>
+        <circle cx="36" cy="18" r="3" fill="#8a9aaa" opacity="0.6"/>
+        <circle cx="28" cy="36" r="2" fill="#8a9aaa" opacity="0.6"/>
+        <circle cx="38" cy="46" r="2.5" fill="#8a9aaa" opacity="0.6"/>
+      </svg>`, 40, 48, false, -15));
+
+    // The Earth
+    frag.appendChild(makeEl('flow-space', `
+      <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="30" cy="30" r="26" fill="#1a5276"/>
+        <path d="M10 20 Q16 15 22 19 Q26 25 22 33 Q18 38 12 36 Q6 30 10 20 Z" fill="#2d7a3a" opacity="0.9"/>
+        <path d="M18 38 Q24 36 26 45 Q24 55 18 57 Q12 53 14 44 Z" fill="#2d7a3a" opacity="0.9"/>
+        <path d="M32 17 Q38 14 40 20 Q42 27 38 29 Q33 31 31 26 Q29 21 32 17 Z" fill="#2d7a3a" opacity="0.9"/>
+        <path d="M34 31 Q42 29 44 39 Q44 51 38 53 Q30 52 30 44 Q28 37 34 31 Z" fill="#2d7a3a" opacity="0.9"/>
+        <path d="M18 10 Q30 5 42 10 Q36 16 24 16 Z" fill="#cce8fc" opacity="0.65"/>
+      </svg>`, 50, 50, true, 30));
+
+    // A Galaxy
+    frag.appendChild(makeEl('flow-space', `
+      <svg viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="35" cy="35" rx="30" ry="11" fill="#2d1b6e" opacity="0.35" transform="rotate(-25 35 35)"/>
+        <path d="M35 35 Q52 20 62 22 Q56 32 46 38 Q60 40 64 51 Q51 48 43 42 Q48 56 46 63 Q37 54 35 44 Q28 57 20 61 Q22 49 30 42 Q17 44 12 35 Q22 30 32 34 Q20 24 22 14 Q32 18 35 28 Q40 18 49 12 Q47 24 39 30 Z" fill="#4a2d9e" opacity="0.65"/>
+        <ellipse cx="35" cy="35" rx="8" ry="8" fill="#6a4dc0"/>
+        <circle cx="35" cy="35" r="4" fill="#b898f0"/>
+        <circle cx="56" cy="24" r="1.5" fill="#fff" opacity="0.8"/>
+        <circle cx="18" cy="46" r="1.5" fill="#fff" opacity="0.8"/>
+        <circle cx="52" cy="52" r="1"   fill="#fff" opacity="0.8"/>
+        <circle cx="22" cy="20" r="1"   fill="#fff" opacity="0.8"/>
+        <circle cx="44" cy="16" r="1"   fill="#fff" opacity="0.7"/>
+      </svg>`, 56, 56, false, 45));
+
+    // A Shooting Star
+    frag.appendChild(makeEl('flow-space', `
+      <svg viewBox="0 0 80 36" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 18 Q40 20 62 18" stroke="#9a7d0a" stroke-width="3" stroke-linecap="round" opacity="0.65" fill="none"/>
+        <path d="M12 18 Q42 19 62 18" stroke="#e8d060" stroke-width="1.5" opacity="0.45" fill="none"/>
+        <path d="M70 8 L73 16 L80 18 L73 20 L70 28 L67 20 L60 18 L67 16 Z" fill="#c8960c"/>
+        <circle cx="70" cy="18" r="3" fill="#f0e860" opacity="0.85"/>
+      </svg>`, 66, 30, true, 0));
+
+    // ── 5. Animals ────────────────────────────────────────────────────────────
+
+    // Fish
+    frag.appendChild(makeEl('flow-animal', `
+      <svg viewBox="0 0 64 40" xmlns="http://www.w3.org/2000/svg">
+        <path d="M48 20 L64 10 L64 30 Z" fill="#0e4f68"/>
+        <ellipse cx="28" cy="20" rx="22" ry="14" fill="#1a6b8a"/>
+        <path d="M22 10 Q30 4 38 10" fill="#1e8bc3" opacity="0.8"/>
+        <circle cx="13" cy="16" r="4.5" fill="#fff"/>
+        <circle cx="13" cy="16" r="2.5" fill="#0a2030"/>
+        <circle cx="14" cy="15" r="1" fill="#fff" opacity="0.7"/>
+      </svg>`, 56, 35, false, 10));
+
+    // Lion
+    frag.appendChild(makeEl('flow-animal', `
+      <svg viewBox="0 0 80 78" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="40" cy="34" r="30" fill="#7a5108"/>
+        <circle cx="40" cy="34" r="22" fill="#b88010"/>
+        <circle cx="40" cy="34" r="15" fill="#e0a830"/>
+        <ellipse cx="36" cy="31" rx="3" ry="3.5" fill="#2d1b10"/>
+        <ellipse cx="44" cy="31" rx="3" ry="3.5" fill="#2d1b10"/>
+        <circle cx="36" cy="30" r="1.2" fill="#fff" opacity="0.6"/>
+        <circle cx="44" cy="30" r="1.2" fill="#fff" opacity="0.6"/>
+        <ellipse cx="40" cy="37" rx="4" ry="2.5" fill="#b03020"/>
+        <path d="M36 40 Q40 45 44 40" stroke="#5d0000" stroke-width="1.5" fill="none"/>
+        <circle cx="18" cy="12" r="8" fill="#7a5108"/>
+        <circle cx="62" cy="12" r="8" fill="#7a5108"/>
+        <ellipse cx="40" cy="66" rx="18" ry="10" fill="#b88010"/>
+        <path d="M57 62 Q74 53 72 40" stroke="#7a5108" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <circle cx="72" cy="40" r="5" fill="#7a5108"/>
+      </svg>`, 60, 60, true, -20));
+
+    // Bird 1
+    frag.appendChild(makeEl('flow-animal', `
+      <svg viewBox="0 0 40 28" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 18 Q8 10 0 6 Q10 6 16 12 Q12 3 20 0 Q28 3 24 12 Q30 6 40 6 Q32 10 20 18 Z" fill="#3d5a27"/>
+        <circle cx="20" cy="18" r="4" fill="#4a6b32"/>
+        <circle cx="18" cy="17" r="1.5" fill="#1a2510"/>
+      </svg>`, 34, 24, false, 0));
+
+    // Bird 2
+    frag.appendChild(makeEl('flow-animal', `
+      <svg viewBox="0 0 36 26" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 16 Q7 9 0 5 Q9 5 14 11 Q11 3 18 0 Q25 3 22 11 Q27 5 36 5 Q29 9 18 16 Z" fill="#2d4a8a"/>
+        <circle cx="18" cy="16" r="3.5" fill="#3a5fa8"/>
+        <circle cx="16" cy="15" r="1.2" fill="#101830"/>
+      </svg>`, 30, 22, true, 10));
+
+    // Bird 3
+    frag.appendChild(makeEl('flow-animal', `
+      <svg viewBox="0 0 38 27" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19 17 Q8 10 0 6 Q10 6 15 12 Q12 3 19 0 Q26 3 23 12 Q28 6 38 6 Q30 10 19 17 Z" fill="#7b3f00"/>
+        <circle cx="19" cy="17" r="3.8" fill="#964e10"/>
+        <circle cx="17" cy="16" r="1.3" fill="#2d1500"/>
+      </svg>`, 32, 23, false, -8));
+
+    // Elephant
+    frag.appendChild(makeEl('flow-animal', `
+      <svg viewBox="0 0 90 80" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="52" cy="52" rx="30" ry="22" fill="#5d6d7e"/>
+        <circle cx="24" cy="36" r="18" fill="#6d7d8e"/>
+        <ellipse cx="7" cy="36" rx="10" ry="16" fill="#4a5a6a"/>
+        <path d="M14 46 Q6 58 10 70 Q18 74 18 62 Q20 72 26 68 Q28 57 20 46 Z" fill="#6d7d8e"/>
+        <circle cx="19" cy="30" r="3.5" fill="#1a252f"/>
+        <circle cx="19" cy="30" r="1.8" fill="#fff"/>
+        <path d="M10 50 Q2 57 6 64" stroke="#dedad0" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+        <rect x="34" y="68" width="10" height="14" rx="4" fill="#4a5a6a"/>
+        <rect x="48" y="68" width="10" height="14" rx="4" fill="#4a5a6a"/>
+        <rect x="62" y="68" width="10" height="14" rx="4" fill="#4a5a6a"/>
+        <path d="M82 50 Q94 46 92 58" stroke="#4a5a6a" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+      </svg>`, 70, 62, true, 0));
+
+    // Whale
+    frag.appendChild(makeEl('flow-animal', `
+      <svg viewBox="0 0 90 58" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 28 Q14 10 50 14 Q80 14 85 28 Q80 44 50 44 Q14 46 10 28 Z" fill="#1a3a5c"/>
+        <path d="M80 28 L96 16 L90 28 L96 40 Z" fill="#122d4a"/>
+        <path d="M20 28 Q50 42 75 30" stroke="#3a6ea8" stroke-width="4.5" fill="none" opacity="0.65"/>
+        <circle cx="20" cy="22" r="4.5" fill="#fff"/>
+        <circle cx="20" cy="22" r="2.8" fill="#0a1a2c"/>
+        <circle cx="21" cy="21" r="1" fill="#fff" opacity="0.7"/>
+        <path d="M40 13 Q43 3 45 0 Q47 4 49 8 Q47 11 44 13 Z" fill="#5a9ecc" opacity="0.75"/>
+        <path d="M55 44 Q60 56 50 56 Q44 56 55 44 Z" fill="#122d4a"/>
+      </svg>`, 70, 46, false, 0));
+
+    flowingElementsLayer.appendChild(frag);
+  }
+
+  // ==========================================================================
   // 3. Web Audio Sintetizado
   // ==========================================================================
   function getAudioContext() {
@@ -721,6 +1065,11 @@
         }, flipMs);
       }
     }, tPage1);
+
+    // Erupção de elementos mágicos das páginas 3 e 4
+    scheduleTimer(() => {
+      triggerPage3And4Flow();
+    }, tPage1 + timings.animStart * 1000);
 
     // Folha 2 vira
     scheduleTimer(() => {
