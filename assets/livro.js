@@ -34,6 +34,7 @@
   let audioCtx = null;
   let pageFlipTimers = [];
   let currentPairIsA = false;
+  let coverFilesCache = null;
 
   // ==========================================================================
   // 1. Configurações de Tempos & Painel de Testes
@@ -234,7 +235,34 @@
   // ==========================================================================
   // 2. Seleção Aleatória de Imagens das Páginas e Capa
   // ==========================================================================
-  function randomizeBookImages() {
+  function testImageExists(url) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+  }
+
+  async function discoverCovers(imgDir) {
+    if (coverFilesCache) return coverFilesCache;
+    const files = ['Cover.jpg'];
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const tests = [];
+    for (let i = 0; i < letters.length; i++) {
+      const letter = letters[i];
+      tests.push(
+        testImageExists(`${imgDir}Cover${letter}.png`).then((ok) => {
+          if (ok) files.push(`Cover${letter}.png`);
+        })
+      );
+    }
+    await Promise.all(tests);
+    coverFilesCache = files;
+    return coverFilesCache;
+  }
+
+  async function randomizeBookImages() {
     const imgDir = `${base}assets/images/Landing Page/`;
 
     // Par 1 e 2: Ambos padrão ou ambos variante 'A'
@@ -243,7 +271,8 @@
     const page2File = currentPairIsA ? 'Book Page 2A.png' : 'Book Page 2.png';
 
     // Demais páginas e capa: Escolha individual 50/50
-    const coverFile = Math.random() < 0.5 ? 'CoverA.png' : 'Cover.jpg';
+    const coverOptions = await discoverCovers(imgDir);
+    const coverFile = coverOptions[Math.floor(Math.random() * coverOptions.length)];
     const page3File = Math.random() < 0.5 ? 'Book Page 3A.png' : 'Book Page 3.png';
     const page4File = Math.random() < 0.5 ? 'Book Page 4A.png' : 'Book Page 4.png';
     const page5File = Math.random() < 0.5 ? 'Book Page 5A.png' : 'Book Page 5.png';
@@ -258,6 +287,12 @@
     const page2Back = book ? book.querySelector('.page-2 .page-back') : null;
     const page3Front = book ? book.querySelector('.page-3 .page-front') : null;
 
+    // Par final (cenário): escolhe aleatoriamente entre os pares "End Image"
+    const endImageCount = 7;
+    const endImageIndex = Math.floor(Math.random() * endImageCount) + 1;
+    const endLeftFile = `End Image${endImageIndex} - Left.png`;
+    const endRightFile = `End Image${endImageIndex} - Right.png`;
+
     if (coverFront) coverFront.style.backgroundImage = `url("${encodeURI(imgDir + coverFile)}")`;
     if (coverBack) coverBack.style.backgroundImage = `url("${encodeURI(imgDir + page1File)}")`;
     if (page1Front) page1Front.style.backgroundImage = `url("${encodeURI(imgDir + page2File)}")`;
@@ -265,6 +300,11 @@
     if (page2Front) page2Front.style.backgroundImage = `url("${encodeURI(imgDir + page4File)}")`;
     if (page2Back) page2Back.style.backgroundImage = `url("${encodeURI(imgDir + page5File)}")`;
     if (page3Front) page3Front.style.backgroundImage = `url("${encodeURI(imgDir + page6File)}")`;
+
+    const finalLeft = document.querySelector('.final-spread-left');
+    const finalRight = document.querySelector('.final-spread-right');
+    if (finalLeft) finalLeft.style.backgroundImage = `url("${encodeURI(imgDir + endLeftFile)}")`;
+    if (finalRight) finalRight.style.backgroundImage = `url("${encodeURI(imgDir + endRightFile)}")`;
   }
 
   // ==========================================================================
@@ -1570,18 +1610,18 @@
     }, closeTotalTime);
   }
 
-  function testAnimation() {
+  async function testAnimation() {
     if (isAnimating) return;
     clearFlowingElements();
     if (isBookOpen) {
       closeBook();
       const closeWait = (1.25 + timings.coverDuration + 0.35) * 1000;
-      setTimeout(() => {
-        randomizeBookImages();
+      setTimeout(async () => {
+        await randomizeBookImages();
         openBook();
       }, closeWait);
     } else {
-      randomizeBookImages();
+      await randomizeBookImages();
       openBook();
     }
   }
