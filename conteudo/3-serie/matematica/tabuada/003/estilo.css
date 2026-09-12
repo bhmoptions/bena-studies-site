@@ -74,7 +74,7 @@
   .workshop-layout{height:calc(100dvh - 114px)}
   .scene-panel{height:auto;min-height:0}
 }
-@media(min-width:1600px){.workshop-layout{grid-template-columns:minmax(0,1fr) 420px}.puzzle-panel{padding:24px}}
+@media(min-width:1600px){.workshop-layout{grid-template-columns:minmax(0,1fr) 380px}.puzzle-panel{padding:24px}}
 @media(max-width:1150px){.workshop{padding:22px 18px 14px}.workshop-layout{gap:12px;grid-template-columns:minmax(0,1fr) 325px}.puzzle-panel{padding:17px}.scene-bottom{flex-direction:column;align-items:flex-start}.scene-top{flex-direction:column;align-items:flex-start;padding:15px}.scene-bottom>span{max-width:none}}
 @media(max-width:850px){.box-header{padding:0 18px}.header-subject{display:none}.workshop-layout{grid-template-columns:1fr}.scene-panel{height:480px;min-height:400px}.scene-top{flex-direction:row}.puzzle-panel{padding:22px}.scene-bottom{flex-direction:row;align-items:center}}
 @media(max-width:460px){.workshop{padding:20px 10px 12px}.box-header{height:54px;font-size:11px}.box-header>span:nth-child(2){font-size:18px}.scene-panel{height:400px}.scene-top{padding:12px;gap:5px}.scene-caption{font-size:14px}.progress-label{font-size:8px;padding-inline:6px}.scene-bottom{flex-direction:column;align-items:flex-start;padding:12px}.puzzle-panel{padding:18px}.toast{font-size:11px;padding:10px;max-width:90%}}
