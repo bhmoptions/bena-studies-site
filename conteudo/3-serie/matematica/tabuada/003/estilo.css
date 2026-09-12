@@ -19,14 +19,15 @@
 .scene-bottom>span{font-size:10px;color:var(--workshop-ink);max-width:275px;line-height:1.5}.camera-buttons{display:flex;align-items:center;gap:5px;pointer-events:auto}.camera-buttons button{background:var(--workshop-bg);font-size:17px;min-width:33px;padding:5px 9px}.camera-buttons>button:last-child{font-size:10px}.camera-pan-buttons{display:grid;grid-template-columns:repeat(3,33px);grid-template-areas:'. up .' 'left down right';gap:3px}.camera-pan-buttons button{padding:3px;min-width:33px;height:28px;font-size:16px}.camera-pan-buttons button[data-action=pan-up]{grid-area:up}.camera-pan-buttons button[data-action=pan-left]{grid-area:left}.camera-pan-buttons button[data-action=pan-down]{grid-area:down}.camera-pan-buttons button[data-action=pan-right]{grid-area:right}
 .puzzle-panel{background:var(--panel);color:var(--panel-ink);border:1px solid var(--brass);border-radius:9px;box-shadow:inset 0 0 0 4px var(--panel),inset 0 0 0 5px var(--panel-line);padding:20px}
 .puzzle-panel>.panel-kicker{color:var(--panel-muted);font-size:9px;letter-spacing:1.35px}
-.game-instructions h2{font-family:var(--display,Georgia);font-size:28px;font-weight:500;line-height:1.05;margin:0 0 14px}
-.game-instructions>p:not(.panel-kicker):not(.instruction-good-luck){font-size:12px;line-height:1.55;margin:0 0 19px}
+.game-instructions .panel-kicker{font-size:11.25px}
+.game-instructions h2{font-family:var(--display,Georgia);font-size:35px;font-weight:500;line-height:1.05;margin:0 0 14px}
+.game-instructions>p:not(.panel-kicker):not(.instruction-good-luck){font-size:15px;line-height:1.55;margin:0 0 19px}
 .game-instructions strong{color:#624d35}
 .instruction-block{border-top:1px solid var(--panel-line);padding-top:13px;margin-top:15px}
-.instruction-block h3{font-size:10px;letter-spacing:1.25px;text-transform:uppercase;margin:0 0 9px;color:var(--panel-muted)}
-.instruction-block ol,.instruction-block ul{margin:0;padding-left:20px;font-size:11px;line-height:1.5}
+.instruction-block h3{font-size:12.5px;letter-spacing:1.25px;text-transform:uppercase;margin:0 0 9px;color:var(--panel-muted)}
+.instruction-block ol,.instruction-block ul{margin:0;padding-left:20px;font-size:13.75px;line-height:1.5}
 .instruction-block li+li{margin-top:7px}
-.instruction-good-luck{border-left:3px solid var(--brass);background:#e8dcc1;margin:20px 0 0;padding:11px 12px;font-family:var(--display,Georgia);font-size:16px;line-height:1.25}
+.instruction-good-luck{border-left:3px solid var(--brass);background:#e8dcc1;margin:20px 0 0;padding:11px 12px;font-family:var(--display,Georgia);font-size:20px;line-height:1.25}
 .side-selector{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding-bottom:16px;border-bottom:1px solid var(--panel-line)}
 .side-selector button{position:relative;border:1px solid var(--panel-line);border-radius:5px;background:transparent;color:var(--panel-ink);padding:10px 2px 8px;display:flex;flex-direction:column;align-items:center;gap:6px}
 .side-selector button[aria-pressed=true]{background:var(--panel-ink);color:var(--panel);border-color:var(--panel-ink)}
@@ -76,7 +77,7 @@
   .box-header{height:50px}.workshop{padding-top:15px}
   .scene-panel{min-height:480px;height:calc(100dvh - 185px);position:sticky;top:14px}
   .puzzle-panel{max-height:calc(100dvh - 185px);overflow-y:auto;scrollbar-width:thin;padding:14px}
-  .puzzle-panel>.panel-kicker{margin-bottom:7px}.game-instructions h2{font-size:24px;margin-bottom:10px}.game-instructions>p:not(.panel-kicker):not(.instruction-good-luck){margin-bottom:12px}.instruction-block{padding-top:9px;margin-top:10px}.instruction-block li+li{margin-top:4px}.instruction-good-luck{margin-top:12px;padding:8px 10px;font-size:14px}.side-selector{padding-bottom:10px}.side-selector button{padding:7px 2px 5px;gap:4px}.side-selector i{width:10px;height:10px}
+  .puzzle-panel>.panel-kicker{margin-bottom:7px}.game-instructions .panel-kicker{font-size:10px}.game-instructions h2{font-size:30px;margin-bottom:10px}.game-instructions>p:not(.panel-kicker):not(.instruction-good-luck){margin-bottom:12px}.instruction-block{padding-top:9px;margin-top:10px}.instruction-block h3{font-size:11px}.instruction-block ol,.instruction-block ul{font-size:12px}.instruction-block li+li{margin-top:4px}.instruction-good-luck{margin-top:12px;padding:8px 10px;font-size:17.5px}.side-selector{padding-bottom:10px}.side-selector button{padding:7px 2px 5px;gap:4px}.side-selector i{width:10px;height:10px}
   .box-page .mascot-feedback{padding:7px;margin:8px 0}.box-page .notebook-buddy{width:46px;height:46px}.supply-label{margin-top:11px}.flask-buttons{margin-top:6px}.flask-buttons button{height:70px}.flask-buttons img{height:58px}.flask-buttons span{font-size:11px;bottom:3px}
   .selection-label{margin:6px 0;min-height:26px}.drop-zone{min-height:70px;gap:3px}.pan-expression{font-size:21px}.pan-actions{margin-top:4px}.check-mechanism,.next-mechanism{margin-top:11px;padding:11px}.attempt-note{margin-top:6px;font-size:8px}
 }
