@@ -43,7 +43,9 @@
     pauseCover: 0.3,
     flipDuration: 1.5,
     sheetInterval: 0.3,
-    endPause: 0.1
+    endPause: 0.1,
+    animStart: 0.5,
+    animDuration: 0.75
   };
 
   let timings = { ...defaultTimings };
@@ -86,6 +88,10 @@
   const valSheetInterval = document.getElementById('valSheetInterval');
   const sliderEndPause = document.getElementById('sliderEndPause');
   const valEndPause = document.getElementById('valEndPause');
+  const sliderAnimStart = document.getElementById('sliderAnimStart');
+  const valAnimStart = document.getElementById('valAnimStart');
+  const sliderAnimDuration = document.getElementById('sliderAnimDuration');
+  const valAnimDuration = document.getElementById('valAnimDuration');
   const btnTestAnimation = document.getElementById('btnTestAnimation');
   const btnResetTimings = document.getElementById('btnResetTimings');
 
@@ -104,6 +110,12 @@
 
     if (sliderEndPause) sliderEndPause.value = timings.endPause;
     if (valEndPause) valEndPause.textContent = `${Number(timings.endPause).toFixed(1)}s`;
+
+    if (sliderAnimStart) sliderAnimStart.value = timings.animStart;
+    if (valAnimStart) valAnimStart.textContent = `${Number(timings.animStart).toFixed(2)}s`;
+
+    if (sliderAnimDuration) sliderAnimDuration.value = timings.animDuration;
+    if (valAnimDuration) valAnimDuration.textContent = `${Number(timings.animDuration).toFixed(2)}s`;
 
     applyTimingsToCSS();
   }
@@ -146,6 +158,22 @@
     sliderEndPause.addEventListener('input', (e) => {
       timings.endPause = parseFloat(e.target.value);
       if (valEndPause) valEndPause.textContent = `${timings.endPause.toFixed(1)}s`;
+      saveTimings();
+    });
+  }
+
+  if (sliderAnimStart) {
+    sliderAnimStart.addEventListener('input', (e) => {
+      timings.animStart = parseFloat(e.target.value);
+      if (valAnimStart) valAnimStart.textContent = `${timings.animStart.toFixed(2)}s`;
+      saveTimings();
+    });
+  }
+
+  if (sliderAnimDuration) {
+    sliderAnimDuration.addEventListener('input', (e) => {
+      timings.animDuration = parseFloat(e.target.value);
+      if (valAnimDuration) valAnimDuration.textContent = `${timings.animDuration.toFixed(2)}s`;
       saveTimings();
     });
   }
@@ -407,13 +435,14 @@
         </svg>
       `;
     }
+    duoDiv.style.setProperty('--anim-duration', `${timings.animDuration}s`);
     frag.appendChild(duoDiv);
 
     // 2. Criação de MUITAS Palavras em Português (34 palavras)
     const wordsSource = isVariantA ? boatWordsList : starWordsList;
     const wordColors = isVariantA
-      ? ['#56ccf2', '#ffffff', '#e0f7fa', '#f3ac8e', '#ffd166', '#80deea', '#06d6a0']
-      : ['#f4cd65', '#ffffff', '#ffd166', '#dcabc3', '#f3ac8e', '#a9e6b6', '#fff9e6'];
+      ? ['#1b6ca8', '#2c7744', '#7b3f00', '#8e3a59', '#2d6a4f', '#4a4e69', '#0d6986']
+      : ['#8a5a1e', '#7b241c', '#1b4f72', '#5b2c6f', '#196f3d', '#283747', '#78281f'];
 
     const wordCount = 34;
     for (let i = 0; i < wordCount; i++) {
@@ -438,8 +467,9 @@
       const dz = (70 + Math.random() * 140).toFixed(0);
       const rotStart = (Math.random() * 16 - 8).toFixed(1);
       const rotEnd = (Math.random() * 32 - 16).toFixed(1);
-      const dur = (2.2 + Math.random() * 1.0).toFixed(2);
-      const delay = (0.05 + Math.random() * 0.75).toFixed(2);
+      const maxDelay = timings.animDuration * 0.35;
+      const delay = (Math.random() * maxDelay).toFixed(2);
+      const dur = (timings.animDuration - parseFloat(delay)).toFixed(2);
 
       span.style.left = `${posX.toFixed(1)}%`;
       span.style.top = `${posY.toFixed(1)}%`;
@@ -459,7 +489,7 @@
 
     // 3. Criação de Elementos Temáticos (Estrelas ou Barquinhos)
     if (!isVariantA) {
-      const starColors = ['#fff', '#f4cd65', '#ffd700', '#f3ac8e', '#dcabc3'];
+      const starColors = ['#b7950b', '#9a7d0a', '#7d6608', '#8b4513', '#7b241c'];
       for (let s = 0; s < 22; s++) {
         const star = document.createElement('div');
         star.className = 'flow-star';
@@ -474,8 +504,9 @@
         const dy = (-(80 + Math.random() * 140)).toFixed(0);
         const dz = (80 + Math.random() * 160).toFixed(0);
         const rot = (Math.random() * 360).toFixed(0);
-        const dur = (2.0 + Math.random() * 1.2).toFixed(2);
-        const delay = (Math.random() * 0.7).toFixed(2);
+        const maxDelay = timings.animDuration * 0.35;
+        const delay = (Math.random() * maxDelay).toFixed(2);
+        const dur = (timings.animDuration - parseFloat(delay)).toFixed(2);
 
         star.style.left = `${posX.toFixed(1)}%`;
         star.style.top = `${posY.toFixed(1)}%`;
@@ -498,10 +529,10 @@
       }
     } else {
       const boatColors = [
-        { hull: '#ffffff', sail: '#e3f2fd', flag: '#ff7eb3' },
-        { hull: '#fff9c4', sail: '#fffde7', flag: '#06d6a0' },
-        { hull: '#e0f7fa', sail: '#ffffff', flag: '#f3ac8e' },
-        { hull: '#ffe0b2', sail: '#fff3e0', flag: '#29b6f6' }
+        { hull: '#7b5e3a', sail: '#a0855b', flag: '#8e3a59' },
+        { hull: '#4a6741', sail: '#6b9e60', flag: '#2d4a8a' },
+        { hull: '#2c4f7c', sail: '#3a6fa8', flag: '#7b3f00' },
+        { hull: '#5c3d2e', sail: '#8b6347', flag: '#2d5a27' }
       ];
 
       for (let b = 0; b < 16; b++) {
@@ -520,8 +551,9 @@
         const dz = (60 + Math.random() * 150).toFixed(0);
         const rotStart = (Math.random() * 16 - 8).toFixed(1);
         const rotEnd = (Math.random() * 24 - 12).toFixed(1);
-        const dur = (2.4 + Math.random() * 1.0).toFixed(2);
-        const delay = (Math.random() * 0.75).toFixed(2);
+        const maxDelay = timings.animDuration * 0.35;
+        const delay = (Math.random() * maxDelay).toFixed(2);
+        const dur = (timings.animDuration - parseFloat(delay)).toFixed(2);
 
         boat.style.left = `${posX.toFixed(1)}%`;
         boat.style.top = `${posY.toFixed(1)}%`;
@@ -537,9 +569,9 @@
 
         boat.innerHTML = `
           <svg viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="1,8 31,8 25,18 7,18" fill="${palette.hull}" stroke="#90caf9" stroke-width="1.2"/>
-            <polygon points="16,8 16,-1 27,8" fill="${palette.sail}" stroke="#90caf9" stroke-width="0.8"/>
-            <polygon points="16,8 16,-4 5,8" fill="#ffffff" stroke="#90caf9" stroke-width="0.8"/>
+            <polygon points="1,8 31,8 25,18 7,18" fill="${palette.hull}" stroke="#4a4a5a" stroke-width="1.2"/>
+            <polygon points="16,8 16,-1 27,8" fill="${palette.sail}" stroke="#4a4a5a" stroke-width="0.8"/>
+            <polygon points="16,8 16,-4 5,8" fill="${palette.hull}" stroke="#4a4a5a" stroke-width="0.8"/>
             <polygon points="16,-1 16,-4 21,-2.5" fill="${palette.flag}"/>
           </svg>
         `;
@@ -659,7 +691,7 @@
     // Erupção de elementos mágicos que fluem para fora das páginas 1 e 2
     scheduleTimer(() => {
       triggerPage1And2Flow(currentPairIsA);
-    }, Math.min(500, timings.coverDuration * 350));
+    }, timings.animStart * 1000);
 
     const page1 = book ? book.querySelector('.page-1') : null;
     const page2 = book ? book.querySelector('.page-2') : null;

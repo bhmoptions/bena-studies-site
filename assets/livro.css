@@ -662,7 +662,7 @@ html, body {
   margin-top: -105px;
   pointer-events: none;
   transform-style: preserve-3d;
-  animation: flow-character-leap 3.8s cubic-bezier(0.2, 0.85, 0.35, 1) forwards;
+  animation: flow-character-leap var(--anim-duration, 3.8s) cubic-bezier(0.2, 0.85, 0.35, 1) forwards;
 }
 
 @keyframes flow-character-leap {
@@ -780,7 +780,7 @@ html, body {
   pointer-events: none;
   white-space: nowrap;
   user-select: none;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85), 0 0 14px currentColor;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.75);
   transform-style: preserve-3d;
   animation: flow-word-away var(--dur, 2.8s) cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0s) forwards;
   opacity: 0;
@@ -811,7 +811,7 @@ html, body {
   transform-style: preserve-3d;
   animation: flow-star-away var(--dur, 2.6s) cubic-bezier(0.2, 0.9, 0.3, 1) var(--delay, 0s) forwards;
   opacity: 0;
-  filter: drop-shadow(0 0 8px currentColor);
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.7));
   will-change: transform, opacity;
 }
 
