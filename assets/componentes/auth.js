@@ -18,9 +18,21 @@ const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
+let isAuthInitialized = false;
+const authReadyCallbacks = [];
+
 // Interface global para outros modulos (ranking, jogos...)
 window.BENA_AUTH = {
   currentUser: () => auth.currentUser,
+  isLoggedIn: () => !!auth.currentUser,
+  isAuthReady: () => isAuthInitialized,
+  onAuthReady: (cb) => {
+    if (isAuthInitialized) cb(auth.currentUser);
+    else authReadyCallbacks.push(cb);
+  },
+  showLoginModal: (cb) => showLoginModal(cb),
+  showSignupModal: (cb) => showSignupModal(cb),
+  showLockedNoticeModal: (cb) => showLockedNoticeModal(cb),
   perfil: async () => {
     const user = auth.currentUser;
     if (!user) return null;
@@ -124,8 +136,25 @@ function setLoading(btn, loading, label) {
   btn.innerHTML = loading ? 'Aguarde\u2026' : label;
 }
 
+/* VIEW: Aviso de Livro Trancado (Acesso restrito) */
+function showLockedNoticeModal(onSuccess) {
+  content.innerHTML = `
+    <div class="modal-symbol">🔒</div>
+    <div class="eyebrow"><span></span>LIVRO DE DESCOBERTAS • ACESSO RESTRITO</div>
+    <h2>Entre para abrir seu livro!</h2>
+    <p>O Livro Mágico de Descobertas e os desafios de matemática são exclusivos para exploradores cadastrados. Faça login ou crie sua conta para começar a jogar.</p>
+    <div style="display:flex; flex-direction:column; gap:12px; margin-top:24px;">
+      <button class="primary" id="btn-notice-login" style="width:100%; justify-content:center;">Entrar na minha conta <span>→</span></button>
+      <button class="topic" id="btn-notice-signup" style="width:100%; justify-content:center; text-align:center; margin-top:0;">Cadastrar nova conta <span>↗</span></button>
+    </div>
+  `;
+  modal.showModal();
+  document.querySelector('#btn-notice-login').onclick = () => showLoginModal(onSuccess);
+  document.querySelector('#btn-notice-signup').onclick = () => showSignupModal(onSuccess);
+}
+
 /* VIEW: Login */
-function showLoginModal() {
+function showLoginModal(onSuccess) {
   content.innerHTML = `
     <div class="modal-symbol">\u263a</div>
     <div class="eyebrow"><span></span>ACESSE SUA CONTA</div>
@@ -139,7 +168,7 @@ function showLoginModal() {
     <p class="auth-toggle">Ainda n\u00e3o tem conta? <button class="auth-link" id="go-signup">Cadastrar \u2192</button></p>
   `;
   modal.showModal();
-  document.querySelector('#go-signup').onclick = showSignupModal;
+  document.querySelector('#go-signup').onclick = () => showSignupModal(onSuccess);
 
   document.querySelector('#auth-form').onsubmit = async (e) => {
     e.preventDefault();
@@ -154,8 +183,9 @@ function showLoginModal() {
       if (snap.exists()) {
         window.BENA_AUTH.sincronizarAluno(snap.data().nome); // sync com MySQL (non-blocking)
         modal.close();
+        if (typeof onSuccess === 'function') onSuccess();
       } else {
-        showNomeModal(cred.user);
+        showNomeModal(cred.user, onSuccess);
       }
     } catch (err) {
       setError('auth-error', friendlyError(err.code));
@@ -165,7 +195,7 @@ function showLoginModal() {
 }
 
 /* VIEW: Signup */
-function showSignupModal() {
+function showSignupModal(onSuccess) {
   content.innerHTML = `
     <div class="modal-symbol">\u263a</div>
     <div class="eyebrow"><span></span>CRIE SUA CONTA</div>
@@ -180,7 +210,7 @@ function showSignupModal() {
     <p class="auth-toggle">J\u00e1 tem conta? <button class="auth-link" id="go-login">Entrar \u2192</button></p>
   `;
   modal.showModal();
-  document.querySelector('#go-login').onclick = showLoginModal;
+  document.querySelector('#go-login').onclick = () => showLoginModal(onSuccess);
 
   document.querySelector('#auth-form').onsubmit = async (e) => {
     e.preventDefault();
@@ -193,7 +223,7 @@ function showSignupModal() {
     setError('auth-error', '');
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, pass);
-      showNomeModal(cred.user);
+      showNomeModal(cred.user, onSuccess);
     } catch (err) {
       setError('auth-error', friendlyError(err.code));
       setLoading(btn, false, 'Cadastrar <span>\u2192</span>');
@@ -202,7 +232,7 @@ function showSignupModal() {
 }
 
 /* VIEW: Escolher nome (primeira vez) */
-function showNomeModal(user) {
+function showNomeModal(user, onSuccess) {
   content.innerHTML = `
     <div class="modal-symbol">\u270f\ufe0f</div>
     <div class="eyebrow"><span></span>QUASE L\u00c1!</div>
@@ -236,6 +266,7 @@ function showNomeModal(user) {
       window.BENA_AUTH.sincronizarAluno(nome); // sync com MySQL (non-blocking)
       updateLoginBtn(user, nome);
       modal.close();
+      if (typeof onSuccess === 'function') onSuccess();
     } catch (err) {
       console.error(err);
       setError('nome-error', 'Erro ao salvar. Tente novamente.');
@@ -325,6 +356,11 @@ if (loginBtn) {
 }
 
 onAuthStateChanged(auth, async (user) => {
+  isAuthInitialized = true;
+  while (authReadyCallbacks.length) {
+    const cb = authReadyCallbacks.shift();
+    try { cb(user); } catch (e) { console.error(e); }
+  }
   if (user) {
     const snap = await getDoc(doc(db, 'usuarios', user.uid));
     const nome = snap.exists() ? snap.data().nome : null;

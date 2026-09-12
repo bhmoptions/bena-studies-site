@@ -1243,9 +1243,16 @@
   // ==========================================================================
   // 4. Sequência Dinâmica de Abertura e Fechamento
   // ==========================================================================
+  // 4. Sequência Dinâmica de Abertura e Fechamento (com Aceleração 3x)
+  // ==========================================================================
+  let currentSpeed = 1;
+  let animStartTime = 0;
+  let pendingSequence = [];
+
   function scheduleTimer(fn, delay) {
     const id = setTimeout(fn, delay);
     pageFlipTimers.push(id);
+    return id;
   }
 
   function clearPageTimers() {
@@ -1253,26 +1260,80 @@
     pageFlipTimers = [];
   }
 
+  function scheduleAllSequenceItems() {
+    clearPageTimers();
+    const now = performance.now();
+    const elapsedVirtual = (now - animStartTime) * currentSpeed;
+
+    pendingSequence.forEach((item) => {
+      if (item.executed) return;
+      const remainingVirtual = item.time - elapsedVirtual;
+      const delay = Math.max(0, remainingVirtual / currentSpeed);
+
+      const timerId = setTimeout(() => {
+        item.executed = true;
+        item.action();
+      }, delay);
+      pageFlipTimers.push(timerId);
+    });
+  }
+
+  function accelerateOpening() {
+    if (!isAnimating || isBookOpen || currentSpeed >= 3) return;
+
+    const now = performance.now();
+    const elapsedReal = now - animStartTime;
+    const elapsedVirtual = elapsedReal * currentSpeed;
+
+    currentSpeed = 3;
+    animStartTime = now - (elapsedVirtual / currentSpeed);
+
+    // Ajusta variáveis CSS e classe de aceleração
+    document.documentElement.style.setProperty('--cover-duration', `${timings.coverDuration / 3}s`);
+    document.documentElement.style.setProperty('--flip-duration', `${timings.flipDuration / 3}s`);
+    if (bookWrap) bookWrap.classList.add('is-speed-3x');
+
+    // Acelera Web Animations API ativas
+    if (typeof document.getAnimations === 'function') {
+      try {
+        document.getAnimations().forEach(anim => {
+          const target = anim.effect?.target;
+          if (target && (target.closest?.('#magicBook') || target.closest?.('#bookWrap') || target.id === 'bookWrap' || target.id === 'magicBook')) {
+            anim.playbackRate = 3;
+          }
+        });
+      } catch (e) {}
+    }
+
+    // Se houver folhas em pleno voo (is-flipping), acelera remoção do estado is-flipping
+    const flippingPages = book ? book.querySelectorAll('.turning-page.is-flipping') : [];
+    flippingPages.forEach(p => {
+      setTimeout(() => p.classList.remove('is-flipping'), (timings.flipDuration * 1000) / 3);
+    });
+
+    scheduleAllSequenceItems();
+  }
+
   function openBook() {
     if (isBookOpen || isAnimating) return;
     isAnimating = true;
+    currentSpeed = 1;
 
     clearPageTimers();
     playRustleSound();
 
-    instructionCallout.style.opacity = '0';
-    instructionCallout.style.transform = 'translateY(15px)';
+    applyTimingsToCSS();
+    if (bookWrap) {
+      bookWrap.classList.remove('is-speed-3x');
+      bookWrap.classList.remove('spread-revealed');
+      bookWrap.classList.remove('is-closed');
+      bookWrap.classList.add('is-open');
+    }
 
-    bookWrap.classList.remove('spread-revealed');
-
-    // 1. Capa se abre (duração controlada via CSS e slider)
-    bookWrap.classList.remove('is-closed');
-    bookWrap.classList.add('is-open');
-
-    // Erupção de elementos mágicos que fluem para fora das páginas 1 e 2
-    scheduleTimer(() => {
-      triggerPage1And2Flow(currentPairIsA);
-    }, timings.animStart0 * 1000);
+    if (instructionCallout) {
+      instructionCallout.style.opacity = '0';
+      instructionCallout.style.transform = 'translateY(15px)';
+    }
 
     const page1 = book ? book.querySelector('.page-1') : null;
     const page2 = book ? book.querySelector('.page-2') : null;
@@ -1291,70 +1352,100 @@
     const tPage3 = tPage2 + flipMs + (timings.sheetInterval * 1000);
     const tEnd = tPage3 + flipMs + (timings.endPause * 1000);
 
-    // Folha 1 vira
-    scheduleTimer(() => {
-      playRustleSound();
-      if (page1) {
-        page1.classList.add('is-flipping');
-        page1.classList.add('is-flipped');
-        setTimeout(() => {
-          page1.classList.remove('is-flipping');
-        }, flipMs);
+    animStartTime = performance.now();
+
+    pendingSequence = [
+      {
+        time: timings.animStart0 * 1000,
+        executed: false,
+        action: () => triggerPage1And2Flow(currentPairIsA)
+      },
+      {
+        time: tPage1,
+        executed: false,
+        action: () => {
+          playRustleSound();
+          if (page1) {
+            page1.classList.add('is-flipping');
+            page1.classList.add('is-flipped');
+            setTimeout(() => {
+              page1.classList.remove('is-flipping');
+            }, (timings.flipDuration * 1000) / currentSpeed);
+          }
+        }
+      },
+      {
+        time: tPage1 + timings.animStart * 1000,
+        executed: false,
+        action: () => triggerPage3And4Flow()
+      },
+      {
+        time: tPage2,
+        executed: false,
+        action: () => {
+          playRustleSound();
+          if (page2) {
+            page2.classList.add('is-flipping');
+            page2.classList.add('is-flipped');
+            setTimeout(() => {
+              page2.classList.remove('is-flipping');
+            }, (timings.flipDuration * 1000) / currentSpeed);
+          }
+        }
+      },
+      {
+        time: tPage2 + timings.animStart * 1000,
+        executed: false,
+        action: () => triggerPage5And6Flow()
+      },
+      {
+        time: tPage3,
+        executed: false,
+        action: () => {
+          playRustleSound();
+          if (page3) {
+            page3.classList.add('is-flipping');
+            page3.classList.add('is-flipped');
+            setTimeout(() => {
+              page3.classList.remove('is-flipping');
+            }, (timings.flipDuration * 1000) / currentSpeed);
+          }
+        }
+      },
+      {
+        time: tEnd,
+        executed: false,
+        action: () => {
+          playChimeSequence();
+          if (bookWrap) {
+            bookWrap.classList.add('spread-revealed');
+            bookWrap.classList.remove('is-speed-3x');
+          }
+          currentSpeed = 1;
+          applyTimingsToCSS();
+          isBookOpen = true;
+          isAnimating = false;
+        }
       }
-    }, tPage1);
+    ];
 
-    // Erupção de elementos mágicos das páginas 3 e 4
-    scheduleTimer(() => {
-      triggerPage3And4Flow();
-    }, tPage1 + timings.animStart * 1000);
-
-    // Folha 2 vira
-    scheduleTimer(() => {
-      playRustleSound();
-      if (page2) {
-        page2.classList.add('is-flipping');
-        page2.classList.add('is-flipped');
-        setTimeout(() => {
-          page2.classList.remove('is-flipping');
-        }, flipMs);
-      }
-    }, tPage2);
-
-    // Erupção de elementos mágicos das páginas 5 e 6
-    scheduleTimer(() => {
-      triggerPage5And6Flow();
-    }, tPage2 + timings.animStart * 1000);
-
-    // Folha 3 vira
-    scheduleTimer(() => {
-      playRustleSound();
-      if (page3) {
-        page3.classList.add('is-flipping');
-        page3.classList.add('is-flipped');
-        setTimeout(() => {
-          page3.classList.remove('is-flipping');
-        }, flipMs);
-      }
-    }, tPage3);
-
-    // Cenário assentado -> ativa destinos e sinfonia
-    scheduleTimer(() => {
-      playChimeSequence();
-      bookWrap.classList.add('spread-revealed');
-      isBookOpen = true;
-      isAnimating = false;
-    }, tEnd);
+    scheduleAllSequenceItems();
   }
 
   function closeBook() {
     if (!isBookOpen || isAnimating) return;
     isAnimating = true;
+    currentSpeed = 1;
 
     clearPageTimers();
     clearFlowingElements();
     playRustleSound();
 
-    bookWrap.classList.remove('spread-revealed');
+    applyTimingsToCSS();
+    if (bookWrap) {
+      bookWrap.classList.remove('spread-revealed');
+      bookWrap.classList.remove('is-speed-3x');
+    }
 
     const page1 = book ? book.querySelector('.page-1') : null;
     const page2 = book ? book.querySelector('.page-2') : null;
@@ -1399,8 +1490,10 @@
     const coverCloseDelay = 1250;
     scheduleTimer(() => {
       playRustleSound();
-      bookWrap.classList.remove('is-open');
-      bookWrap.classList.add('is-closed');
+      if (bookWrap) {
+        bookWrap.classList.remove('is-open');
+        bookWrap.classList.add('is-closed');
+      }
     }, coverCloseDelay);
 
     const closeTotalTime = coverCloseDelay + (timings.coverDuration * 1000) + 300;
@@ -1415,19 +1508,74 @@
   }
 
   // ==========================================================================
-  // 5. Eventos do Livro & Controles
+  // 5. Eventos do Livro & Controles (Autenticação, Cliques Globais & Aceleração)
   // ==========================================================================
+  let lastBookInteraction = 0;
+
+  function shakeBookLocked() {
+    if (!book) return;
+    book.classList.remove('is-locked-shake');
+    void book.offsetWidth; // Força reflow para reiniciar animação CSS
+    book.classList.add('is-locked-shake');
+    playRustleSound();
+    setTimeout(() => {
+      if (book) book.classList.remove('is-locked-shake');
+    }, 600);
+  }
+
+  function handleBookInteraction() {
+    // Evita múltiplos disparos por propagação de eventos
+    const now = performance.now();
+    if (now - lastBookInteraction < 60) return;
+    lastBookInteraction = now;
+
+    // 1. Livro já completamente aberto: eventos normais
+    if (isBookOpen) return;
+
+    // 2. Se está animando a abertura: clique acelera 3x!
+    if (isAnimating) {
+      accelerateOpening();
+      return;
+    }
+
+    // 3. Livro fechado: validação obrigatória de login
+    const checkAndOpen = (user) => {
+      if (user) {
+        openBook();
+      } else {
+        shakeBookLocked();
+        if (window.BENA_AUTH?.showLockedNoticeModal) {
+          window.BENA_AUTH.showLockedNoticeModal(() => openBook());
+        } else {
+          const loginBtn = document.querySelector('[data-login]');
+          if (loginBtn) loginBtn.click();
+        }
+      }
+    };
+
+    if (window.BENA_AUTH) {
+      if (typeof window.BENA_AUTH.isAuthReady === 'function' && !window.BENA_AUTH.isAuthReady()) {
+        window.BENA_AUTH.onAuthReady?.(checkAndOpen);
+      } else {
+        checkAndOpen(window.BENA_AUTH.currentUser?.());
+      }
+    } else {
+      shakeBookLocked();
+      const loginBtn = document.querySelector('[data-login]');
+      if (loginBtn) loginBtn.click();
+    }
+  }
+
   if (book) {
-    book.addEventListener('click', () => {
-      if (isBookOpen) return;
-      openBook();
-    });
+    book.addEventListener('click', handleBookInteraction);
+  }
+
+  if (bookWrap) {
+    bookWrap.addEventListener('click', handleBookInteraction);
   }
 
   if (instructionCallout) {
-    instructionCallout.addEventListener('click', () => {
-      if (!isBookOpen) openBook();
-    });
+    instructionCallout.addEventListener('click', handleBookInteraction);
   }
 
   // --- Destinos Selecionáveis & Navegação Real ---

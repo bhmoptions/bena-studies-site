@@ -120,12 +120,44 @@ html, body {
 }
 
 /* Estado Fechado: Flutuação Mágica e Respiração */
+.book-wrap.is-closed {
+  cursor: pointer;
+}
+
 .book-wrap.is-closed .book {
   animation: book-levitate 4.5s ease-in-out infinite alternate;
 }
 
+.book-wrap.is-closed:hover .book,
 .book-wrap.is-closed .book:hover {
   transform: rotateX(8deg) rotateY(-10deg) scale(1.03);
+}
+
+/* Efeito de livro trancado (usuário deslogado) */
+@keyframes book-locked-nudge {
+  0%   { transform: rotateX(12deg) rotateY(-18deg) rotateZ(1deg); }
+  20%  { transform: rotateX(12deg) rotateY(-12deg) rotateZ(-3deg) translateY(-3px); }
+  40%  { transform: rotateX(12deg) rotateY(-24deg) rotateZ(3deg) translateY(2px); }
+  60%  { transform: rotateX(12deg) rotateY(-14deg) rotateZ(-2deg); }
+  80%  { transform: rotateX(12deg) rotateY(-20deg) rotateZ(2deg); }
+  100% { transform: rotateX(12deg) rotateY(-18deg) rotateZ(1deg); }
+}
+
+.book.is-locked-shake {
+  animation: book-locked-nudge 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) !important;
+}
+
+/* Aceleração 3x das animações de abertura */
+.book-wrap.is-speed-3x {
+  transition: transform 0.533s cubic-bezier(0.25, 1, 0.3, 1) !important;
+}
+
+.book-wrap.is-speed-3x .book-cover {
+  transition-duration: calc(var(--cover-duration) / 3) !important;
+}
+
+.book-wrap.is-speed-3x .turning-page {
+  transition-duration: calc(var(--flip-duration) / 3) !important;
 }
 
 @keyframes book-levitate {
