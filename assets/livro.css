@@ -906,6 +906,27 @@ html, body {
   100% { transform: rotate(-12deg) translateY(-20px) scale(1.06); }
 }
 
+/* --- Par Correndo (Páginas 5 e 6) --- */
+.duo-run .anim-girl-run {
+  transform-origin: 64px 120px;
+  animation: girl-run-play 0.45s ease-in-out infinite alternate;
+}
+.duo-run .anim-boy-run {
+  transform-origin: 236px 120px;
+  animation: boy-run-play 0.45s ease-in-out infinite alternate 0.22s;
+}
+
+@keyframes girl-run-play {
+  0%   { transform: rotate(-8deg) translateY(0px); }
+  100% { transform: rotate(8deg)  translateY(-14px) scale(1.04); }
+}
+
+@keyframes boy-run-play {
+  0%   { transform: rotate(8deg)  translateY(0px); }
+  100% { transform: rotate(-8deg) translateY(-14px) scale(1.04); }
+}
+
+
 
 
 /* --------------------------------------------------------------------------

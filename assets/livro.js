@@ -44,6 +44,8 @@
     flipDuration: 1.5,
     sheetInterval: 0.3,
     endPause: 0.1,
+    animStart0: 0.15,
+    animDuration0: 1.8,
     animStart: 0.15,
     animDuration: 1.8
   };
@@ -88,6 +90,10 @@
   const valSheetInterval = document.getElementById('valSheetInterval');
   const sliderEndPause = document.getElementById('sliderEndPause');
   const valEndPause = document.getElementById('valEndPause');
+  const sliderAnimStart0 = document.getElementById('sliderAnimStart0');
+  const valAnimStart0 = document.getElementById('valAnimStart0');
+  const sliderAnimDuration0 = document.getElementById('sliderAnimDuration0');
+  const valAnimDuration0 = document.getElementById('valAnimDuration0');
   const sliderAnimStart = document.getElementById('sliderAnimStart');
   const valAnimStart = document.getElementById('valAnimStart');
   const sliderAnimDuration = document.getElementById('sliderAnimDuration');
@@ -110,6 +116,12 @@
 
     if (sliderEndPause) sliderEndPause.value = timings.endPause;
     if (valEndPause) valEndPause.textContent = `${Number(timings.endPause).toFixed(1)}s`;
+
+    if (sliderAnimStart0) sliderAnimStart0.value = timings.animStart0;
+    if (valAnimStart0) valAnimStart0.textContent = `${Number(timings.animStart0).toFixed(2)}s`;
+
+    if (sliderAnimDuration0) sliderAnimDuration0.value = timings.animDuration0;
+    if (valAnimDuration0) valAnimDuration0.textContent = `${Number(timings.animDuration0).toFixed(2)}s`;
 
     if (sliderAnimStart) sliderAnimStart.value = timings.animStart;
     if (valAnimStart) valAnimStart.textContent = `${Number(timings.animStart).toFixed(2)}s`;
@@ -158,6 +170,22 @@
     sliderEndPause.addEventListener('input', (e) => {
       timings.endPause = parseFloat(e.target.value);
       if (valEndPause) valEndPause.textContent = `${timings.endPause.toFixed(1)}s`;
+      saveTimings();
+    });
+  }
+
+  if (sliderAnimStart0) {
+    sliderAnimStart0.addEventListener('input', (e) => {
+      timings.animStart0 = parseFloat(e.target.value);
+      if (valAnimStart0) valAnimStart0.textContent = `${timings.animStart0.toFixed(2)}s`;
+      saveTimings();
+    });
+  }
+
+  if (sliderAnimDuration0) {
+    sliderAnimDuration0.addEventListener('input', (e) => {
+      timings.animDuration0 = parseFloat(e.target.value);
+      if (valAnimDuration0) valAnimDuration0.textContent = `${timings.animDuration0.toFixed(2)}s`;
       saveTimings();
     });
   }
@@ -435,7 +463,7 @@
         </svg>
       `;
     }
-    duoDiv.style.setProperty('--anim-duration', `${timings.animDuration}s`);
+    duoDiv.style.setProperty('--anim-duration', `${timings.animDuration0}s`);
     frag.appendChild(duoDiv);
 
     // 2. Criação de MUITAS Palavras em Português (34 palavras)
@@ -467,9 +495,9 @@
       const dz = (70 + Math.random() * 140).toFixed(0);
       const rotStart = (Math.random() * 16 - 8).toFixed(1);
       const rotEnd = (Math.random() * 32 - 16).toFixed(1);
-      const maxDelay = timings.animDuration * 0.35;
+      const maxDelay = timings.animDuration0 * 0.35;
       const delay = (Math.random() * maxDelay).toFixed(2);
-      const dur = (timings.animDuration - parseFloat(delay)).toFixed(2);
+      const dur = (timings.animDuration0 - parseFloat(delay)).toFixed(2);
 
       span.style.left = `${posX.toFixed(1)}%`;
       span.style.top = `${posY.toFixed(1)}%`;
@@ -504,9 +532,9 @@
         const dy = (-(80 + Math.random() * 140)).toFixed(0);
         const dz = (80 + Math.random() * 160).toFixed(0);
         const rot = (Math.random() * 360).toFixed(0);
-        const maxDelay = timings.animDuration * 0.35;
+        const maxDelay = timings.animDuration0 * 0.35;
         const delay = (Math.random() * maxDelay).toFixed(2);
-        const dur = (timings.animDuration - parseFloat(delay)).toFixed(2);
+        const dur = (timings.animDuration0 - parseFloat(delay)).toFixed(2);
 
         star.style.left = `${posX.toFixed(1)}%`;
         star.style.top = `${posY.toFixed(1)}%`;
@@ -551,9 +579,9 @@
         const dz = (60 + Math.random() * 150).toFixed(0);
         const rotStart = (Math.random() * 16 - 8).toFixed(1);
         const rotEnd = (Math.random() * 24 - 12).toFixed(1);
-        const maxDelay = timings.animDuration * 0.35;
+        const maxDelay = timings.animDuration0 * 0.35;
         const delay = (Math.random() * maxDelay).toFixed(2);
-        const dur = (timings.animDuration - parseFloat(delay)).toFixed(2);
+        const dur = (timings.animDuration0 - parseFloat(delay)).toFixed(2);
 
         boat.style.left = `${posX.toFixed(1)}%`;
         boat.style.top = `${posY.toFixed(1)}%`;
@@ -927,6 +955,371 @@
   }
 
   // ==========================================================================
+  // Erupção Mágica — Elementos das Páginas 5 e 6 (Esportes + Veículos + Palavras EN)
+  // ==========================================================================
+  function triggerPage5And6Flow() {
+    if (!flowingElementsLayer) return;
+    clearFlowingElements();
+
+    const frag = document.createDocumentFragment();
+
+    function rdd() {
+      const delay = parseFloat((Math.random() * timings.animDuration * 0.32).toFixed(2));
+      const dur   = parseFloat((timings.animDuration - delay).toFixed(2));
+      return { dur, delay };
+    }
+
+    function rpos(onLeft) {
+      const x = onLeft ? (7 + Math.random() * 36) : (57 + Math.random() * 36);
+      const y = 16 + Math.random() * 66;
+      return { x, y };
+    }
+
+    function makeEl(cls, svg, w, h, onLeft, rot) {
+      const { x, y } = rpos(onLeft);
+      const { dur, delay } = rdd();
+      const el = document.createElement('div');
+      el.className = cls;
+      el.style.left   = `${x.toFixed(1)}%`;
+      el.style.top    = `${y.toFixed(1)}%`;
+      el.style.width  = `${w}px`;
+      el.style.height = `${h}px`;
+      el.innerHTML = svg;
+      const dx = (Math.random() * 80 - 40).toFixed(0);
+      const dy = (-(80 + Math.random() * 130)).toFixed(0);
+      const dz = (80 + Math.random() * 150).toFixed(0);
+      const r  = rot !== undefined ? rot : (Math.random() * 120 - 60).toFixed(0);
+      el.style.setProperty('--dx', `${dx}px`);
+      el.style.setProperty('--dy', `${dy}px`);
+      el.style.setProperty('--dz', `${dz}px`);
+      el.style.setProperty('--rot', `${r}deg`);
+      el.style.setProperty('--dur', `${dur}s`);
+      el.style.setProperty('--delay', `${delay}s`);
+      return el;
+    }
+
+    // ── 1. Running Boy & Girl Duo ─────────────────────────────────────────────
+    const duoDiv = document.createElement('div');
+    duoDiv.className = 'flow-character-duo duo-run';
+    duoDiv.style.setProperty('--anim-duration', `${timings.animDuration}s`);
+    duoDiv.innerHTML = `
+      <svg class="duo-svg" viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="skinGrad5" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#fddab9"/>
+            <stop offset="100%" stop-color="#e8a870"/>
+          </linearGradient>
+          <linearGradient id="runShirt" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#c0392b"/>
+            <stop offset="100%" stop-color="#922b21"/>
+          </linearGradient>
+          <linearGradient id="runDress" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#2471a3"/>
+            <stop offset="100%" stop-color="#154360"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Speed lines -->
+        <line x1="130" y1="80" x2="175" y2="80" stroke="#7d6608" stroke-width="2" stroke-dasharray="4 4" opacity="0.6"/>
+        <line x1="135" y1="90" x2="178" y2="90" stroke="#7d6608" stroke-width="1.5" stroke-dasharray="3 5" opacity="0.45"/>
+
+        <!-- ── Girl running (left) ── -->
+        <g class="anim-girl-run">
+          <!-- Back leg (extended behind) -->
+          <path d="M62 118 Q50 138 38 152" stroke="#e8a870" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="36" cy="154" r="5" fill="#154360"/>
+          <!-- Front leg (extended forward) -->
+          <path d="M72 118 Q84 134 98 140" stroke="#e8a870" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="100" cy="141" r="5" fill="#154360"/>
+          <!-- Shorts/skirt -->
+          <path d="M50 102 L84 102 L88 120 L46 120 Z" fill="#1a5276"/>
+          <!-- Shirt -->
+          <path d="M48 78 L82 78 L80 104 L50 104 Z" fill="url(#runDress)"/>
+          <!-- Back arm (pumping back) -->
+          <path d="M82 82 Q102 68 114 58" stroke="#e8a870" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="116" cy="57" r="4.5" fill="#e8a870"/>
+          <!-- Front arm (pumping forward) -->
+          <path d="M50 82 Q32 66 22 54" stroke="#e8a870" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="20" cy="52" r="4.5" fill="#e8a870"/>
+          <!-- Head (slightly forward lean) -->
+          <circle cx="64" cy="57" r="17" fill="url(#skinGrad5)"/>
+          <!-- Ponytail streaming back -->
+          <path d="M80 52 Q100 46 112 50" stroke="#2d1b10" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <!-- Hair -->
+          <path d="M47 54 Q64 36 81 54 Q70 44 64 43 Q56 44 47 54 Z" fill="#2d1b10"/>
+          <!-- Eyes -->
+          <ellipse cx="58" cy="57" rx="2.5" ry="3" fill="#2d1b10"/>
+          <ellipse cx="70" cy="57" rx="2.5" ry="3" fill="#2d1b10"/>
+          <!-- Determined smile -->
+          <path d="M60 65 Q64 69 68 65" stroke="#c0392b" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <!-- Cheeks -->
+          <circle cx="52" cy="61" r="3" fill="#ff7eb3" opacity="0.55"/>
+          <circle cx="76" cy="61" r="3" fill="#ff7eb3" opacity="0.55"/>
+        </g>
+
+        <!-- ── Boy running (right) ── -->
+        <g class="anim-boy-run">
+          <!-- Back leg (extended back and up) -->
+          <path d="M228 118 Q214 136 200 148" stroke="#e8a870" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="198" cy="150" r="5" fill="#922b21"/>
+          <!-- Front leg (striding forward) -->
+          <path d="M248 118 Q264 132 278 136" stroke="#e8a870" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="280" cy="137" r="5" fill="#922b21"/>
+          <!-- Shorts -->
+          <path d="M218 106 L256 106 L260 122 L214 122 Z" fill="#0d1b2e"/>
+          <!-- Shirt -->
+          <path d="M216 82 L258 82 L256 108 L218 108 Z" fill="url(#runShirt)"/>
+          <!-- Back arm (pumping back) -->
+          <path d="M218 86 Q238 70 252 56" stroke="#e8a870" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="253" cy="54" r="4.5" fill="#e8a870"/>
+          <!-- Front arm (pumping forward) -->
+          <path d="M256 86 Q272 68 284 54" stroke="#e8a870" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="286" cy="52" r="4.5" fill="#e8a870"/>
+          <!-- Head (forward lean) -->
+          <circle cx="236" cy="56" r="17" fill="url(#skinGrad5)"/>
+          <!-- Hair -->
+          <path d="M218 52 Q220 33 236 35 Q254 33 254 49 Q244 41 236 43 Q228 41 218 52 Z" fill="#4a2e1b"/>
+          <!-- Eyes (focused forward) -->
+          <ellipse cx="230" cy="56" rx="2.5" ry="3" fill="#2d1b10"/>
+          <ellipse cx="242" cy="56" rx="2.5" ry="3" fill="#2d1b10"/>
+          <!-- Determined mouth -->
+          <path d="M232 64 Q236 68 240 64" stroke="#c0392b" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <!-- Cheeks -->
+          <circle cx="224" cy="60" r="3" fill="#ff7eb3" opacity="0.5"/>
+          <circle cx="248" cy="60" r="3" fill="#ff7eb3" opacity="0.5"/>
+        </g>
+      </svg>
+    `;
+    frag.appendChild(duoDiv);
+
+    // ── 2. Sports Balls ───────────────────────────────────────────────────────
+
+    // Basketball (×2)
+    for (let i = 0; i < 2; i++) {
+      frag.appendChild(makeEl('flow-space', `
+        <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="25" cy="25" r="23" fill="#c45e00"/>
+          <circle cx="25" cy="25" r="23" fill="none" stroke="#6b3200" stroke-width="1.5"/>
+          <path d="M2 25 Q25 10 48 25" stroke="#6b3200" stroke-width="1.5" fill="none"/>
+          <path d="M2 25 Q25 40 48 25" stroke="#6b3200" stroke-width="1.5" fill="none"/>
+          <line x1="25" y1="2" x2="25" y2="48" stroke="#6b3200" stroke-width="1.5"/>
+        </svg>`, 44, 44, i % 2 === 0));
+    }
+
+    // Football/American Football (×2)
+    for (let i = 0; i < 2; i++) {
+      frag.appendChild(makeEl('flow-space', `
+        <svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="30" cy="20" rx="28" ry="17" fill="#7b4010"/>
+          <ellipse cx="30" cy="20" rx="28" ry="17" fill="none" stroke="#4a2808" stroke-width="1.5"/>
+          <line x1="10" y1="20" x2="50" y2="20" stroke="#e8e0d0" stroke-width="2"/>
+          <line x1="20" y1="14" x2="20" y2="26" stroke="#e8e0d0" stroke-width="1.5"/>
+          <line x1="30" y1="12" x2="30" y2="28" stroke="#e8e0d0" stroke-width="1.5"/>
+          <line x1="40" y1="14" x2="40" y2="26" stroke="#e8e0d0" stroke-width="1.5"/>
+        </svg>`, 52, 35, i % 2 === 0, 20));
+    }
+
+    // Soccer Ball (×2)
+    for (let i = 0; i < 2; i++) {
+      frag.appendChild(makeEl('flow-space', `
+        <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="25" cy="25" r="23" fill="#f0f0f0"/>
+          <polygon points="25,6 30,14 20,14" fill="#1a1a1a"/>
+          <polygon points="25,44 30,36 20,36" fill="#1a1a1a"/>
+          <polygon points="6,25 14,20 14,30" fill="#1a1a1a"/>
+          <polygon points="44,25 36,20 36,30" fill="#1a1a1a"/>
+          <polygon points="10,10 18,14 14,20" fill="#1a1a1a"/>
+          <polygon points="40,10 32,14 36,20" fill="#1a1a1a"/>
+          <polygon points="10,40 18,36 14,30" fill="#1a1a1a"/>
+          <polygon points="40,40 32,36 36,30" fill="#1a1a1a"/>
+        </svg>`, 44, 44, i % 2 === 0));
+    }
+
+    // Volleyball (×2)
+    for (let i = 0; i < 2; i++) {
+      frag.appendChild(makeEl('flow-space', `
+        <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="25" cy="25" r="23" fill="#f5f0e8"/>
+          <path d="M5 18 Q25 12 45 18" stroke="#1a4b8c" stroke-width="2" fill="none"/>
+          <path d="M5 32 Q25 38 45 32" stroke="#1a4b8c" stroke-width="2" fill="none"/>
+          <path d="M14 5 Q20 25 14 45" stroke="#c0392b" stroke-width="2" fill="none"/>
+          <path d="M36 5 Q30 25 36 45" stroke="#196f3d" stroke-width="2" fill="none"/>
+        </svg>`, 44, 44, i % 2 === 0));
+    }
+
+    // Tennis Ball (×2)
+    for (let i = 0; i < 2; i++) {
+      frag.appendChild(makeEl('flow-space', `
+        <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="25" cy="25" r="23" fill="#8bc34a"/>
+          <path d="M6 16 Q18 25 6 34" stroke="#f0f0f0" stroke-width="3" fill="none"/>
+          <path d="M44 16 Q32 25 44 34" stroke="#f0f0f0" stroke-width="3" fill="none"/>
+        </svg>`, 40, 40, i % 2 === 0));
+    }
+
+    // ── 3. Vehicles ───────────────────────────────────────────────────────────
+
+    // Cars (×3)
+    const carColors = ['#c0392b', '#1a4b8c', '#196f3d'];
+    for (let i = 0; i < 3; i++) {
+      frag.appendChild(makeEl('flow-animal', `
+        <svg viewBox="0 0 80 44" xmlns="http://www.w3.org/2000/svg">
+          <!-- Body -->
+          <rect x="4" y="18" width="72" height="20" rx="4" fill="${carColors[i]}"/>
+          <!-- Cabin -->
+          <path d="M18 18 Q22 6 38 6 L52 6 Q68 6 62 18 Z" fill="${carColors[i]}"/>
+          <!-- Windows -->
+          <path d="M22 16 Q24 8 36 8 L50 8 Q60 8 58 16 Z" fill="#b8d4e8" opacity="0.85"/>
+          <line x1="40" y1="8" x2="40" y2="16" stroke="#7a9eb8" stroke-width="1.5"/>
+          <!-- Wheels -->
+          <circle cx="18" cy="38" r="7" fill="#1a1a2e"/>
+          <circle cx="18" cy="38" r="4" fill="#5a5a6e"/>
+          <circle cx="62" cy="38" r="7" fill="#1a1a2e"/>
+          <circle cx="62" cy="38" r="4" fill="#5a5a6e"/>
+          <!-- Headlight -->
+          <rect x="70" y="22" width="6" height="4" rx="2" fill="#f4cd65"/>
+          <!-- Taillight -->
+          <rect x="4" y="22" width="5" height="4" rx="2" fill="#c0392b"/>
+        </svg>`, 72, 40, i % 2 === 0, 0));
+    }
+
+    // Buses (×3)
+    const busColors = ['#e8b820', '#2471a3', '#196f3d'];
+    for (let i = 0; i < 3; i++) {
+      frag.appendChild(makeEl('flow-animal', `
+        <svg viewBox="0 0 90 50" xmlns="http://www.w3.org/2000/svg">
+          <!-- Body -->
+          <rect x="2" y="8" width="86" height="34" rx="5" fill="${busColors[i]}"/>
+          <!-- Roof -->
+          <rect x="4" y="6" width="82" height="6" rx="3" fill="${busColors[i]}"/>
+          <!-- Windows row -->
+          <rect x="10" y="12" width="12" height="10" rx="2" fill="#b8d4e8" opacity="0.85"/>
+          <rect x="26" y="12" width="12" height="10" rx="2" fill="#b8d4e8" opacity="0.85"/>
+          <rect x="42" y="12" width="12" height="10" rx="2" fill="#b8d4e8" opacity="0.85"/>
+          <rect x="58" y="12" width="12" height="10" rx="2" fill="#b8d4e8" opacity="0.85"/>
+          <!-- Door -->
+          <rect x="72" y="14" width="10" height="16" rx="2" fill="${busColors[i]}"/>
+          <line x1="77" y1="14" x2="77" y2="30" stroke="#0d1b2e" stroke-width="1.2"/>
+          <!-- Stripe -->
+          <rect x="2" y="24" width="86" height="4" rx="0" fill="#0d1b2e" opacity="0.25"/>
+          <!-- Wheels -->
+          <circle cx="18" cy="44" r="7" fill="#1a1a2e"/>
+          <circle cx="18" cy="44" r="4" fill="#5a5a6e"/>
+          <circle cx="72" cy="44" r="7" fill="#1a1a2e"/>
+          <circle cx="72" cy="44" r="4" fill="#5a5a6e"/>
+        </svg>`, 80, 46, i % 2 === 0, 0));
+    }
+
+    // Bikes (×4)
+    const bikeColors = ['#c0392b', '#1a4b8c', '#196f3d', '#7d6608'];
+    for (let i = 0; i < 4; i++) {
+      frag.appendChild(makeEl('flow-animal', `
+        <svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">
+          <!-- Rear wheel -->
+          <circle cx="12" cy="28" r="11" fill="none" stroke="#1a1a2e" stroke-width="3"/>
+          <circle cx="12" cy="28" r="5" fill="none" stroke="#5a5a6e" stroke-width="2"/>
+          <!-- Spokes rear -->
+          <line x1="12" y1="17" x2="12" y2="39" stroke="#5a5a6e" stroke-width="1.2"/>
+          <line x1="1" y1="28" x2="23" y2="28" stroke="#5a5a6e" stroke-width="1.2"/>
+          <!-- Front wheel -->
+          <circle cx="48" cy="28" r="11" fill="none" stroke="#1a1a2e" stroke-width="3"/>
+          <circle cx="48" cy="28" r="5" fill="none" stroke="#5a5a6e" stroke-width="2"/>
+          <!-- Spokes front -->
+          <line x1="48" y1="17" x2="48" y2="39" stroke="#5a5a6e" stroke-width="1.2"/>
+          <line x1="37" y1="28" x2="59" y2="28" stroke="#5a5a6e" stroke-width="1.2"/>
+          <!-- Frame -->
+          <path d="M12 28 L26 12 L38 28 L12 28 Z" fill="none" stroke="${bikeColors[i]}" stroke-width="2.5"/>
+          <path d="M38 28 L48 28" fill="none" stroke="${bikeColors[i]}" stroke-width="2.5"/>
+          <path d="M26 12 L48 22" fill="none" stroke="${bikeColors[i]}" stroke-width="2.5"/>
+          <!-- Seat -->
+          <path d="M22 8 L30 8" stroke="#1a1a2e" stroke-width="3" stroke-linecap="round"/>
+          <line x1="26" y1="8" x2="26" y2="12" stroke="${bikeColors[i]}" stroke-width="2"/>
+          <!-- Handlebar -->
+          <line x1="48" y1="22" x2="48" y2="16" stroke="${bikeColors[i]}" stroke-width="2"/>
+          <path d="M44 14 L52 14" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- Pedal -->
+          <circle cx="30" cy="26" r="3" fill="${bikeColors[i]}"/>
+        </svg>`, 52, 36, i % 2 === 0, 0));
+    }
+
+    // ── 4. Whiteboards (×2) ───────────────────────────────────────────────────
+    for (let i = 0; i < 2; i++) {
+      const eq = i === 0
+        ? `<text x="8" y="28" font-size="9" fill="#1a4b8c" font-family="monospace">2 + 3 = 5</text>
+           <text x="8" y="40" font-size="8" fill="#196f3d" font-family="monospace">A B C D</text>`
+        : `<text x="8" y="28" font-size="9" fill="#c0392b" font-family="monospace">5 × 4 = 20</text>
+           <text x="8" y="40" font-size="8" fill="#7d6608" font-family="monospace">Hello!</text>`;
+      frag.appendChild(makeEl('flow-animal', `
+        <svg viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg">
+          <!-- Board -->
+          <rect x="2" y="4" width="76" height="50" rx="3" fill="#f5f5f0" stroke="#2d2d2d" stroke-width="2.5"/>
+          <!-- Frame top -->
+          <rect x="2" y="4" width="76" height="6" rx="3" fill="#4a3520"/>
+          <!-- Equations -->
+          ${eq}
+          <!-- Tray at bottom -->
+          <rect x="2" y="50" width="76" height="5" rx="2" fill="#4a3520"/>
+          <!-- Legs -->
+          <line x1="15" y1="54" x2="12" y2="60" stroke="#4a3520" stroke-width="3" stroke-linecap="round"/>
+          <line x1="65" y1="54" x2="68" y2="60" stroke="#4a3520" stroke-width="3" stroke-linecap="round"/>
+        </svg>`, 68, 52, i % 2 === 0, 5));
+    }
+
+    // ── 5. LOTS of English Words ──────────────────────────────────────────────
+    const englishWords = [
+      'run', 'jump', 'play', 'learn', 'read', 'write', 'math', 'science',
+      'music', 'art', 'sport', 'team', 'game', 'win', 'goal', 'fast',
+      'strong', 'smart', 'brave', 'fun', 'school', 'friends', 'books',
+      'class', 'teach', 'think', 'dream', 'grow', 'laugh', 'sing',
+      'explore', 'create', 'imagine', 'build', 'share', 'shine', 'star',
+      'sky', 'world', 'nature', 'wonder', 'magic', 'happy', 'bright',
+      'color', 'rainbow', 'treasure', 'adventure', 'discover', 'believe'
+    ];
+    const wordColors5 = [
+      '#8a5a1e', '#7b241c', '#1b4f72', '#5b2c6f', '#196f3d',
+      '#283747', '#78281f', '#0e6655', '#1a4b8c', '#7d6608'
+    ];
+    const fontChoices5 = [
+      "'Fredoka', sans-serif",
+      "'Kalam', cursive",
+      "'DM Sans', sans-serif",
+      "'Space Grotesk', sans-serif",
+      "Georgia, serif"
+    ];
+    const sizeChoices5 = ['12px', '14px', '17px', '20px', '24px', '28px'];
+
+    for (let i = 0; i < 42; i++) {
+      const span = document.createElement('span');
+      span.className = 'flow-word';
+      span.textContent = englishWords[i % englishWords.length];
+      const onLeft = i % 2 === 0;
+      const posX = onLeft ? (7 + Math.random() * 36) : (57 + Math.random() * 36);
+      const posY = 16 + Math.random() * 66;
+      const { dur, delay } = rdd();
+      const dx = (Math.random() * 90 - 45).toFixed(0);
+      const dy = (-(85 + Math.random() * 130)).toFixed(0);
+      const dz = (70 + Math.random() * 140).toFixed(0);
+      const rotStart = (Math.random() * 16 - 8).toFixed(1);
+      const rotEnd   = (Math.random() * 32 - 16).toFixed(1);
+      span.style.left       = `${posX.toFixed(1)}%`;
+      span.style.top        = `${posY.toFixed(1)}%`;
+      span.style.fontFamily = fontChoices5[Math.floor(Math.random() * fontChoices5.length)];
+      span.style.fontSize   = sizeChoices5[Math.floor(Math.random() * sizeChoices5.length)];
+      span.style.color      = wordColors5[Math.floor(Math.random() * wordColors5.length)];
+      span.style.setProperty('--dx', `${dx}px`);
+      span.style.setProperty('--dy', `${dy}px`);
+      span.style.setProperty('--dz', `${dz}px`);
+      span.style.setProperty('--rot-start', `${rotStart}deg`);
+      span.style.setProperty('--rot-end',   `${rotEnd}deg`);
+      span.style.setProperty('--dur',   `${dur}s`);
+      span.style.setProperty('--delay', `${delay}s`);
+      frag.appendChild(span);
+    }
+
+    flowingElementsLayer.appendChild(frag);
+  }
+
+  // ==========================================================================
   // 3. Web Audio Sintetizado
   // ==========================================================================
   function getAudioContext() {
@@ -1035,7 +1428,7 @@
     // Erupção de elementos mágicos que fluem para fora das páginas 1 e 2
     scheduleTimer(() => {
       triggerPage1And2Flow(currentPairIsA);
-    }, timings.animStart * 1000);
+    }, timings.animStart0 * 1000);
 
     const page1 = book ? book.querySelector('.page-1') : null;
     const page2 = book ? book.querySelector('.page-2') : null;
@@ -1082,6 +1475,11 @@
         }, flipMs);
       }
     }, tPage2);
+
+    // Erupção de elementos mágicos das páginas 5 e 6
+    scheduleTimer(() => {
+      triggerPage5And6Flow();
+    }, tPage2 + timings.animStart * 1000);
 
     // Folha 3 vira
     scheduleTimer(() => {
