@@ -1,7 +1,7 @@
 import * as T from 'three';
 import { OrbitControls } from '../../../../../assets/vendor/three/OrbitControls.js';
-import { createWorkshopAssets, ANGLES } from './modelos.mjs?v=puzzles-json-5';
-import { SIDES, total, balanceTilt, valuesForSide } from './logica.mjs?v=puzzles-json-5';
+import { createWorkshopAssets, ANGLES } from './modelos.mjs?v=puzzles-json-6';
+import { SIDES, total, balanceTilt, valuesForSide } from './logica.mjs?v=puzzles-json-6';
 import { createBoxEffects } from './efeitos.mjs';
 import { createBoxControls } from './controles-caixa.mjs';
 import { MECHANISMS } from './mecanismos.mjs';
