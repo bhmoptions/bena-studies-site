@@ -16,9 +16,7 @@ const art = {
 };
 document.querySelector('#app').innerHTML = `
 <header class="site-header"><div class="header wrap"><a class="brand" href="${base}index.html" aria-label="Bena Studies, início"><span class="brand-icon">b<span>✦</span></span><span>Bena<span class="brand-light">Studies</span></span></a><button class="login" data-login>Entrar <span>↗</span></button></div></header>
-<main><section class="hero wrap"><div class="hero-copy"><div class="eyebrow"><span></span>${t.label}</div><h1>${t.title}</h1><p>${t.desc}</p><a class="primary" href="#materias">${t.cta}<span>→</span></a><div class="hero-foot"><span class="mini-faces">☺ ☻ ☺</span><span>${t.tag}</span></div></div>${art[contentDesign]}</section>
-<section id="materias" class="subjects wrap"><div class="section-heading"><div><div class="eyebrow">SEU MAPA DE DESCOBERTAS</div><h2>${t.section}</h2></div><span class="grade">${serie?.nome || 'Série ainda sem conteúdo'}</span></div><div class="subject-grid">${materias.map((m,i)=>`<button class="subject subject-${i}" data-subject="${i}"><span class="subject-top"><span class="subject-icon">${m.simbolo}</span><span class="subject-number">0${i+1} / ${design==='espaco'?'PLANETA':'EXPLORAR'}</span></span><h3>${m.nome}</h3><p>${m.descricao}</p><span class="subject-bottom">${m.temas.map(x=>x.nome).join(' • ')}<span class="arrow">↗</span></span></button>`).join('') || '<p>Os conteúdos desta série chegarão em breve.</p>'}</div></section>
-</main>
+<main></main>
 <dialog id="modal"><button class="close" aria-label="Fechar">×</button><div id="modal-content"></div></dialog>`;
 const modal = document.querySelector('#modal');
 const content = document.querySelector('#modal-content');
