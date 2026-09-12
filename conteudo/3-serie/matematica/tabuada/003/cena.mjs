@@ -16,7 +16,7 @@ export function createScene(host,config,callbacks,reducedMotion=false) {
   renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
   renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.23;
-  renderer.domElement.setAttribute('aria-label','Oficina 3D. Arraste o fundo para girar, os frascos para colocar ou retirar, e as engrenagens para conferir. Os controles da caixa também recebem foco com Tab.');
+  renderer.domElement.setAttribute('aria-label','Oficina 3D. Arraste o fundo para girar, use Shift + arraste ou arraste com o botão direito para deslocar, os frascos para colocar ou retirar, e as engrenagens para conferir. Os controles da caixa também recebem foco com Tab.');
   renderer.domElement.tabIndex=0;host.append(renderer.domElement);
   const scene=new T.Scene();scene.background=new T.Color('#293b3c');scene.fog=new T.Fog('#293b3c',23,55);
   const env=assets.texture(assets.canvas(1024,512,(ctx,w,h)=>{
@@ -199,9 +199,13 @@ export function createScene(host,config,callbacks,reducedMotion=false) {
     const delta=clamp(event.deltaY,-120,120);
     zoom(Math.exp(delta*.0015*controls.zoomSpeed));
   },true);
+  on(renderer.domElement,'contextmenu',event=>{
+    // The right mouse button is reserved for panning inside the 3D scene.
+    event.preventDefault();event.stopImmediatePropagation();
+  },true);
   on(renderer.domElement,'pointerdown',event=>{
-    if(event.button!==0)return;
-    if(event.shiftKey){
+    if(event.button!==0&&event.button!==2)return;
+    if(event.button===2||event.shiftKey){
       event.preventDefault();event.stopImmediatePropagation();focusTween=null;down=null;controls.enabled=false;
       panning={x:event.clientX,y:event.clientY};renderer.domElement.setPointerCapture?.(event.pointerId);renderer.domElement.style.cursor='grabbing';return;
     }

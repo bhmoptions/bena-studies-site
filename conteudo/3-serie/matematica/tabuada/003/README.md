@@ -47,7 +47,7 @@ O mascote compartilhado mantém o feedback pedagógico aprovado.
 O quarto acerto abre a tampa e revela o pergaminho com a pontuação.
 
 Arraste o fundo para orbitar, role para aproximar ou use os botões de câmera.
-Segure **Shift** enquanto arrasta para deslocar o enquadramento sobre a mesa;
+Segure **Shift** enquanto arrasta ou arraste com o botão direito para deslocar o enquadramento sobre a mesa;
 as quatro setas ao lado dos controles fazem o mesmo para mouse, toque e teclado.
 Ao aproximar, a câmera sobe levemente e desloca o foco para a balança ativa,
 mantendo os frascos da prateleira frontal no enquadramento. **Centralizar**

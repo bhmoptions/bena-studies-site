@@ -26,7 +26,7 @@ export function start(container, voltar) {
         <section class="scene-panel" aria-label="Mesa da oficina">
           <div class="scene-top"><span class="scene-caption">Explore a caixa</span><span class="progress-label" aria-live="polite">0 de 4 mecanismos abertos</span></div>
           <div class="scene-host"></div>
-          <div class="scene-bottom"><span>Arraste o fundo para girar · Shift + arraste para deslocar · role para aproximar</span>
+          <div class="scene-bottom"><span>Arraste o fundo para girar · Shift + arraste ou botão direito + arraste para deslocar · role para aproximar</span>
           <div class="camera-buttons"><div class="camera-pan-buttons" aria-label="Deslocar visão"><button type="button" data-action="pan-up" aria-label="Deslocar visão para cima">↑</button><button type="button" data-action="pan-left" aria-label="Deslocar visão para a esquerda">←</button><button type="button" data-action="pan-down" aria-label="Deslocar visão para baixo">↓</button><button type="button" data-action="pan-right" aria-label="Deslocar visão para a direita">→</button></div><button type="button" data-action="orbit-left" aria-label="Girar câmera para a esquerda">↶</button><button type="button" data-action="orbit-right" aria-label="Girar câmera para a direita">↷</button><button type="button" data-action="zoom-in" aria-label="Aproximar câmera">+</button><button type="button" data-action="zoom-out" aria-label="Afastar câmera">−</button><button type="button" data-action="focus" aria-label="Voltar à vista da balança selecionada">Centralizar</button></div></div>
           <p class="toast" role="status" aria-live="polite"></p>
         </section>
@@ -48,7 +48,7 @@ export function start(container, voltar) {
               <h3>Como explorar o cenário</h3>
               <ul>
                 <li><strong>Arraste o fundo</strong> para girar o cenário.</li>
-                <li><strong>Segure Shift e arraste</strong> para mover o cenário.</li>
+                <li><strong>Segure Shift e arraste, ou arraste com o botão direito</strong> para mover o cenário.</li>
                 <li><strong>Role a rodinha do mouse</strong> para aproximar ou afastar a visão.</li>
               </ul>
             </div>
