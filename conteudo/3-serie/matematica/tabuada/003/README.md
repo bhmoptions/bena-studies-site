@@ -33,6 +33,11 @@ não enviam resposta. Cada gesto envia no máximo uma resposta.
 Perto do eixo, um arraste lateral também gira a engrenagem, para facilitar o uso.
 As áreas de toque acompanham a projeção e a posição real dos objetos.
 
+O painel lateral apresenta a missão da rodada e o botão **ⓘ Instruções** abre
+o guia completo em uma janela acessível. Em telas grandes, esse painel fica
+um pouco mais largo para acomodar a mensagem sem apertar os controles; em
+telas pequenas, ele acompanha o layout de uma coluna.
+
 Nas três balanças de ponteiro, forme grupos iguais até alcançar a marca.
 Na roxa, os pratos precisam de totais iguais com tipos diferentes de frasco.
 Cada mecanismo tem sua dica em um bilhete físico à direita da balança, na cor
