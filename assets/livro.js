@@ -10,11 +10,6 @@
   const bookWrap = document.getElementById('bookWrap');
   const book = document.getElementById('magicBook');
   const instructionCallout = document.getElementById('instructionCallout');
-  const openControls = document.getElementById('openControls');
-  const btnReplay = document.getElementById('btnReplay');
-  const btnClose = document.getElementById('btnClose');
-  const soundToggle = document.getElementById('soundToggle');
-  const soundIcon = document.getElementById('soundIcon');
 
   // Dialog & Modal
   const gameDialog = document.getElementById('game-dialog');
@@ -37,9 +32,9 @@
   let coverFilesCache = null;
 
   // ==========================================================================
-  // 1. Configurações de Tempos & Painel de Testes
+  // 1. Configurações de Tempos (Definitivas)
   // ==========================================================================
-  const defaultTimings = {
+  const timings = {
     coverDuration: 1.5,
     pauseCover: 0.3,
     flipDuration: 1.5,
@@ -51,186 +46,11 @@
     animDuration: 1.8
   };
 
-  let timings = { ...defaultTimings };
-
-  // Carrega preferências salvas do localStorage
-  try {
-    const saved = localStorage.getItem('bena_book_timings');
-    if (saved) {
-      timings = Object.assign({}, defaultTimings, JSON.parse(saved));
-      // Se estava com o padrão anterior de 3s, atualiza para o novo padrão de 1.5s
-      if (timings.coverDuration === 3.0) {
-        timings.coverDuration = 1.5;
-        saveTimings();
-      }
-    }
-  } catch (e) {}
-
   function applyTimingsToCSS() {
     document.documentElement.style.setProperty('--cover-duration', `${timings.coverDuration}s`);
     document.documentElement.style.setProperty('--flip-duration', `${timings.flipDuration}s`);
   }
-
-  function saveTimings() {
-    try {
-      localStorage.setItem('bena_book_timings', JSON.stringify(timings));
-    } catch (e) {}
-  }
-
-  // Elementos do Painel de Tempos
-  const timingPanel = document.getElementById('timingPanel');
-  const timingHeader = document.getElementById('timingHeader');
-  const timingToggle = document.getElementById('timingToggle');
-  const sliderCoverDur = document.getElementById('sliderCoverDur');
-  const valCoverDur = document.getElementById('valCoverDur');
-  const sliderPauseCover = document.getElementById('sliderPauseCover');
-  const valPauseCover = document.getElementById('valPauseCover');
-  const sliderFlipDur = document.getElementById('sliderFlipDur');
-  const valFlipDur = document.getElementById('valFlipDur');
-  const sliderSheetInterval = document.getElementById('sliderSheetInterval');
-  const valSheetInterval = document.getElementById('valSheetInterval');
-  const sliderEndPause = document.getElementById('sliderEndPause');
-  const valEndPause = document.getElementById('valEndPause');
-  const sliderAnimStart0 = document.getElementById('sliderAnimStart0');
-  const valAnimStart0 = document.getElementById('valAnimStart0');
-  const sliderAnimDuration0 = document.getElementById('sliderAnimDuration0');
-  const valAnimDuration0 = document.getElementById('valAnimDuration0');
-  const sliderAnimStart = document.getElementById('sliderAnimStart');
-  const valAnimStart = document.getElementById('valAnimStart');
-  const sliderAnimDuration = document.getElementById('sliderAnimDuration');
-  const valAnimDuration = document.getElementById('valAnimDuration');
-  const btnTestAnimation = document.getElementById('btnTestAnimation');
-  const btnResetTimings = document.getElementById('btnResetTimings');
-
-  function updateTimingUI() {
-    if (sliderCoverDur) sliderCoverDur.value = timings.coverDuration;
-    if (valCoverDur) valCoverDur.textContent = `${Number(timings.coverDuration).toFixed(1)}s`;
-
-    if (sliderPauseCover) sliderPauseCover.value = timings.pauseCover;
-    if (valPauseCover) valPauseCover.textContent = `${Number(timings.pauseCover).toFixed(1)}s`;
-
-    if (sliderFlipDur) sliderFlipDur.value = timings.flipDuration;
-    if (valFlipDur) valFlipDur.textContent = `${Number(timings.flipDuration).toFixed(1)}s`;
-
-    if (sliderSheetInterval) sliderSheetInterval.value = timings.sheetInterval;
-    if (valSheetInterval) valSheetInterval.textContent = `${Number(timings.sheetInterval).toFixed(1)}s`;
-
-    if (sliderEndPause) sliderEndPause.value = timings.endPause;
-    if (valEndPause) valEndPause.textContent = `${Number(timings.endPause).toFixed(1)}s`;
-
-    if (sliderAnimStart0) sliderAnimStart0.value = timings.animStart0;
-    if (valAnimStart0) valAnimStart0.textContent = `${Number(timings.animStart0).toFixed(2)}s`;
-
-    if (sliderAnimDuration0) sliderAnimDuration0.value = timings.animDuration0;
-    if (valAnimDuration0) valAnimDuration0.textContent = `${Number(timings.animDuration0).toFixed(2)}s`;
-
-    if (sliderAnimStart) sliderAnimStart.value = timings.animStart;
-    if (valAnimStart) valAnimStart.textContent = `${Number(timings.animStart).toFixed(2)}s`;
-
-    if (sliderAnimDuration) sliderAnimDuration.value = timings.animDuration;
-    if (valAnimDuration) valAnimDuration.textContent = `${Number(timings.animDuration).toFixed(2)}s`;
-
-    applyTimingsToCSS();
-  }
-
-  if (sliderCoverDur) {
-    sliderCoverDur.addEventListener('input', (e) => {
-      timings.coverDuration = parseFloat(e.target.value);
-      if (valCoverDur) valCoverDur.textContent = `${timings.coverDuration.toFixed(1)}s`;
-      applyTimingsToCSS();
-      saveTimings();
-    });
-  }
-
-  if (sliderPauseCover) {
-    sliderPauseCover.addEventListener('input', (e) => {
-      timings.pauseCover = parseFloat(e.target.value);
-      if (valPauseCover) valPauseCover.textContent = `${timings.pauseCover.toFixed(1)}s`;
-      saveTimings();
-    });
-  }
-
-  if (sliderFlipDur) {
-    sliderFlipDur.addEventListener('input', (e) => {
-      timings.flipDuration = parseFloat(e.target.value);
-      if (valFlipDur) valFlipDur.textContent = `${timings.flipDuration.toFixed(1)}s`;
-      applyTimingsToCSS();
-      saveTimings();
-    });
-  }
-
-  if (sliderSheetInterval) {
-    sliderSheetInterval.addEventListener('input', (e) => {
-      timings.sheetInterval = parseFloat(e.target.value);
-      if (valSheetInterval) valSheetInterval.textContent = `${timings.sheetInterval.toFixed(1)}s`;
-      saveTimings();
-    });
-  }
-
-  if (sliderEndPause) {
-    sliderEndPause.addEventListener('input', (e) => {
-      timings.endPause = parseFloat(e.target.value);
-      if (valEndPause) valEndPause.textContent = `${timings.endPause.toFixed(1)}s`;
-      saveTimings();
-    });
-  }
-
-  if (sliderAnimStart0) {
-    sliderAnimStart0.addEventListener('input', (e) => {
-      timings.animStart0 = parseFloat(e.target.value);
-      if (valAnimStart0) valAnimStart0.textContent = `${timings.animStart0.toFixed(2)}s`;
-      saveTimings();
-    });
-  }
-
-  if (sliderAnimDuration0) {
-    sliderAnimDuration0.addEventListener('input', (e) => {
-      timings.animDuration0 = parseFloat(e.target.value);
-      if (valAnimDuration0) valAnimDuration0.textContent = `${timings.animDuration0.toFixed(2)}s`;
-      saveTimings();
-    });
-  }
-
-  if (sliderAnimStart) {
-    sliderAnimStart.addEventListener('input', (e) => {
-      timings.animStart = parseFloat(e.target.value);
-      if (valAnimStart) valAnimStart.textContent = `${timings.animStart.toFixed(2)}s`;
-      saveTimings();
-    });
-  }
-
-  if (sliderAnimDuration) {
-    sliderAnimDuration.addEventListener('input', (e) => {
-      timings.animDuration = parseFloat(e.target.value);
-      if (valAnimDuration) valAnimDuration.textContent = `${timings.animDuration.toFixed(2)}s`;
-      saveTimings();
-    });
-  }
-
-  if (timingHeader) {
-    timingHeader.addEventListener('click', () => {
-      if (timingPanel) {
-        timingPanel.classList.toggle('is-collapsed');
-        if (timingToggle) {
-          timingToggle.textContent = timingPanel.classList.contains('is-collapsed') ? '▲' : '▼';
-        }
-      }
-    });
-  }
-
-  if (btnResetTimings) {
-    btnResetTimings.addEventListener('click', () => {
-      timings = { ...defaultTimings };
-      updateTimingUI();
-      saveTimings();
-    });
-  }
-
-  if (btnTestAnimation) {
-    btnTestAnimation.addEventListener('click', () => {
-      testAnimation();
-    });
-  }
+  applyTimingsToCSS();
 
   // ==========================================================================
   // 2. Seleção Aleatória de Imagens das Páginas e Capa
@@ -1523,7 +1343,6 @@
       bookWrap.classList.add('spread-revealed');
       isBookOpen = true;
       isAnimating = false;
-      openControls.classList.add('is-visible');
     }, tEnd);
   }
 
@@ -1534,7 +1353,6 @@
     clearPageTimers();
     clearFlowingElements();
     playRustleSound();
-    openControls.classList.remove('is-visible');
 
     bookWrap.classList.remove('spread-revealed');
 
@@ -1589,25 +1407,11 @@
     scheduleTimer(() => {
       isBookOpen = false;
       isAnimating = false;
-      instructionCallout.style.opacity = '1';
-      instructionCallout.style.transform = 'translateY(0)';
+      if (instructionCallout) {
+        instructionCallout.style.opacity = '1';
+        instructionCallout.style.transform = 'translateY(0)';
+      }
     }, closeTotalTime);
-  }
-
-  async function testAnimation() {
-    if (isAnimating) return;
-    clearFlowingElements();
-    if (isBookOpen) {
-      closeBook();
-      const closeWait = (1.25 + timings.coverDuration + 0.35) * 1000;
-      setTimeout(async () => {
-        await randomizeBookImages();
-        openBook();
-      }, closeWait);
-    } else {
-      await randomizeBookImages();
-      openBook();
-    }
   }
 
   // ==========================================================================
@@ -1625,16 +1429,6 @@
       if (!isBookOpen) openBook();
     });
   }
-
-  if (btnReplay) btnReplay.addEventListener('click', testAnimation);
-  if (btnClose) btnClose.addEventListener('click', closeBook);
-
-  // Alternador de Som
-  soundToggle.addEventListener('click', () => {
-    soundEnabled = !soundEnabled;
-    soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
-    soundToggle.setAttribute('aria-pressed', soundEnabled);
-  });
 
   // --- Destinos Selecionáveis & Navegação Real ---
   const subjectDestinations = {
@@ -1804,7 +1598,6 @@
   // ==========================================================================
   // 7. Inicialização
   // ==========================================================================
-  updateTimingUI();
   randomizeBookImages();
   updateSubjectBadges();
 

@@ -16,8 +16,113 @@ const art = {
 };
 document.querySelector('#app').innerHTML = `
 <header class="site-header"><div class="header wrap"><a class="brand" href="${base}index.html" aria-label="Bena Studies, início"><span class="brand-icon">b<span>✦</span></span><span>Bena<span class="brand-light">Studies</span></span></a><button class="login" data-login>Entrar <span>↗</span></button></div></header>
-<main></main>
-<dialog id="modal"><button class="close" aria-label="Fechar">×</button><div id="modal-content"></div></dialog>`;
+<main class="main-stage">
+  <div class="ambient-halo"></div>
+  <div class="book-wrap is-closed" id="bookWrap">
+    <div class="book" id="magicBook" role="button" aria-label="Abrir o Livro de Descobertas" tabindex="0">
+      <div class="book-base"></div>
+      <div class="book-edges-right"></div>
+      <div class="book-edges-bottom"></div>
+      <div class="book-spine"></div>
+
+      <div class="open-spread-right">
+        <div class="final-spread-right"></div>
+        <div class="book-gutter"></div>
+      </div>
+
+      <div class="turning-page page-3">
+        <div class="page-front"></div>
+        <div class="page-back">
+          <div class="final-spread-left"></div>
+        </div>
+      </div>
+
+      <div class="turning-page page-2">
+        <div class="page-front"></div>
+        <div class="page-back"></div>
+      </div>
+
+      <div class="turning-page page-1">
+        <div class="page-front"></div>
+        <div class="page-back"></div>
+      </div>
+
+      <div class="book-cover">
+        <div class="book-cover-front">
+          <div class="cover-sheen"></div>
+          <div class="flutter-corner" aria-hidden="true"></div>
+        </div>
+        <div class="book-cover-back"></div>
+      </div>
+
+      <div class="flowing-elements-layer" id="flowingElementsLayer" aria-hidden="true"></div>
+
+      <div class="destinations-container">
+        <button class="destination-card dest-math" data-dest="matematica" title="Explorar Matemática">
+          <div class="destination-icon">×</div>
+          <div class="destination-info">
+            <span class="destination-title">Matemática</span>
+            <span class="destination-sub">Torre dos Números</span>
+            <span class="destination-badge badge-active">Disponível</span>
+          </div>
+        </button>
+
+        <button class="destination-card dest-port" data-dest="portugues" title="Explorar Português">
+          <div class="destination-icon">Aa</div>
+          <div class="destination-info">
+            <span class="destination-title">Português</span>
+            <span class="destination-sub">Vale das Letras</span>
+            <span class="destination-badge badge-soon">Em Breve</span>
+          </div>
+        </button>
+
+        <button class="destination-card dest-scie" data-dest="ciencias" title="Explorar Ciências">
+          <div class="destination-icon">🔬</div>
+          <div class="destination-info">
+            <span class="destination-title">Ciências</span>
+            <span class="destination-sub">Observatório</span>
+            <span class="destination-badge badge-soon">Em Breve</span>
+          </div>
+        </button>
+
+        <button class="destination-card dest-geog" data-dest="geografia" title="Explorar Geografia">
+          <div class="destination-icon">🌍</div>
+          <div class="destination-info">
+            <span class="destination-title">Geografia</span>
+            <span class="destination-sub">Exploradores</span>
+            <span class="destination-badge badge-soon">Em Breve</span>
+          </div>
+        </button>
+
+        <button class="destination-card dest-engl" data-dest="ingles" title="Explorar Inglês">
+          <div class="destination-icon">🇬🇧</div>
+          <div class="destination-info">
+            <span class="destination-title">Inglês</span>
+            <span class="destination-sub">Ponte de Idiomas</span>
+            <span class="destination-badge badge-soon">Em Breve</span>
+          </div>
+        </button>
+
+        <button class="destination-card dest-hist" data-dest="historia" title="Explorar História">
+          <div class="destination-icon">🏛️</div>
+          <div class="destination-info">
+            <span class="destination-title">História</span>
+            <span class="destination-sub">Templo do Tempo</span>
+            <span class="destination-badge badge-soon">Em Breve</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="instruction-callout" id="instructionCallout">
+    <div class="instruction-pill">
+      <span>✦</span> Toque no livro para abrir seu mundo de descobertas
+    </div>
+  </div>
+</main>
+<dialog id="modal"><button class="close" aria-label="Fechar">×</button><div id="modal-content"></div></dialog>
+<dialog id="game-dialog"><button class="dialog-close" id="dialogClose" aria-label="Fechar modal">×</button><div id="dialogContent"></div></dialog>`;
 const modal = document.querySelector('#modal');
 const content = document.querySelector('#modal-content');
 modal.querySelector('.close').onclick = () => modal.close();
