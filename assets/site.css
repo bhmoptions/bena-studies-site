@@ -183,3 +183,26 @@ dialog .timing-note { font-size: 12px; margin-top: 6px; }
   margin-bottom: 16px;
 }
 .auth-sair { color: var(--orange); }
+
+/* Campo com label a esquerda */
+.auth-field-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+.auth-field-row input {
+  flex: 1;
+  margin-top: 0;
+}
+.auth-field-label {
+  flex-shrink: 0;
+  width: 48px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: right;
+}
+

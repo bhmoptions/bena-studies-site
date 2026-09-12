@@ -324,10 +324,16 @@ function showEditarPerfilModal(user, perfil) {
   const escolaAtual = perfil?.escola || '';
   document.querySelector('#conta-body').innerHTML = `
     <form id="editar-perfil-form" class="auth-form">
-      <input type="text" id="novo-nome" value="${nomeAtual}" placeholder="Seu nome \u00fanico" autocomplete="off"
-             required minlength="2" maxlength="30">
-      <input type="text" id="nova-escola" value="${escolaAtual}" placeholder="Nome da sua escola" autocomplete="off"
-             required minlength="2" maxlength="80">
+      <div class="auth-field-row">
+        <label class="auth-field-label" for="novo-nome">Nome</label>
+        <input type="text" id="novo-nome" value="${nomeAtual}" placeholder="Seu nome \u00fanico" autocomplete="off"
+               required minlength="2" maxlength="30">
+      </div>
+      <div class="auth-field-row">
+        <label class="auth-field-label" for="nova-escola">Escola</label>
+        <input type="text" id="nova-escola" value="${escolaAtual}" placeholder="Nome da sua escola" autocomplete="off"
+               required minlength="2" maxlength="80">
+      </div>
       <p class="auth-error" id="perfil-edit-error" role="alert" hidden></p>
       <button type="submit" class="primary">Salvar altera\u00e7\u00f5es <span>\u2192</span></button>
     </form>
