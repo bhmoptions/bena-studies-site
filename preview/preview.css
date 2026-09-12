@@ -1,0 +1,262 @@
+/* Somente as propostas usam estes estilos. Paleta e cabeçalho vêm de assets/site.css. */
+#app { display: flex; flex-direction: column; min-height: 100svh; }
+.preview-main {
+  --scene-ease: cubic-bezier(.22, .68, 0, 1.02);
+  background: radial-gradient(ellipse at 50% 45%, color-mix(in srgb, var(--paper) 94%, transparent) 15%, color-mix(in srgb, var(--paper) 70%, transparent) 100%);
+  overflow: clip;
+  flex: 1;
+  display: flex;
+}
+.experience { position: relative; width: min(1320px, 100%); margin-inline: auto; min-height: calc(100svh - 151px); }
+.experience-copy { position: relative; z-index: 2; }
+.experience-kicker { color: var(--yellow); font-family: var(--body); font-size: 10px; font-weight: 600; letter-spacing: 2.6px; line-height: 1.8; }
+body[data-concept] .experience h1 { font-family: var(--display); font-size: clamp(42px, 4.6vw, 66px); font-weight: 400; letter-spacing: -2.3px; line-height: 1.18; margin: 23px 0 20px; }
+body[data-concept] .experience h1 em { color: var(--accent); text-decoration: none; }
+.experience-description { color: var(--muted); font-size: 15px; line-height: 1.9; }
+.experience-cta { display: inline-flex; justify-content: center; align-items: center; gap: 30px; min-height: 53px; padding: 14px 24px; border-radius: 5px; background: var(--accent); color: var(--accent-ink); font-family: var(--body); font-size: 14px; font-weight: 700; transition: transform .25s, box-shadow .25s; }
+.experience-cta > span:last-child { font-size: 21px; font-weight: 400; }
+.experience-cta:hover { transform: translateY(-3px); box-shadow: 0 7px 22px color-mix(in srgb, var(--accent) 12%, transparent); }
+.preview-tools { min-height: 73px; padding: 12px max(24px, calc((100% - 1200px) / 2)); display: flex; gap: 25px; align-items: center; justify-content: space-between; background: var(--paper); border-top: 1px solid var(--line); position: relative; z-index: 5; }
+.preview-tools-label { color: var(--muted); font-size: 9px; letter-spacing: 1.8px; white-space: nowrap; }
+.preview-tools nav { display: flex; align-items: center; gap: 7px; }
+.preview-tools nav a { display: flex; align-items: center; gap: 9px; padding: 11px 16px; border: 1px solid transparent; border-radius: 4px; color: var(--muted); font-size: 12px; transition: color .2s, border-color .2s; }
+.preview-tools nav a[aria-current] { color: var(--ink); background: var(--soft); border-color: var(--line); }
+.preview-tools nav a:hover { color: var(--accent); }
+.concept-index { color: var(--accent); font-size: 9px; opacity: .8; }
+.motion-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; padding: 5px 0 5px 10px; background: transparent; color: var(--muted); font-size: 10px; white-space: nowrap; }
+.motion-toggle > span:first-child { font-size: 16px; }
+.motion-toggle:hover { color: var(--ink); }
+.motion-toggle:disabled { cursor: default; }
+.preview-motion-paused .preview-main *, .preview-motion-paused .preview-main *::before, .preview-motion-paused .preview-main *::after,
+.preview-inactive .preview-main *, .preview-inactive .preview-main *::before, .preview-inactive .preview-main *::after { animation-play-state: paused !important; }
+.preview-motion-paused .book-discovery, .preview-motion-paused .constellation-node { animation: none !important; }
+
+/* 01 · Um livro de capa dura, com uma única abertura que revela a navegação. */
+.book-experience { display: grid; grid-template-columns: .9fr 1.1fr; align-items: center; gap: 12px; padding: 45px 60px 68px; }
+.book-copy { padding-bottom: 16px; }
+.book-copy .experience-description { max-width: 342px; }
+.book-copy .experience-cta { margin-top: 31px; }
+.book-stage { height: 515px; position: relative; isolation: isolate; }
+.book-aura { position: absolute; inset: 0 -50px -25px; background: radial-gradient(ellipse at 51% 54%, color-mix(in srgb, var(--yellow) 9%, transparent), transparent 65%); transition: opacity 1s; }
+.book-object { position: absolute; width: 242px; height: 328px; left: calc(50% - 106px); top: 71px; transform: perspective(1300px) rotateX(15deg) rotateY(-18deg) rotateZ(-9deg); transform-style: preserve-3d; transition: transform 1.25s var(--scene-ease), left 1.25s var(--scene-ease), top 1.25s var(--scene-ease); }
+.book-object::after { content: ''; position: absolute; z-index: -2; left: 9%; right: -12%; height: 50px; bottom: -34px; background: var(--shadow); border-radius: 50%; filter: blur(22px); opacity: .9; transform: translateZ(-25px); }
+.book-object { animation: book-breathe 7s ease-in-out infinite; }
+.book-back { position: absolute; inset: 0 -5px -6px 0; border: 1px solid var(--ruled-line); border-radius: 3px 12px 12px 4px; background: var(--white); box-shadow: 3px 5px 0 var(--shadow), 7px 12px 25px color-mix(in srgb, var(--shadow) 65%, transparent); transform: translateZ(-17px); }
+.book-pages { position: absolute; inset: 4px -1px 0 8px; border-radius: 0 7px 7px 0; color: var(--accent-ink); background: repeating-linear-gradient(to bottom, var(--ink) 0 2px, color-mix(in srgb, var(--ink) 72%, var(--yellow)) 2px 3px); box-shadow: inset 15px 0 20px color-mix(in srgb, var(--shadow) 24%, transparent), 3px 5px 0 color-mix(in srgb, var(--ink) 65%, var(--yellow)); transform: translateZ(-8px); }
+.page-drawing { display: block; height: 100%; padding: 96px 25px 30px; text-align: center; background: linear-gradient(90deg, color-mix(in srgb, var(--ink) 65%, var(--yellow)), var(--ink) 12%, var(--ink) 95%, color-mix(in srgb, var(--ink) 80%, var(--yellow))); border-radius: inherit; font-family: var(--display); font-size: 50px; }
+.page-drawing small { display: block; margin-top: 15px; font-size: 19px; line-height: 1.6; }
+.book-cover { position: absolute; inset: 0; padding: 0; display: block; transform-style: preserve-3d; transform-origin: 2px center; border-radius: 3px 10px 10px 3px; background: transparent; transition: transform 1.35s var(--scene-ease); z-index: 3; }
+.book-face, .book-inside { position: absolute; inset: 0; border-radius: inherit; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+.book-face { display: flex; flex-direction: column; align-items: center; color: var(--yellow); background: radial-gradient(ellipse at 90% 5%, color-mix(in srgb, var(--blue) 17%, var(--white)), transparent 65%), repeating-linear-gradient(85deg, transparent 0 2px, color-mix(in srgb, var(--ink) 2%, transparent) 2px 3px), var(--white); box-shadow: inset 3px 0 4px color-mix(in srgb, var(--ink) 9%, transparent), inset 12px 0 10px color-mix(in srgb, var(--shadow) 70%, transparent), inset 16px 0 0 color-mix(in srgb, var(--shadow) 35%, transparent), inset 17px 0 0 color-mix(in srgb, var(--yellow) 18%, transparent), 1px 0 2px var(--shadow); border: 1px solid color-mix(in srgb, var(--yellow) 28%, var(--white)); transform: translateZ(1px); }
+.cover-border { position: absolute; inset: 14px 13px 14px 27px; border: 1px solid color-mix(in srgb, var(--yellow) 35%, transparent); border-radius: 1px 5px 5px 1px; }
+.cover-border::before, .cover-border::after { content: '✧'; position: absolute; bottom: -8px; font-size: 13px; line-height: 1; background: var(--white); }
+.cover-border::before { left: 10px; }.cover-border::after { right: 10px; }
+.cover-edition { margin: 32px 0 0 12px; font-family: var(--body); font-size: 8px; font-weight: 600; letter-spacing: 3px; }
+.cover-compass { position: relative; display: grid; place-items: center; width: 84px; height: 84px; margin: 19px 0 12px 13px; }
+.cover-compass svg { width: 58px; height: 58px; }
+.star-inner { fill: var(--ink); }
+.cover-compass i { position: absolute; inset: 3px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--yellow) 42%, transparent); }
+.cover-compass i:last-child { inset: 10px; border-style: dashed; opacity: .6; }
+.cover-title { font-family: var(--display); font-size: 32px; line-height: 1.02; font-weight: 400; margin-left: 12px; text-shadow: 1px 2px 1px var(--shadow); }
+.cover-title b { font-weight: 400; color: var(--ink); }
+.cover-bottom { font-family: var(--body); font-size: 6px; letter-spacing: 1.9px; margin-top: 23px; margin-left: 12px; }
+.book-inside { display: grid; place-content: center; padding: 30px; color: var(--accent-ink); background: linear-gradient(90deg, var(--ink) 80%, color-mix(in srgb, var(--ink) 72%, var(--yellow))); transform: rotateY(180deg); border: 6px solid var(--white); font-family: var(--display); font-size: 18px; line-height: 1.6; }
+.book-inside b { margin-top: 20px; color: var(--highlight); font-size: 27px; font-weight: 400; }
+.book-ribbon { position: absolute; width: 19px; height: 66px; right: 31px; bottom: -33px; background: var(--accent); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%); transform: translateZ(-12px); }
+.book-cover:hover { transform: rotateY(-14deg); }
+.book-invitation { position: absolute; top: 456px; width: 100%; text-align: center; color: var(--muted); font-family: var(--display); font-size: 16px; transform: rotate(-3deg); transition: opacity .4s; }
+.book-world { position: absolute; z-index: 4; width: 470px; height: 325px; max-width: 100%; left: 50%; top: -13px; transform: translate(-50%, 140px) scale(.3); transform-origin: 50% 100%; opacity: 0; pointer-events: none; transition: opacity .5s, transform 1.2s var(--scene-ease); }
+.world-orbits { position: absolute; inset: 0; width: 100%; height: 100%; stroke: var(--yellow); stroke-width: .7; opacity: .5; }
+.world-orbits circle { fill: var(--yellow); }
+.world-planet { width: 93px; height: 93px; position: absolute; left: 52%; top: 27px; border-radius: 50%; background: radial-gradient(circle at 26% 22%, var(--ink), var(--blue) 22%, color-mix(in srgb, var(--blue) 45%, var(--white)) 75%); box-shadow: inset -14px -8px 24px color-mix(in srgb, var(--shadow) 60%, transparent), 0 0 35px color-mix(in srgb, var(--blue) 15%, transparent); animation: world-float 6s ease-in-out infinite; }
+.world-planet i { position: absolute; inset: 27px -24px; border: 6px solid var(--yellow); border-top-color: color-mix(in srgb, var(--yellow) 35%, transparent); border-radius: 50%; transform: rotate(-29deg); }
+.world-letter { position: absolute; left: 15%; top: 69px; font-family: var(--display); font-size: 66px; color: var(--pink); transform: rotate(-15deg); text-shadow: 3px 5px 0 var(--shadow); }
+.world-number { position: absolute; right: 9%; top: 125px; font-family: var(--display); font-size: 63px; color: var(--accent); transform: rotate(14deg); }
+.world-spark { position: absolute; font-size: 33px; color: var(--yellow); animation: light-breathe 5s ease-in-out infinite; }
+.world-spark-one { left: 40%; top: 2px; }.world-spark-two { left: 7%; top: 200px; font-size: 20px; }
+.world-plant { position: absolute; width: 97px; height: 131px; left: 42%; bottom: 6px; stroke: var(--blue); stroke-width: 2; transform: rotate(10deg); }
+.world-plant path:not(:first-child) { fill: color-mix(in srgb, var(--blue) 22%, var(--white)); }
+.is-revealed .book-object { left: calc(50% + 9px); top: 176px; transform: perspective(1300px) rotateX(35deg) rotateY(0) rotateZ(6deg) scale(.79); animation: none; }
+.is-revealed .book-cover { transform: rotateY(-165deg); }
+.is-revealed .book-world { opacity: 1; transform: translate(-50%, 0) scale(1); transition-delay: .2s; }
+.is-revealed .book-invitation { opacity: 0; }
+.book-discoveries { position: absolute; top: 467px; left: -10px; right: -10px; display: flex; align-items: center; justify-content: center; gap: 20px; }
+.book-discoveries[hidden], .star-discoveries[hidden] { display: none; }
+.book-discovery { display: flex; gap: 9px; align-items: center; text-align: left; padding: 7px 0; background: transparent; font-size: 12px; animation: discovery-appear .65s var(--scene-ease) both; animation-delay: calc(.18s + var(--order) * .1s); }
+.book-discovery .discovery-symbol { color: var(--yellow); font-family: var(--display); font-size: 27px; }
+.book-discovery small { display: block; color: var(--muted); font-size: 9px; margin-top: 5px; }
+.book-discovery:hover { color: var(--accent); }
+
+/* 02 · Uma cena acolhedora, animada como um pequeno teatro de papel. */
+.classroom-experience { display: flex; flex-direction: column; align-items: center; padding: 32px 25px 26px; text-align: center; }
+.classroom-copy { flex: 0 0 auto; }
+body[data-concept] .classroom-experience h1 { font-size: clamp(38px, 4.2vw, 59px); margin: 14px 0 10px; }
+.classroom-scene { position: relative; width: min(960px, 88vw); height: clamp(280px, 36vh, 385px); margin: -5px 0 0; }
+.classroom-image-wrap { position: absolute; inset: -5px -12px -58px; overflow: hidden; mask-image: radial-gradient(ellipse 66% 56% at 50% 48%, var(--shadow) 59%, transparent 98%); }
+.classroom-image { width: 100%; height: 100%; object-fit: cover; object-position: 50% 49%; animation: classroom-breathe 12s ease-in-out infinite alternate; }
+.classroom-light { position: absolute; left: 39%; top: 51%; width: 15%; height: 25%; border-radius: 50%; background: radial-gradient(ellipse, color-mix(in srgb, var(--yellow) 14%, transparent), transparent 72%); mix-blend-mode: screen; animation: light-breathe 5s ease-in-out infinite; pointer-events: none; }
+.classroom-motes { position: absolute; inset: 0; pointer-events: none; }
+.classroom-motes i { position: absolute; left: 41%; top: 56%; width: 3px; height: 3px; border-radius: 50%; background: var(--yellow); box-shadow: 0 0 9px var(--yellow); animation: mote-rise 6s ease-out infinite; }
+.classroom-motes i:nth-child(2) { left: 51%; top: 44%; animation-delay: -3s; }.classroom-motes i:nth-child(3) { left: 47%; top: 61%; animation-delay: -1s; }.classroom-motes i:nth-child(4) { left: 62%; top: 33%; animation-delay: -4s; }.classroom-motes i:nth-child(5) { left: 25%; top: 46%; animation-delay: -2s; }
+.classroom-orbit { position: absolute; width: 110px; height: 80px; left: 39%; top: 0; stroke: var(--yellow); opacity: .3; transform: rotate(-10deg); pointer-events: none; }
+.classroom-orbit circle { fill: var(--yellow); }
+.classroom-action { position: relative; z-index: 2; margin-top: 40px; }
+.classroom-action .experience-cta { min-width: 209px; }
+.classroom-action p { color: var(--muted); font-size: 10px; margin-top: 14px; }
+
+/* 03 · Um mapa celeste: os detalhes aparecem depois do primeiro gesto. */
+.constellation-experience { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 40px 24px 25px; }
+body[data-concept] .constellation-experience h1 { font-size: clamp(36px, 4.1vw, 58px); margin: 17px 0 12px; }
+.constellation-stage { position: relative; width: min(950px, 100%); height: 386px; margin-top: 6px; transition: transform .6s var(--scene-ease); }
+.constellation-stage::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 42%, color-mix(in srgb, var(--yellow) 7%, transparent), transparent 48%); }
+.starfield { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.starfield i { position: absolute; left: var(--x); top: var(--y); width: var(--size); height: var(--size); border-radius: 50%; background: var(--ink); opacity: .35; animation: starlight 7s ease-in-out infinite; animation-delay: var(--delay); }
+.celestial-map { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.sky-orbit { stroke: var(--yellow); stroke-width: .6; opacity: .14; }
+.inner-orbit { stroke-dasharray: 2 8; opacity: .25; }
+.distant-stars { stroke: var(--blue); stroke-width: .7; opacity: .3; }
+.distant-stars circle { fill: var(--blue); stroke: none; }
+.constellation-connections { stroke: var(--yellow); stroke-width: 1; opacity: 0; transition: opacity .6s; }
+.constellation-connections path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.25s var(--scene-ease); }
+.constellation-connections circle { fill: var(--yellow); }
+.star-trigger { position: absolute; left: 50%; top: 41%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 21px; background: transparent; padding: 16px; min-width: 240px; transition: top .8s, transform .8s; }
+.central-star { display: grid; place-items: center; width: 103px; height: 103px; position: relative; color: var(--yellow); }
+.central-star::before { content: ''; position: absolute; inset: -20px; border: 1px solid color-mix(in srgb, var(--yellow) 14%, transparent); border-radius: 50%; }
+.central-star::after { content: ''; position: absolute; inset: -48px; background: radial-gradient(circle, color-mix(in srgb, var(--yellow) 12%, transparent), transparent 65%); border-radius: 50%; }
+.central-star svg { width: 100%; height: 100%; filter: drop-shadow(0 0 15px color-mix(in srgb, var(--yellow) 30%, transparent)); animation: central-star-breathe 5s ease-in-out infinite; }
+.star-trigger > span:last-child { font-size: 12px; color: var(--ink); white-space: nowrap; }
+.star-trigger b { color: var(--accent); margin-left: 6px; font-weight: 400; }
+.star-trigger:hover .central-star { color: var(--ink); }
+.constellation-caption { color: var(--muted); font-family: var(--display); font-size: 17px; margin-top: -9px; }
+.star-discoveries { position: absolute; inset: 0; pointer-events: none; }
+.constellation-node { position: absolute; display: flex; flex-direction: column; align-items: center; width: 150px; min-height: 123px; padding: 4px 10px 11px; background: color-mix(in srgb, var(--paper) 92%, transparent); border-radius: 50%; transform: translate(-50%, -50%); animation: node-appear .8s var(--scene-ease) both; }
+.constellation-node { pointer-events: auto; }
+.constellation-node-0 { left: 23.3%; top: 43%; color: var(--accent); animation-delay: .15s; }
+.constellation-node-1 { left: 78%; top: 33%; color: var(--blue); animation-delay: .3s; }
+.constellation-node-2 { left: 56.5%; top: 78%; color: var(--pink); animation-delay: .45s; }
+.node-art { display: block; width: 80px; height: 65px; transition: transform .25s; }
+.node-art svg { width: 100%; height: 100%; stroke: currentColor; stroke-width: 1.2; }
+.node-art circle { fill: currentColor; }
+.constellation-node-1 .node-art circle:first-child { fill: color-mix(in srgb, var(--blue) 7%, transparent); }
+.node-name { color: var(--ink); font-size: 14px; font-weight: 500; }
+.constellation-node small { display: block; color: var(--muted); font-size: 9px; margin-top: 6px; }
+.constellation-node:hover .node-art { transform: translateY(-5px) scale(1.08); }
+.constellation-node:hover .node-name { color: var(--accent); }
+.is-revealed .constellation-connections { opacity: .7; }
+.is-revealed .constellation-connections path { stroke-dashoffset: 0; }
+.is-revealed .star-trigger { top: 37%; transform: translate(-50%, -50%) scale(.64); }
+.is-revealed .star-trigger > span:last-child { font-size: 17px; }
+.has-selection .constellation-stage { transform: scale(1.045); }
+
+/* Navegação do catálogo; jogos e cálculos de pontuação não são reimplementados. */
+.discovery-dialog { width: min(590px, calc(100% - 32px)); max-height: min(85svh, 750px); padding: 40px; background: var(--paper); border: 1px solid var(--ruled-line); border-radius: 12px; color: var(--ink); box-shadow: 0 24px 100px color-mix(in srgb, var(--shadow) 80%, transparent); }
+.discovery-dialog::backdrop { background: color-mix(in srgb, var(--shadow) 72%, transparent); backdrop-filter: blur(9px); }
+.discovery-close { position: absolute; right: 12px; top: 10px; display: grid; place-items: center; width: 36px; height: 36px; font-size: 25px; background: transparent; color: var(--muted); border-radius: 50%; }
+.discovery-close:hover { color: var(--ink); background: var(--soft); }
+.discovery-dialog h2 { font-size: 34px; line-height: 1.25; margin: 16px 0 12px; }
+.discovery-dialog h2:focus { outline: none; }
+.discovery-dialog .experience-kicker { font-size: 9px; padding-right: 8px; }
+.discovery-description { color: var(--muted); font-size: 13px; line-height: 1.8; }
+.discovery-theme { margin-top: 29px; }
+.discovery-theme h3 { color: var(--yellow); font-family: var(--body); font-size: 11px; font-weight: 500; margin-bottom: 12px; }
+.discovery-game-list, .available-discoveries { display: grid; }
+.available-discoveries { margin-top: 22px; }
+.discovery-game { display: flex; align-items: center; justify-content: space-between; gap: 25px; padding: 18px 5px; border-top: 1px solid var(--line); background: transparent; text-align: left; transition: padding .2s; }
+.discovery-game > span:last-child { color: var(--accent); font-size: 23px; }
+.discovery-game strong { font-size: 14px; font-weight: 600; }
+.discovery-game small { display: block; font-size: 12px; color: var(--muted); line-height: 1.6; margin-top: 5px; }
+.discovery-game:hover { padding-inline: 12px 0; }
+.discovery-dialog .experience-cta { margin-top: 24px; font-size: 12px; }
+
+@keyframes world-float { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
+@keyframes book-breathe { 0%, 100% { translate: 0 0; } 50% { translate: 0 -9px; } }
+@keyframes light-breathe { 0%, 100% { opacity: .4; } 50% { opacity: .95; } }
+@keyframes discovery-appear { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes classroom-breathe { from { transform: scale(1); } to { transform: scale(1.025) translateY(-3px); } }
+@keyframes mote-rise { 0% { opacity: 0; transform: translate(0, 10px); } 25% { opacity: .65; } 100% { opacity: 0; transform: translate(16px, -45px); } }
+@keyframes starlight { 0%, 100% { opacity: .15; } 50% { opacity: .6; } }
+@keyframes central-star-breathe { 0%, 100% { transform: scale(.96) rotate(-5deg); } 50% { transform: scale(1.04) rotate(5deg); } }
+@keyframes node-appear { from { opacity: 0; margin-top: 14px; } to { opacity: 1; margin-top: 0; } }
+
+@media (min-height: 900px) and (min-width: 901px) {
+  .classroom-scene { height: clamp(350px, 39vh, 420px); margin-top: 10px; }
+  .constellation-experience { padding-top: 55px; }
+  .constellation-stage { height: 430px; margin-top: 20px; }
+}
+@media (min-width: 1600px) { .book-object { scale: 1.1; }.book-world { scale: 1.05; }.book-stage { margin-left: 15px; } }
+@media (max-width: 1100px) {
+  .book-experience { padding-inline: 36px; grid-template-columns: .85fr 1.15fr; gap: 0; }
+  body[data-concept] .book-experience h1 { font-size: 48px; }
+  .book-discoveries { gap: 13px; }.book-discovery { font-size: 11px; }
+  .preview-tools { padding-inline: 24px; gap: 15px; }
+  .preview-tools nav a { padding-inline: 12px; }
+}
+@media (max-width: 800px) {
+  .experience { min-height: calc(100svh - 151px); }
+  .book-experience { grid-template-columns: 1fr; text-align: center; padding: 36px 24px 35px; }
+  .book-copy { padding-bottom: 0; }
+  .book-copy .experience-description { max-width: 430px; margin-inline: auto; }
+  .book-copy .experience-cta { margin-top: 21px; }
+  body[data-concept] .book-experience h1 { font-size: 47px; margin-block: 15px 9px; }
+  .book-stage { width: min(530px, 100%); margin: 4px auto 0; height: 450px; }
+  .book-object { top: 42px; width: 219px; height: 298px; }
+  .cover-edition { margin-top: 28px; }.cover-compass { width: 72px; height: 72px; margin-top: 16px; }.cover-title { font-size: 30px; }.cover-bottom { margin-top: 20px; }
+  .book-invitation { top: 386px; }
+  .book-world { top: -6px; height: 282px; width: 421px; }
+  .is-revealed .book-object { top: 134px; }
+  .book-discoveries { top: 395px; }
+  .preview-tools-label { display: none; }.preview-tools { justify-content: center; gap: 22px; }
+  .classroom-experience { padding-top: 32px; }
+  .classroom-scene { width: 97vw; height: 365px; margin-top: 8px; }
+  .classroom-image-wrap { inset: -40px -9px -38px; }
+  .classroom-orbit { top: 5%; }
+  .classroom-action { margin-top: 5px; }
+  .constellation-stage { height: 370px; margin-top: 28px; }
+  .constellation-node { width: 125px; }
+  .constellation-node-0 { left: 19%; }.constellation-node-1 { left: 81%; }
+}
+@media (max-width: 550px) {
+  .experience { min-height: calc(100svh - 185px); }
+  .experience-kicker { font-size: 8px; letter-spacing: 1.9px; }
+  .experience-description { font-size: 13px; line-height: 1.75; }
+  .experience-cta { min-height: 49px; font-size: 13px; padding: 12px 21px; gap: 25px; }
+  .book-experience { padding: 27px 22px 23px; }
+  body[data-concept] .book-experience h1 { font-size: clamp(39px, 10.4vw, 49px); letter-spacing: -1.9px; }
+  .book-copy .experience-description { max-width: 310px; }
+  .book-copy .experience-cta { margin-top: 17px; }
+  .book-stage { height: 397px; margin-top: 0; }
+  .book-object { width: 191px; height: 258px; left: calc(50% - 86px); top: 31px; }
+  .cover-edition { font-size: 6px; letter-spacing: 2px; margin-top: 24px; }.cover-compass { width: 62px; height: 62px; margin: 15px 0 10px 13px; }.cover-compass svg { width: 43px; height: 43px; }.cover-title { font-size: 26px; }.cover-bottom { font-size: 5px; letter-spacing: 1.5px; margin-top: 18px; }
+  .book-invitation { top: 325px; font-size: 14px; }
+  .is-revealed .book-object { left: calc(50% - 4px); top: 108px; transform: perspective(1300px) rotateX(35deg) rotateY(0) rotateZ(6deg) scale(.68); }
+  .book-world { top: -2px; height: 249px; width: 340px; }
+  .world-planet { width: 69px; height: 69px; top: 30px; }.world-planet i { inset: 20px -21px; border-width: 4px; }.world-letter { top: 63px; font-size: 47px; left: 12%; }.world-number { top: 117px; font-size: 45px; }.world-plant { width: 72px; height: 95px; }.world-spark-one { font-size: 22px; top: 5px; }.world-spark-two { top: 150px; }
+  .page-drawing { padding: 64px 15px 20px; font-size: 33px; }.page-drawing small { font-size: 16px; }.book-inside { padding: 13px; font-size: 14px; }
+  .book-discoveries { top: 336px; left: -8px; right: -8px; gap: 16px; }.book-discovery { font-size: 11px; flex-direction: column; text-align: center; gap: 0; padding-block: 2px; min-width: 82px; }.book-discovery .discovery-symbol { font-size: 25px; line-height: 1.15; }.book-discovery small { font-size: 8px; margin-top: 4px; }
+  .preview-tools { flex-direction: column; gap: 3px; padding: 11px 12px 7px; min-height: 104px; }
+  .preview-tools nav { width: 100%; justify-content: center; gap: 5px; }.preview-tools nav a { gap: 6px; padding: 11px 12px; font-size: 11px; }.concept-index { font-size: 8px; }
+  .motion-toggle { min-height: 34px; font-size: 9px; padding: 0 10px; }
+  .classroom-experience { padding: 29px 21px 28px; }
+  body[data-concept] .classroom-experience h1 { font-size: clamp(32px, 8.8vw, 44px); letter-spacing: -1.6px; line-height: 1.22; margin-block: 17px 13px; }
+  .classroom-copy .experience-description { max-width: 286px; margin: auto; }
+  .classroom-scene { width: 117vw; height: 300px; margin-top: 0; flex-shrink: 0; }
+  .classroom-image-wrap { inset: 0 -17px -10px; mask-image: radial-gradient(ellipse 68% 57% at 50% 50%, var(--shadow) 58%, transparent 98%); }
+  .classroom-image { object-fit: cover; object-position: 50% 50%; }
+  .classroom-orbit { width: 74px; height: 54px; left: 39%; top: 15%; }
+  .classroom-action { margin-top: -5px; }.classroom-action p { max-width: 230px; line-height: 1.7; margin: 12px auto 0; }
+  .constellation-experience { padding: 31px 20px 28px; }
+  body[data-concept] .constellation-experience h1 { font-size: clamp(32px, 8.6vw, 44px); letter-spacing: -1.5px; line-height: 1.22; margin-block: 16px 13px; }
+  .constellation-copy .experience-description { max-width: 291px; margin: auto; }
+  .constellation-stage { width: calc(100% + 18px); height: 337px; margin-top: 17px; }
+  .celestial-map { width: 180%; left: -40%; }
+  .central-star { width: 86px; height: 86px; }.star-trigger { top: 46%; gap: 24px; }.star-trigger > span:last-child { font-size: 11px; }
+  .constellation-node { width: 104px; min-height: 98px; padding: 3px 5px 9px; }
+  .constellation-node-0 { left: 16%; top: 44%; }.constellation-node-1 { left: 84%; top: 31%; }.constellation-node-2 { left: 54%; top: 82%; }
+  .node-art { width: 59px; height: 48px; }.node-name { font-size: 12px; }.constellation-node small { font-size: 8px; }
+  .is-revealed .star-trigger { top: 41%; transform: translate(-50%, -50%) scale(.54); }.is-revealed .star-trigger > span:last-child { font-size: 16px; }
+  .constellation-caption { font-size: 14px; margin-top: 4px; }
+  .discovery-dialog { padding: 34px 24px 25px; }.discovery-dialog h2 { font-size: 29px; }.discovery-game strong { font-size: 13px; }.discovery-game small { font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .preview-main *, .preview-main *::before, .preview-main *::after { animation: none !important; transition: none !important; }
+}
