@@ -246,6 +246,7 @@ function showSignupModal(onSuccess) {
 
 /* VIEW: Escolher nome e escola (primeira vez ou perfil incompleto) */
 function showPerfilModal(user, perfilExistente, onSuccess) {
+  if (!modal || !content) return;
   const nomePadrao   = perfilExistente?.nome || '';
   const escolaPadrao = perfilExistente?.escola || '';
   content.innerHTML = `
@@ -262,7 +263,9 @@ function showPerfilModal(user, perfilExistente, onSuccess) {
       <button type="submit" class="primary">Salvar e entrar <span>\u2192</span></button>
     </form>
   `;
-  modal.showModal();
+  if (!modal.open) {
+    try { modal.showModal(); } catch (e) { console.warn('[BENA_AUTH] Erro ao abrir modal:', e); }
+  }
   const inputFoco = nomePadrao ? document.querySelector('#auth-escola') : document.querySelector('#auth-nome');
   inputFoco?.focus();
 
@@ -396,14 +399,16 @@ onAuthStateChanged(auth, async (user) => {
     const perfil = snap.exists() ? snap.data() : null;
     const nome   = perfil?.nome || null;
     const escola = perfil?.escola || null;
+    console.log('[BENA_AUTH] Usuario logado:', { email: user.email, nome, escola });
     updateLoginBtn(user, nome);
     if (nome && escola) {
       window.BENA_AUTH.sincronizarAluno(nome, escola);
-    } else if (modal && !modal.open) {
-      // Usuario existente sem nome ou escola cadastrados
+    } else if (modal) {
+      console.log('[BENA_AUTH] Perfil incompleto (falta escola ou nome), solicitando preenchimento...');
       showPerfilModal(user, perfil);
     }
   } else {
+    console.log('[BENA_AUTH] Nenhum usuario logado');
     updateLoginBtn(null, null);
   }
 });
