@@ -206,3 +206,80 @@ dialog .timing-note { font-size: 12px; margin-top: 6px; }
   text-align: right;
 }
 
+/* Destino global do Ranking: fica sempre imediatamente antes da marca. */
+.header-destinations,
+.game-header-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(12px, 1.8vw, 24px);
+}
+
+.ranking-nav,
+.game-template-header .game-ranking-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 8px 13px;
+  border: 1px solid #5b574e;
+  border-radius: 999px;
+  color: #f3ecdc;
+  background: #242b3c;
+  box-shadow: 2px 2px 0 #10131c;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  transition: transform .18s ease, border-color .18s ease, background-color .18s ease;
+}
+
+.ranking-nav svg,
+.game-template-header .game-ranking-link svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: #e9c675;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.ranking-nav:hover,
+.game-template-header .game-ranking-link:hover {
+  color: #f3ecdc;
+  border-color: #e9c675;
+  background: #303646;
+  transform: translateY(-2px) rotate(-1deg);
+}
+
+.game-template-header .game-header-tools {
+  flex-shrink: 0;
+}
+
+.game-template-header .game-brand {
+  color: #f3ecdc;
+  font-family: var(--display, Georgia), serif;
+  font-size: 22px;
+  white-space: nowrap;
+}
+
+.game-template-header .game-brand b { color: #d7b36a; }
+
+@media(max-width:700px) {
+  .header-destinations,
+  .game-header-tools { gap: 11px; }
+  .ranking-nav,
+  .game-template-header .game-ranking-link { min-height: 35px; padding: 8px 10px; }
+  .ranking-nav span,
+  .game-template-header .game-ranking-link span { display: none; }
+  .game-template-header .game-brand { font-size: 19px; }
+}
+
+@media(max-width:430px) {
+  .header .login { padding-inline: 12px; }
+  .header .login span { margin-left: 6px; }
+  .header .brand-icon { display: none; }
+  .header .brand { font-size: 21px; }
+  .game-template-header .game-brand { font-size: 17px; }
+}
+

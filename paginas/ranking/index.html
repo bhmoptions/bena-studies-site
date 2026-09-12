@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#191d29">
+  <title>Ranking • Bena Studies</title>
+  <link rel="icon" href="../../assets/images/favicon.svg">
+  <link rel="stylesheet" href="../../assets/site.css">
+  <link rel="stylesheet" href="ranking.css">
+</head>
+<body data-design="caderno-dark" class="ranking-page">
+  <header class="ranking-site-header">
+    <div class="ranking-header-inner">
+      <button class="login" data-login>Entrar <span>↗</span></button>
+      <div class="header-destinations">
+        <a class="ranking-nav" href="./" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8v4a4 4 0 0 1-8 0V3Z"></path><path d="M8 5H5v1a4 4 0 0 0 4 4M16 5h3v1a4 4 0 0 1-4 4M12 11v5M9 21h6M8 17h8"></path></svg><span>Ranking</span></a>
+        <a class="ranking-brand" href="../../index.html" aria-label="Bena Studies, início">Bena <span>Studies</span> <b>✦</b></a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="ranking-intro rank-wrap" aria-labelledby="ranking-title">
+      <div class="ranking-copy">
+        <p class="ranking-kicker"><span></span> QUADRO DE HONRA</p>
+        <h1 id="ranking-title">As conquistas<br>ganham <em>um lugar.</em></h1>
+        <p class="ranking-lede">Cada descoberta merece ser celebrada. Quando a próxima temporada começar, este mural vai mostrar o caminho que a turma percorreu.</p>
+        <div class="ranking-status" role="status"><span aria-hidden="true">✦</span><div><strong>Temporada em preparação</strong><small>O ranking oficial será publicado com regras iguais para toda a turma.</small></div></div>
+        <a class="ranking-cta" href="../../index.html"><span>Explorar os desafios</span><b aria-hidden="true">→</b></a>
+      </div>
+
+      <div class="podium-scene" aria-label="Ilustração de um pódio de três posições aguardando os primeiros resultados">
+        <p class="scene-note">aqui moram<br>os próximos<br>“eu consegui!”</p>
+        <div class="paper-flag">A turma faz<br>a história <b>✦</b></div>
+        <div class="rank-podium">
+          <div class="podium-step podium-second"><span>2º</span><small>espaço aberto</small></div>
+          <div class="podium-step podium-first"><i aria-hidden="true">✦</i><span>1º</span><small>espaço aberto</small></div>
+          <div class="podium-step podium-third"><span>3º</span><small>espaço aberto</small></div>
+        </div>
+        <span class="rank-spark spark-one" aria-hidden="true">✧</span>
+        <span class="rank-spark spark-two" aria-hidden="true">✦</span>
+        <span class="rank-tape" aria-hidden="true"></span>
+      </div>
+    </section>
+
+    <section class="ranking-board rank-wrap" aria-labelledby="board-title">
+      <div class="board-heading">
+        <div>
+          <p class="ranking-kicker"><span></span> COMO VAI FUNCIONAR</p>
+          <h2 id="board-title">Um mural que valoriza o aprender.</h2>
+        </div>
+        <p>O que vale por aqui não é correr: é descobrir, tentar e evoluir.</p>
+      </div>
+      <div class="ranking-principles">
+        <article class="principle-card principle-sun">
+          <span class="principle-icon" aria-hidden="true">✦</span>
+          <p class="principle-number">01</p>
+          <h3>Capricho na primeira tentativa</h3>
+          <p>Os acertos de primeira ajudam a contar uma história de atenção e prática.</p>
+        </article>
+        <article class="principle-card principle-blue">
+          <span class="principle-icon" aria-hidden="true">↗</span>
+          <p class="principle-number">02</p>
+          <h3>Novos desafios, novas conquistas</h3>
+          <p>Explorar atividades diferentes também mostra o tamanho da sua curiosidade.</p>
+        </article>
+        <article class="principle-card principle-pink">
+          <span class="principle-icon" aria-hidden="true">♥</span>
+          <p class="principle-number">03</p>
+          <h3>Uma temporada justa para todos</h3>
+          <p>As regras e os jogos são definidos antes de começar — assim toda a turma joga no mesmo campo.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="ranking-waiting rank-wrap" aria-labelledby="waiting-title">
+      <div class="waiting-stamp" aria-hidden="true"><span>PRONTA</span><small>para a<br>temporada</small></div>
+      <div>
+        <p class="ranking-kicker"><span></span> PRÓXIMO CAPÍTULO</p>
+        <h2 id="waiting-title">Por enquanto, o pódio está guardando seu lugar.</h2>
+      </div>
+      <p>Continue explorando e aprendendo. Quando a temporada for aberta pelo responsável, o quadro de honra vai aparecer aqui.</p>
+    </section>
+  </main>
+
+  <footer class="ranking-footer rank-wrap"><a href="../../index.html">Bena Studies <b>✦</b></a><small>Aprender também é celebrar cada passo.</small></footer>
+
+  <dialog id="modal" aria-label="Sua conta Bena Studies"><button class="close" type="button" aria-label="Fechar">×</button><div id="modal-content"></div></dialog>
+  <script src="../../config/site.js"></script>
+  <script src="ranking.js"></script>
+  <script type="module" src="../../assets/componentes/auth.js?v=escola-1"></script>
+</body>
+</html>
