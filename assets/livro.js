@@ -31,7 +31,180 @@
   let audioCtx = null;
   let pageFlipTimers = [];
 
-  // --- Web Audio Efeitos Sintetizados ---
+  // ==========================================================================
+  // 1. Configurações de Tempos & Painel de Testes
+  // ==========================================================================
+  const defaultTimings = {
+    coverDuration: 3.0,
+    pauseCover: 0.3,
+    flipDuration: 1.5,
+    sheetInterval: 0.3,
+    endPause: 0.1
+  };
+
+  let timings = { ...defaultTimings };
+
+  // Carrega preferências salvas do localStorage
+  try {
+    const saved = localStorage.getItem('bena_book_timings');
+    if (saved) {
+      timings = Object.assign({}, defaultTimings, JSON.parse(saved));
+    }
+  } catch (e) {}
+
+  function applyTimingsToCSS() {
+    document.documentElement.style.setProperty('--cover-duration', `${timings.coverDuration}s`);
+    document.documentElement.style.setProperty('--flip-duration', `${timings.flipDuration}s`);
+  }
+
+  function saveTimings() {
+    try {
+      localStorage.setItem('bena_book_timings', JSON.stringify(timings));
+    } catch (e) {}
+  }
+
+  // Elementos do Painel de Tempos
+  const timingPanel = document.getElementById('timingPanel');
+  const timingHeader = document.getElementById('timingHeader');
+  const timingToggle = document.getElementById('timingToggle');
+  const sliderCoverDur = document.getElementById('sliderCoverDur');
+  const valCoverDur = document.getElementById('valCoverDur');
+  const sliderPauseCover = document.getElementById('sliderPauseCover');
+  const valPauseCover = document.getElementById('valPauseCover');
+  const sliderFlipDur = document.getElementById('sliderFlipDur');
+  const valFlipDur = document.getElementById('valFlipDur');
+  const sliderSheetInterval = document.getElementById('sliderSheetInterval');
+  const valSheetInterval = document.getElementById('valSheetInterval');
+  const sliderEndPause = document.getElementById('sliderEndPause');
+  const valEndPause = document.getElementById('valEndPause');
+  const btnTestAnimation = document.getElementById('btnTestAnimation');
+  const btnResetTimings = document.getElementById('btnResetTimings');
+
+  function updateTimingUI() {
+    if (sliderCoverDur) sliderCoverDur.value = timings.coverDuration;
+    if (valCoverDur) valCoverDur.textContent = `${Number(timings.coverDuration).toFixed(1)}s`;
+
+    if (sliderPauseCover) sliderPauseCover.value = timings.pauseCover;
+    if (valPauseCover) valPauseCover.textContent = `${Number(timings.pauseCover).toFixed(1)}s`;
+
+    if (sliderFlipDur) sliderFlipDur.value = timings.flipDuration;
+    if (valFlipDur) valFlipDur.textContent = `${Number(timings.flipDuration).toFixed(1)}s`;
+
+    if (sliderSheetInterval) sliderSheetInterval.value = timings.sheetInterval;
+    if (valSheetInterval) valSheetInterval.textContent = `${Number(timings.sheetInterval).toFixed(1)}s`;
+
+    if (sliderEndPause) sliderEndPause.value = timings.endPause;
+    if (valEndPause) valEndPause.textContent = `${Number(timings.endPause).toFixed(1)}s`;
+
+    applyTimingsToCSS();
+  }
+
+  if (sliderCoverDur) {
+    sliderCoverDur.addEventListener('input', (e) => {
+      timings.coverDuration = parseFloat(e.target.value);
+      if (valCoverDur) valCoverDur.textContent = `${timings.coverDuration.toFixed(1)}s`;
+      applyTimingsToCSS();
+      saveTimings();
+    });
+  }
+
+  if (sliderPauseCover) {
+    sliderPauseCover.addEventListener('input', (e) => {
+      timings.pauseCover = parseFloat(e.target.value);
+      if (valPauseCover) valPauseCover.textContent = `${timings.pauseCover.toFixed(1)}s`;
+      saveTimings();
+    });
+  }
+
+  if (sliderFlipDur) {
+    sliderFlipDur.addEventListener('input', (e) => {
+      timings.flipDuration = parseFloat(e.target.value);
+      if (valFlipDur) valFlipDur.textContent = `${timings.flipDuration.toFixed(1)}s`;
+      applyTimingsToCSS();
+      saveTimings();
+    });
+  }
+
+  if (sliderSheetInterval) {
+    sliderSheetInterval.addEventListener('input', (e) => {
+      timings.sheetInterval = parseFloat(e.target.value);
+      if (valSheetInterval) valSheetInterval.textContent = `${timings.sheetInterval.toFixed(1)}s`;
+      saveTimings();
+    });
+  }
+
+  if (sliderEndPause) {
+    sliderEndPause.addEventListener('input', (e) => {
+      timings.endPause = parseFloat(e.target.value);
+      if (valEndPause) valEndPause.textContent = `${timings.endPause.toFixed(1)}s`;
+      saveTimings();
+    });
+  }
+
+  if (timingHeader) {
+    timingHeader.addEventListener('click', () => {
+      if (timingPanel) {
+        timingPanel.classList.toggle('is-collapsed');
+        if (timingToggle) {
+          timingToggle.textContent = timingPanel.classList.contains('is-collapsed') ? '▲' : '▼';
+        }
+      }
+    });
+  }
+
+  if (btnResetTimings) {
+    btnResetTimings.addEventListener('click', () => {
+      timings = { ...defaultTimings };
+      updateTimingUI();
+      saveTimings();
+    });
+  }
+
+  if (btnTestAnimation) {
+    btnTestAnimation.addEventListener('click', () => {
+      testAnimation();
+    });
+  }
+
+  // ==========================================================================
+  // 2. Seleção Aleatória de Imagens das Páginas e Capa
+  // ==========================================================================
+  function randomizeBookImages() {
+    const imgDir = `${base}assets/images/Landing Page/`;
+
+    // Par 1 e 2: Ambos padrão ou ambos variante 'A'
+    const usePairA = Math.random() < 0.5;
+    const page1File = usePairA ? 'Book Page 1A.png' : 'Book Page 1.png';
+    const page2File = usePairA ? 'Book Page 2A.png' : 'Book Page 2.png';
+
+    // Demais páginas e capa: Escolha individual 50/50
+    const coverFile = Math.random() < 0.5 ? 'CoverA.png' : 'Cover.jpg';
+    const page3File = Math.random() < 0.5 ? 'Book Page 3A.png' : 'Book Page 3.png';
+    const page4File = Math.random() < 0.5 ? 'Book Page 4A.png' : 'Book Page 4.png';
+    const page5File = Math.random() < 0.5 ? 'Book Page 5A.png' : 'Book Page 5.png';
+    const page6File = Math.random() < 0.5 ? 'Book Page 6A.png' : 'Book Page 6.png';
+
+    // Aplicação aos elementos correspondentes
+    const coverFront = book ? book.querySelector('.book-cover-front') : null;
+    const coverBack = book ? book.querySelector('.book-cover-back') : null;
+    const page1Front = book ? book.querySelector('.page-1 .page-front') : null;
+    const page1Back = book ? book.querySelector('.page-1 .page-back') : null;
+    const page2Front = book ? book.querySelector('.page-2 .page-front') : null;
+    const page2Back = book ? book.querySelector('.page-2 .page-back') : null;
+    const page3Front = book ? book.querySelector('.page-3 .page-front') : null;
+
+    if (coverFront) coverFront.style.backgroundImage = `url("${encodeURI(imgDir + coverFile)}")`;
+    if (coverBack) coverBack.style.backgroundImage = `url("${encodeURI(imgDir + page1File)}")`;
+    if (page1Front) page1Front.style.backgroundImage = `url("${encodeURI(imgDir + page2File)}")`;
+    if (page1Back) page1Back.style.backgroundImage = `url("${encodeURI(imgDir + page3File)}")`;
+    if (page2Front) page2Front.style.backgroundImage = `url("${encodeURI(imgDir + page4File)}")`;
+    if (page2Back) page2Back.style.backgroundImage = `url("${encodeURI(imgDir + page5File)}")`;
+    if (page3Front) page3Front.style.backgroundImage = `url("${encodeURI(imgDir + page6File)}")`;
+  }
+
+  // ==========================================================================
+  // 3. Web Audio Sintetizado
+  // ==========================================================================
   function getAudioContext() {
     if (!audioCtx) {
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -45,7 +218,6 @@
     return audioCtx;
   }
 
-  // Efeito sonoro de folhear páginas (Ruído filtrado suave)
   function playRustleSound() {
     if (!soundEnabled) return;
     try {
@@ -79,14 +251,13 @@
     } catch (e) {}
   }
 
-  // Efeito sonoro de carrilhão ascendente quando a última página se assenta
   function playChimeSequence() {
     if (!soundEnabled) return;
     try {
       const actx = getAudioContext();
       if (!actx) return;
 
-      const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51]; // C5, E5, G5, C6, E6
+      const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
       notes.forEach((freq, idx) => {
         const osc = actx.createOscillator();
         const gain = actx.createGain();
@@ -108,85 +279,9 @@
     } catch (e) {}
   }
 
-  // --- Sequência de Abertura do Livro ---
-  function openBook() {
-    if (isBookOpen || isAnimating) return;
-    isAnimating = true;
-
-    clearPageTimers();
-    playRustleSound();
-
-    // Oculta callout de instrução
-    instructionCallout.style.opacity = '0';
-    instructionCallout.style.transform = 'translateY(15px)';
-
-    // Oculta destinos até a última folha assentar
-    bookWrap.classList.remove('spread-revealed');
-
-    // 1. Capa se abre (Leva 3s)
-    bookWrap.classList.remove('is-closed');
-    bookWrap.classList.add('is-open');
-
-    const page1 = book.querySelector('.page-1');
-    const page2 = book.querySelector('.page-2');
-    const page3 = book.querySelector('.page-3');
-
-    [page1, page2, page3].forEach(p => {
-      if (p) {
-        p.classList.remove('is-flipped', 'is-flipping');
-        p.style.zIndex = '';
-      }
-    });
-
-    // t=3.3s: Folha 1 vira (Sheet 1)
-    // Mostra Página 2 virando e revelando Página 3 (Matemática) na esquerda e Página 4 (Ciências) na direita
-    scheduleTimer(() => {
-      playRustleSound();
-      if (page1) {
-        page1.classList.add('is-flipping');
-        page1.classList.add('is-flipped');
-        setTimeout(() => {
-          page1.classList.remove('is-flipping');
-        }, 1500);
-      }
-    }, 3300);
-
-    // t=5.1s: Folha 2 vira (Sheet 2)
-    // Revela Página 5 (História e Geografia) na esquerda e Página 6 (Inglês) na direita
-    scheduleTimer(() => {
-      playRustleSound();
-      if (page2) {
-        page2.classList.add('is-flipping');
-        page2.classList.add('is-flipped');
-        setTimeout(() => {
-          page2.classList.remove('is-flipping');
-        }, 1500);
-      }
-    }, 5100);
-
-    // t=6.9s: Folha 3 vira (Sheet 3)
-    // Revela no verso a metade esquerda do cenário final, encontrando a metade direita da base!
-    scheduleTimer(() => {
-      playRustleSound();
-      if (page3) {
-        page3.classList.add('is-flipping');
-        page3.classList.add('is-flipped');
-        setTimeout(() => {
-          page3.classList.remove('is-flipping');
-        }, 1500);
-      }
-    }, 6900);
-
-    // t=8.5s: Cenário assentado -> ativa destinos e sinfonia
-    scheduleTimer(() => {
-      playChimeSequence();
-      bookWrap.classList.add('spread-revealed');
-      isBookOpen = true;
-      isAnimating = false;
-      openControls.classList.add('is-visible');
-    }, 8500);
-  }
-
+  // ==========================================================================
+  // 4. Sequência Dinâmica de Abertura e Fechamento
+  // ==========================================================================
   function scheduleTimer(fn, delay) {
     const id = setTimeout(fn, delay);
     pageFlipTimers.push(id);
@@ -197,7 +292,85 @@
     pageFlipTimers = [];
   }
 
-  // Fechar o livro de volta ao estado de repouso
+  function openBook() {
+    if (isBookOpen || isAnimating) return;
+    isAnimating = true;
+
+    clearPageTimers();
+    playRustleSound();
+
+    instructionCallout.style.opacity = '0';
+    instructionCallout.style.transform = 'translateY(15px)';
+
+    bookWrap.classList.remove('spread-revealed');
+
+    // 1. Capa se abre (duração controlada via CSS e slider)
+    bookWrap.classList.remove('is-closed');
+    bookWrap.classList.add('is-open');
+
+    const page1 = book ? book.querySelector('.page-1') : null;
+    const page2 = book ? book.querySelector('.page-2') : null;
+    const page3 = book ? book.querySelector('.page-3') : null;
+
+    [page1, page2, page3].forEach(p => {
+      if (p) {
+        p.classList.remove('is-flipped', 'is-flipping');
+        p.style.zIndex = '';
+      }
+    });
+
+    const flipMs = timings.flipDuration * 1000;
+    const tPage1 = (timings.coverDuration + timings.pauseCover) * 1000;
+    const tPage2 = tPage1 + flipMs + (timings.sheetInterval * 1000);
+    const tPage3 = tPage2 + flipMs + (timings.sheetInterval * 1000);
+    const tEnd = tPage3 + flipMs + (timings.endPause * 1000);
+
+    // Folha 1 vira
+    scheduleTimer(() => {
+      playRustleSound();
+      if (page1) {
+        page1.classList.add('is-flipping');
+        page1.classList.add('is-flipped');
+        setTimeout(() => {
+          page1.classList.remove('is-flipping');
+        }, flipMs);
+      }
+    }, tPage1);
+
+    // Folha 2 vira
+    scheduleTimer(() => {
+      playRustleSound();
+      if (page2) {
+        page2.classList.add('is-flipping');
+        page2.classList.add('is-flipped');
+        setTimeout(() => {
+          page2.classList.remove('is-flipping');
+        }, flipMs);
+      }
+    }, tPage2);
+
+    // Folha 3 vira
+    scheduleTimer(() => {
+      playRustleSound();
+      if (page3) {
+        page3.classList.add('is-flipping');
+        page3.classList.add('is-flipped');
+        setTimeout(() => {
+          page3.classList.remove('is-flipping');
+        }, flipMs);
+      }
+    }, tPage3);
+
+    // Cenário assentado -> ativa destinos e sinfonia
+    scheduleTimer(() => {
+      playChimeSequence();
+      bookWrap.classList.add('spread-revealed');
+      isBookOpen = true;
+      isAnimating = false;
+      openControls.classList.add('is-visible');
+    }, tEnd);
+  }
+
   function closeBook() {
     if (!isBookOpen || isAnimating) return;
     isAnimating = true;
@@ -206,23 +379,24 @@
     playRustleSound();
     openControls.classList.remove('is-visible');
 
-    // Oculta os destinos
     bookWrap.classList.remove('spread-revealed');
 
-    const page1 = book.querySelector('.page-1');
-    const page2 = book.querySelector('.page-2');
-    const page3 = book.querySelector('.page-3');
+    const page1 = book ? book.querySelector('.page-1') : null;
+    const page2 = book ? book.querySelector('.page-2') : null;
+    const page3 = book ? book.querySelector('.page-3') : null;
 
-    // Folha 3 vira de volta para a direita
+    const flipMs = Math.min(1500, timings.flipDuration * 1000);
+
+    // Folha 3 volta para a direita
     if (page3) {
       page3.classList.add('is-flipping');
       page3.classList.remove('is-flipped');
       setTimeout(() => {
         page3.classList.remove('is-flipping');
-      }, 1500);
+      }, flipMs);
     }
 
-    // Folha 2 vira de volta para a direita
+    // Folha 2 volta para a direita
     scheduleTimer(() => {
       playRustleSound();
       if (page2) {
@@ -230,11 +404,11 @@
         page2.classList.remove('is-flipped');
         setTimeout(() => {
           page2.classList.remove('is-flipping');
-        }, 1500);
+        }, flipMs);
       }
     }, 380);
 
-    // Folha 1 vira de volta para a direita
+    // Folha 1 volta para a direita
     scheduleTimer(() => {
       playRustleSound();
       if (page1) {
@@ -242,44 +416,60 @@
         page1.classList.remove('is-flipped');
         setTimeout(() => {
           page1.classList.remove('is-flipping');
-        }, 1500);
+        }, flipMs);
       }
     }, 760);
 
     // Fecha a capa
+    const coverCloseDelay = 1250;
     scheduleTimer(() => {
       playRustleSound();
       bookWrap.classList.remove('is-open');
       bookWrap.classList.add('is-closed');
-    }, 1250);
+    }, coverCloseDelay);
 
+    const closeTotalTime = coverCloseDelay + (timings.coverDuration * 1000) + 300;
     scheduleTimer(() => {
       isBookOpen = false;
       isAnimating = false;
       instructionCallout.style.opacity = '1';
       instructionCallout.style.transform = 'translateY(0)';
-    }, 4300);
+    }, closeTotalTime);
   }
 
-  // Refolhear o livro (Replay da animação completa)
-  function replayBookAnimation() {
+  function testAnimation() {
     if (isAnimating) return;
-    closeBook();
-    scheduleTimer(openBook, 4500);
+    if (isBookOpen) {
+      closeBook();
+      const closeWait = (1.25 + timings.coverDuration + 0.35) * 1000;
+      setTimeout(() => {
+        randomizeBookImages();
+        openBook();
+      }, closeWait);
+    } else {
+      randomizeBookImages();
+      openBook();
+    }
   }
 
-  // --- Eventos de Abertura ---
-  book.addEventListener('click', (e) => {
-    if (isBookOpen) return;
-    openBook();
-  });
+  // ==========================================================================
+  // 5. Eventos do Livro & Controles
+  // ==========================================================================
+  if (book) {
+    book.addEventListener('click', () => {
+      if (isBookOpen) return;
+      openBook();
+    });
+  }
 
-  instructionCallout.addEventListener('click', () => {
-    if (!isBookOpen) openBook();
-  });
+  if (instructionCallout) {
+    instructionCallout.addEventListener('click', () => {
+      if (!isBookOpen) openBook();
+    });
+  }
 
-  btnReplay.addEventListener('click', replayBookAnimation);
-  btnClose.addEventListener('click', closeBook);
+  if (btnReplay) btnReplay.addEventListener('click', testAnimation);
+  if (btnClose) btnClose.addEventListener('click', closeBook);
 
   // Alternador de Som
   soundToggle.addEventListener('click', () => {
@@ -401,14 +591,63 @@
     gameDialog.showModal();
   }
 
-  dialogClose.addEventListener('click', () => {
-    gameDialog.close();
-  });
+  if (dialogClose) {
+    dialogClose.addEventListener('click', () => {
+      if (gameDialog) gameDialog.close();
+    });
+  }
 
-  gameDialog.addEventListener('click', (e) => {
-    if (e.target === gameDialog) {
-      gameDialog.close();
-    }
-  });
+  if (gameDialog) {
+    gameDialog.addEventListener('click', (e) => {
+      if (e.target === gameDialog) {
+        gameDialog.close();
+      }
+    });
+  }
+
+  // ==========================================================================
+  // 6. Badges Automáticos Conforme Conteúdo Disponível
+  // ==========================================================================
+  function updateSubjectBadges() {
+    const serieKey = window.BENA_CONFIG?.serieAtual || '3';
+    const serie = window.BENA_CONTEUDO?.[serieKey];
+    const activeMaterias = new Set(
+      (serie?.materias || [])
+        .filter(m => m.temas?.some(t => (t.jogos || []).length > 0))
+        .map(m => m.id)
+    );
+
+    document.querySelectorAll('.destination-card').forEach(card => {
+      const dest = card.dataset.dest;
+      const isAvailable = activeMaterias.has(dest);
+
+      if (subjectDestinations[dest]) {
+        subjectDestinations[dest].isPlayable = isAvailable;
+      }
+
+      let badge = card.querySelector('.destination-badge');
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'destination-badge';
+        const info = card.querySelector('.destination-info');
+        if (info) info.appendChild(badge);
+      }
+
+      if (isAvailable) {
+        badge.className = 'destination-badge badge-active';
+        badge.textContent = 'DISPONÍVEL';
+      } else {
+        badge.className = 'destination-badge badge-soon';
+        badge.textContent = 'EM BREVE';
+      }
+    });
+  }
+
+  // ==========================================================================
+  // 7. Inicialização
+  // ==========================================================================
+  updateTimingUI();
+  randomizeBookImages();
+  updateSubjectBadges();
 
 })();

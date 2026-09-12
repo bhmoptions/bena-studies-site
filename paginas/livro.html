@@ -76,14 +76,14 @@
           <div class="book-cover-back"></div>
         </div>
 
-        <!-- Destinos Selecionáveis de Navegação (Overlay sobre ambas as páginas abertas) -->
+        <!-- Destinos Selecionáveis de Navegação (Overlay de 4 colunas sobre ambas as páginas abertas) -->
         <div class="destinations-container">
           <button class="destination-card dest-math" data-dest="matematica" title="Explorar Matemática">
             <div class="destination-icon">×</div>
             <div class="destination-info">
               <span class="destination-title">Matemática</span>
               <span class="destination-sub">Torre dos Números</span>
-              <span class="badge-active">Disponível</span>
+              <span class="destination-badge badge-active">Disponível</span>
             </div>
           </button>
 
@@ -92,6 +92,7 @@
             <div class="destination-info">
               <span class="destination-title">Português</span>
               <span class="destination-sub">Vale das Letras</span>
+              <span class="destination-badge badge-soon">Em Breve</span>
             </div>
           </button>
 
@@ -100,6 +101,7 @@
             <div class="destination-info">
               <span class="destination-title">Ciências</span>
               <span class="destination-sub">Observatório</span>
+              <span class="destination-badge badge-soon">Em Breve</span>
             </div>
           </button>
 
@@ -108,6 +110,7 @@
             <div class="destination-info">
               <span class="destination-title">Geografia</span>
               <span class="destination-sub">Exploradores</span>
+              <span class="destination-badge badge-soon">Em Breve</span>
             </div>
           </button>
 
@@ -116,6 +119,7 @@
             <div class="destination-info">
               <span class="destination-title">Inglês</span>
               <span class="destination-sub">Ponte de Idiomas</span>
+              <span class="destination-badge badge-soon">Em Breve</span>
             </div>
           </button>
 
@@ -124,6 +128,7 @@
             <div class="destination-info">
               <span class="destination-title">História</span>
               <span class="destination-sub">Templo do Tempo</span>
+              <span class="destination-badge badge-soon">Em Breve</span>
             </div>
           </button>
         </div>
@@ -143,6 +148,55 @@
       <button class="ctrl-btn" id="btnClose"><span>✕</span> Fechar o livro</button>
     </div>
   </main>
+
+  <!-- Painel Flutuante de Ajuste de Tempos (Temporário para Testes) -->
+  <aside class="timing-panel" id="timingPanel" aria-label="Ajustes de tempo de animação">
+    <div class="timing-header" id="timingHeader">
+      <span class="timing-header-title">⏱️ Tempos do Livro (Testes)</span>
+      <button class="timing-toggle-btn" id="timingToggle" title="Minimizar/Expandir">▼</button>
+    </div>
+    <div class="timing-body">
+      <div class="timing-row">
+        <div class="timing-label-wrap">
+          <span class="timing-label">1. Abertura da Capa</span>
+          <span class="timing-val" id="valCoverDur">3.0s</span>
+        </div>
+        <input type="range" class="timing-slider" id="sliderCoverDur" min="0.5" max="6.0" step="0.1" value="3.0">
+      </div>
+      <div class="timing-row">
+        <div class="timing-label-wrap">
+          <span class="timing-label">2. Pausa após Capa</span>
+          <span class="timing-val" id="valPauseCover">0.3s</span>
+        </div>
+        <input type="range" class="timing-slider" id="sliderPauseCover" min="0.0" max="3.0" step="0.1" value="0.3">
+      </div>
+      <div class="timing-row">
+        <div class="timing-label-wrap">
+          <span class="timing-label">3. Giro de Cada Folha</span>
+          <span class="timing-val" id="valFlipDur">1.5s</span>
+        </div>
+        <input type="range" class="timing-slider" id="sliderFlipDur" min="0.3" max="4.0" step="0.1" value="1.5">
+      </div>
+      <div class="timing-row">
+        <div class="timing-label-wrap">
+          <span class="timing-label">4. Intervalo entre Folhas</span>
+          <span class="timing-val" id="valSheetInterval">0.3s</span>
+        </div>
+        <input type="range" class="timing-slider" id="sliderSheetInterval" min="0.0" max="3.0" step="0.1" value="0.3">
+      </div>
+      <div class="timing-row">
+        <div class="timing-label-wrap">
+          <span class="timing-label">5. Pausa Final (Botões)</span>
+          <span class="timing-val" id="valEndPause">0.1s</span>
+        </div>
+        <input type="range" class="timing-slider" id="sliderEndPause" min="0.0" max="2.0" step="0.1" value="0.1">
+      </div>
+      <div class="timing-actions">
+        <button class="timing-btn timing-btn-test" id="btnTestAnimation">▶ Testar Abertura</button>
+        <button class="timing-btn timing-btn-reset" id="btnResetTimings">↺ Padrão</button>
+      </div>
+    </div>
+  </aside>
 
   <!-- Modal Dialog de Jogos e Destinos -->
   <dialog id="game-dialog">
