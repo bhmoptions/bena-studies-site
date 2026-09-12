@@ -1281,7 +1281,7 @@
   }
 
   function accelerateOpening() {
-    if (!isAnimating || isBookOpen || currentSpeed >= 3) return;
+    if (!isAnimating || isBookOpen || currentSpeed >= 5) return;
 
     // Pula e remove imediatamente os elementos mágicos que fluem das páginas
     skipFlowingElements = true;
@@ -1291,13 +1291,16 @@
     const elapsedReal = now - animStartTime;
     const elapsedVirtual = elapsedReal * currentSpeed;
 
-    currentSpeed = 3;
+    currentSpeed = 5;
     animStartTime = now - (elapsedVirtual / currentSpeed);
 
     // Ajusta variáveis CSS e classe de aceleração
-    document.documentElement.style.setProperty('--cover-duration', `${timings.coverDuration / 3}s`);
-    document.documentElement.style.setProperty('--flip-duration', `${timings.flipDuration / 3}s`);
-    if (bookWrap) bookWrap.classList.add('is-speed-3x');
+    document.documentElement.style.setProperty('--cover-duration', `${timings.coverDuration / 5}s`);
+    document.documentElement.style.setProperty('--flip-duration', `${timings.flipDuration / 5}s`);
+    if (bookWrap) {
+      bookWrap.classList.remove('is-speed-3x');
+      bookWrap.classList.add('is-speed-5x');
+    }
 
     // Acelera Web Animations API ativas
     if (typeof document.getAnimations === 'function') {
@@ -1305,7 +1308,7 @@
         document.getAnimations().forEach(anim => {
           const target = anim.effect?.target;
           if (target && (target.closest?.('#magicBook') || target.closest?.('#bookWrap') || target.id === 'bookWrap' || target.id === 'magicBook')) {
-            anim.playbackRate = 3;
+            anim.playbackRate = 5;
           }
         });
       } catch (e) {}
@@ -1314,7 +1317,7 @@
     // Se houver folhas em pleno voo (is-flipping), acelera remoção do estado is-flipping
     const flippingPages = book ? book.querySelectorAll('.turning-page.is-flipping') : [];
     flippingPages.forEach(p => {
-      setTimeout(() => p.classList.remove('is-flipping'), (timings.flipDuration * 1000) / 3);
+      setTimeout(() => p.classList.remove('is-flipping'), (timings.flipDuration * 1000) / 5);
     });
 
     // Cancela qualquer passo futuro de erupção de elementos mágicos
@@ -1338,7 +1341,7 @@
 
     applyTimingsToCSS();
     if (bookWrap) {
-      bookWrap.classList.remove('is-speed-3x');
+      bookWrap.classList.remove('is-speed-5x', 'is-speed-3x');
       bookWrap.classList.remove('spread-revealed');
       bookWrap.classList.remove('is-closed');
       bookWrap.classList.add('is-open');
@@ -1436,7 +1439,7 @@
           playChimeSequence();
           if (bookWrap) {
             bookWrap.classList.add('spread-revealed');
-            bookWrap.classList.remove('is-speed-3x');
+            bookWrap.classList.remove('is-speed-5x', 'is-speed-3x');
           }
           currentSpeed = 1;
           skipFlowingElements = false;
@@ -1463,7 +1466,7 @@
     applyTimingsToCSS();
     if (bookWrap) {
       bookWrap.classList.remove('spread-revealed');
-      bookWrap.classList.remove('is-speed-3x');
+      bookWrap.classList.remove('is-speed-5x', 'is-speed-3x');
     }
 
     const page1 = book ? book.querySelector('.page-1') : null;

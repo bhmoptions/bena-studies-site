@@ -147,17 +147,20 @@ html, body {
   animation: book-locked-nudge 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) !important;
 }
 
-/* Aceleração 3x das animações de abertura */
+/* Aceleração 5x das animações de abertura */
+.book-wrap.is-speed-5x,
 .book-wrap.is-speed-3x {
-  transition: transform 0.533s cubic-bezier(0.25, 1, 0.3, 1) !important;
+  transition: transform 0.32s cubic-bezier(0.25, 1, 0.3, 1) !important;
 }
 
+.book-wrap.is-speed-5x .book-cover,
 .book-wrap.is-speed-3x .book-cover {
-  transition-duration: calc(var(--cover-duration) / 3) !important;
+  transition-duration: calc(var(--cover-duration) / 5) !important;
 }
 
+.book-wrap.is-speed-5x .turning-page,
 .book-wrap.is-speed-3x .turning-page {
-  transition-duration: calc(var(--flip-duration) / 3) !important;
+  transition-duration: calc(var(--flip-duration) / 5) !important;
 }
 
 @keyframes book-levitate {
