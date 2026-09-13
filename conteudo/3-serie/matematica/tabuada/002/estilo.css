@@ -60,13 +60,13 @@ body.standalone-game{background:var(--paper);min-height:100dvh}
 .platform-one { top: 72.705882%; }
 .platform-two { top: 66.588235%; }
 .room-platform { height: 3.2%; }
-.room-console { top: 72%; height: 18.56%; }
+.room-console { height: 18.56%; }
 .room-door { top: 79.6%; height: 15.68%; width: 5%; }
 /* Plataformas e perigos desenhados pelas mesmas coordenadas usadas pela física. */
 .room-world{--electric:#87e9ff;--electric-ray:#ff3b3b;--electric-ray-core:#ffe0e0}
 .room-platform.lab-ledge{border:0;border-top:3px solid var(--room-stone);border-radius:3px;background:var(--room-line);box-shadow:0 4px 0 var(--room-dark);z-index:1}
 .lab-ledge::after{content:'';position:absolute;top:35%;bottom:0;left:9%;right:9%;border-left:3px solid var(--room-stone);border-right:3px solid var(--room-stone);opacity:.45}
-.room-console{left:46%;top:41.647%;height:8.941%;width:8%;border-width:2px;z-index:2}
+.room-console{height:8.941%;width:8%;border-width:2px;z-index:2}
 .room-console span{font-size:clamp(12px,2vw,24px);line-height:1}.room-console small{font-size:clamp(5px,.6vw,8px)}
 .room-window{left:29%;top:9%;width:9%;height:17%}.room-wire{left:50%;top:29%;height:39%}
 .room-wall-note{left:6%;top:46%;font-size:clamp(22px,3vw,44px)}
@@ -79,8 +79,10 @@ body.standalone-game{background:var(--paper);min-height:100dvh}
 .room-player.electrocuted{background:var(--electric);box-shadow:0 0 0 5px var(--electric),0 0 22px var(--electric);transform:rotate(-12deg);opacity:.7}
 
 /* Computador sem rótulo: o botão continua identificado para leitores de tela. */
-.room-console{left:46%;top:41.647%;height:8.941%;width:8%;background:transparent;border:0;padding:0;overflow:visible}
+.room-console{height:8.941%;width:8%;background:transparent;border:0;padding:0;overflow:visible}
 .room-console .room-computer{position:absolute;left:-10%;bottom:-37%;width:120%;height:auto;max-width:none;display:block;background:transparent}
+/* A fase fornece left e top por meio de monitor_position.json. */
+.room-console{left:unset;top:unset}
 .room-door{left:91%}
 .room-player.walking .player-book{animation:player-book-step .22s steps(2,end) infinite}
 

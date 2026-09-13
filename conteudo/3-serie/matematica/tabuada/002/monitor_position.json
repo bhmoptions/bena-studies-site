@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "coordinateSystem": {
+    "type": "percentage",
+    "reference": "room-scene",
+    "description": "left and top are percentages of the game scene. Add more objects to a level's positions list to enable random selection."
+  },
+  "levels": [
+    {
+      "id": 1,
+      "positions": [
+        {
+          "left": "46%",
+          "top": "41.647%"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "positions": [
+        {
+          "left": "46%",
+          "top": "41.647%"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "positions": [
+        {
+          "left": "46%",
+          "top": "41.647%"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "positions": [
+        {
+          "left": "46%",
+          "top": "41.647%"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "positions": [
+        {
+          "left": "46%",
+          "top": "41.647%"
+        }
+      ]
+    }
+  ]
+}

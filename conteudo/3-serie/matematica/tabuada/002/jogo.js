@@ -1,6 +1,7 @@
 // Protótipo de estilo: ainda não constitui padrão para outros jogos.
 (() => {
   const css = new URL('estilo.css', document.currentScript.src).href;
+  const monitorPositionUrl = new URL('monitor_position.json', document.currentScript.src);
   if (!document.querySelector(`link[href="${css}"]`)) {
     const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = css; document.head.append(link);
   }
@@ -11,6 +12,8 @@
       const controller = new AbortController();
       const signal = controller.signal;
       let frame, stopped = false, phase = 0, errors = 0, first = 0, tried = false, solved = false, opened = false, exiting = false;
+      let monitorPosition = { left: '46%', top: '41.647%', leftPercent: 46 };
+      let monitorPositionConfig = { levels: [] };
       let x = 75, y = 373, vy = 0, grounded = true, target = null, last = 0;
       const held = new Set();
       // Uma única geometria alimenta desenho e colisões, no espaço de 800 × 425.
@@ -45,6 +48,32 @@
         { title: 'Duas chaves, uma saída', clue: 'A fechadura marca 24. Escolha duas chaves que, multiplicadas, abrem a porta.', type: 'pair', choices: [2, 3, 4, 6], hint: 'Experimente pensar na tabuada do 4: qual número multiplicado por 4 dá 24?', explanation: '4 × 6 = 24. As duas chaves funcionaram!' },
         { title: 'A regra virou do avesso', clue: 'O painel está ao contrário! Desta vez, aperte a conta ERRADA para desligar o bloqueio.', type: 'choice', choices: ['2 × 6 = 12', '3 × 5 = 18', '4 × 4 = 16'], right: 1, hint: 'Confira cada conta. 3 grupos de 5 são 5 + 5 + 5.', explanation: 'Você encontrou a intrusa! 3 × 5 = 15, não 18.' }
       ];
+      function percentValue(value, fallback) {
+        const number = typeof value === 'number' ? value : Number.parseFloat(String(value).replace('%', ''));
+        return Number.isFinite(number) ? Math.max(0, Math.min(100, number)) : fallback;
+      }
+      function normalizeMonitorPosition(position) {
+        const leftPercent = percentValue(position?.left, 46);
+        const topPercent = percentValue(position?.top, 41.647);
+        return { left: `${leftPercent}%`, top: `${topPercent}%`, leftPercent };
+      }
+      function chooseMonitorPosition(levelNumber) {
+        const levelConfig = monitorPositionConfig.levels?.find(item => Number(item.id) === levelNumber);
+        const positions = Array.isArray(levelConfig?.positions) ? levelConfig.positions.filter(Boolean) : [];
+        const selected = positions.length ? positions[Math.floor(Math.random() * positions.length)] : null;
+        return normalizeMonitorPosition(selected || { left: 46, top: 41.647 });
+      }
+      function loadMonitorPositions() {
+        return fetch(monitorPositionUrl)
+          .then(response => {
+            if (!response.ok) throw new Error(`monitor_position.json: ${response.status}`);
+            return response.json();
+          })
+          .then(config => { monitorPositionConfig = config && typeof config === 'object' ? config : { levels: [] }; })
+          .catch(error => {
+            console.warn('[Jogo] Não foi possível carregar monitor_position.json. Usando a posição padrão.', error);
+          });
+      }
       function cleanup() { stopped = true; cancelAnimationFrame(frame); controller.abort(); held.clear(); dialog.classList.remove('room-dialog'); }
       function start() { round = window.BenaPontuacao.iniciarRodada(key); phase = 0; errors = 0; first = 0; showRoom(); }
       function feedback(state, detail) {
@@ -52,8 +81,9 @@
       }
       function showRoom() {
         respawnDelay = 0; x = 75; y = 373; vy = 0; grounded = true; target = null; held.clear(); tried = false; solved = false; opened = false; exiting = false;
+        monitorPosition = chooseMonitorPosition(phase + 1);
         const level = levels[phase];
-        container.innerHTML = `<div class="room-layout"><div><div class="room-world" role="group" aria-label="Sala explorável. Use as setas esquerda e direita para andar e a seta para cima para pular. Leve o personagem até a frente do computador para abrir o desafio."><div class="room-scene"><div class="room-grid"></div>${roomGeometry()}<button class="room-console" aria-label="Computador: leve o personagem até ele para usar"><img class="room-computer" src="../../../../../assets/images/TLA/Desktop.png" alt=""></button><button class="room-door" aria-label="Ir até a porta"><span class="door-lamp"></span><b>SAÍDA</b><i></i></button><div class="room-player" aria-hidden="true"><span class="player-eyes">••</span><span class="player-book"></span></div><div class="room-floor"></div></div></div></div><aside class="room-puzzle game-template-side" aria-label="Desafio da fase"><p class="room-game-title">De novo essa fase?</p><h3 tabindex="-1">${level.title}</h3><div class="room-monitor" hidden></div><div class="feedback" role="status" aria-live="polite" aria-atomic="true"></div><button class="primary room-next" hidden>Atravessar a porta →</button><button class="room-instructions-button" aria-haspopup="dialog">ⓘ Instruções</button></aside></div><dialog class="room-instructions" aria-labelledby="instructions-title"><h2 id="instructions-title">Como jogar</h2><ul><li><strong>Sua missão:</strong> resolva os desafios de tabuada para abrir a porta e atravessar as cinco fases. A sala é a mesma, mas a regra muda!</li><li><strong>Ande e pule:</strong> use ← e → para andar e ↑ para pular.</li><li><strong>Use o computador:</strong> leve o personagem até a frente dele. O conteúdo aparece automaticamente, sem apertar outra tecla.</li><li><strong>Cuidado com a eletricidade:</strong> pule os arcos vermelhos. Se encostar, o personagem reaparece no início da sala. Suas respostas continuam guardadas e você não perde pontos.</li><li><strong>Explore a saída:</strong> depois de resolver o computador, clique ou toque na porta para atravessá-la.</li></ul><button class="primary instructions-close">Entendi! Vamos jogar →</button></dialog>`;
+        container.innerHTML = `<div class="room-layout"><div><div class="room-world" role="group" aria-label="Sala explorável. Use as setas esquerda e direita para andar e a seta para cima para pular. Leve o personagem até a frente do computador para abrir o desafio."><div class="room-scene"><div class="room-grid"></div>${roomGeometry()}<button class="room-console" style="left:${monitorPosition.left};top:${monitorPosition.top}" aria-label="Computador: leve o personagem até ele para usar"><img class="room-computer" src="../../../../../assets/images/TLA/Desktop.png" alt=""></button><button class="room-door" aria-label="Ir até a porta"><span class="door-lamp"></span><b>SAÍDA</b><i></i></button><div class="room-player" aria-hidden="true"><span class="player-eyes">••</span><span class="player-book"></span></div><div class="room-floor"></div></div></div></div><aside class="room-puzzle game-template-side" aria-label="Desafio da fase"><p class="room-game-title">De novo essa fase?</p><h3 tabindex="-1">${level.title}</h3><div class="room-monitor" hidden></div><div class="feedback" role="status" aria-live="polite" aria-atomic="true"></div><button class="primary room-next" hidden>Atravessar a porta →</button><button class="room-instructions-button" aria-haspopup="dialog">ⓘ Instruções</button></aside></div><dialog class="room-instructions" aria-labelledby="instructions-title"><h2 id="instructions-title">Como jogar</h2><ul><li><strong>Sua missão:</strong> resolva os desafios de tabuada para abrir a porta e atravessar as cinco fases. A sala é a mesma, mas a regra muda!</li><li><strong>Ande e pule:</strong> use ← e → para andar e ↑ para pular.</li><li><strong>Use o computador:</strong> leve o personagem até a frente dele. O conteúdo aparece automaticamente, sem apertar outra tecla.</li><li><strong>Cuidado com a eletricidade:</strong> pule os arcos vermelhos. Se encostar, o personagem reaparece no início da sala. Suas respostas continuam guardadas e você não perde pontos.</li><li><strong>Explore a saída:</strong> depois de resolver o computador, clique ou toque na porta para atravessá-la.</li></ul><button class="primary instructions-close">Entendi! Vamos jogar →</button></dialog>`;
         container.querySelector('.room-puzzle h3').focus();
         container.querySelector('.room-console').onclick = () => { if (atComputer()) openPanel(); else status('Chegue à frente do computador para usá-lo.'); };
         container.querySelector('.room-door').onclick = () => { if (solved) beginExit(); else status('A porta ainda está trancada. Resolva o computador primeiro.'); };
@@ -66,7 +96,7 @@
       }
       function status(message) { const door = container.querySelector('.room-door'); if(door) door.setAttribute('aria-label', message); }
       // A frente acessível do computador fica logo abaixo da plataforma central.
-      function atComputer() { return grounded && Math.abs(x - 390) < 50; }
+      function atComputer() { return grounded && Math.abs(x - (monitorPosition.leftPercent * 8 + 22)) < 50; }
       function jump() { if (!respawnDelay && grounded && container.querySelector('.room-world')) { vy = -527; grounded = false; } }
       function openPanel() {
         if (opened) return;
@@ -203,7 +233,12 @@
       window.addEventListener('keyup',e=>{if(e.key==='ArrowLeft')held.delete('left');if(e.key==='ArrowRight')held.delete('right');},{signal});
       window.addEventListener('blur',()=>held.clear(),{signal});
       document.addEventListener('visibilitychange',()=>{held.clear();last=0;},{signal});
-      start();frame=requestAnimationFrame(tick);return cleanup;
+      loadMonitorPositions().finally(() => {
+        if (stopped) return;
+        start();
+        frame = requestAnimationFrame(tick);
+      });
+      return cleanup;
     }
   };
 })();
