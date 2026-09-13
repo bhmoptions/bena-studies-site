@@ -1,7 +1,7 @@
 // Protótipo de estilo: ainda não constitui padrão para outros jogos.
 (() => {
   const css = new URL('estilo.css', document.currentScript.src).href;
-  const monitorPositionUrl = new URL('monitor_position.json', document.currentScript.src);
+  const monitorPositionUrl = new URL('Config/monitor_position.json', document.currentScript.src);
   if (!document.querySelector(`link[href="${css}"]`)) {
     const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = css; document.head.append(link);
   }
