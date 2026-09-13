@@ -1611,6 +1611,33 @@
     historia: 'dest-hist'
   };
 
+  const subjectDestinations = [
+    {
+      id: 'matematica', nome: 'Matemática', simbolo: '×', sub: 'Torre dos Números',
+      descricao: 'Desafios de cálculo rápido, labirintos lógicos e tabuada divertida.'
+    },
+    {
+      id: 'portugues', nome: 'Português', simbolo: 'Aa', sub: 'Vale das Letras',
+      descricao: 'Histórias fantásticas, aventuras de ortografia e charadas literárias estão sendo preparadas.'
+    },
+    {
+      id: 'ciencias', nome: 'Ciências', simbolo: '🔬', sub: 'Observatório',
+      descricao: 'Descubra os planetas, o mistério dos átomos e os ciclos da natureza.'
+    },
+    {
+      id: 'geografia', nome: 'Geografia', simbolo: '🌍', sub: 'Exploradores',
+      descricao: 'Mapas interativos, biomas do Brasil e relevos do nosso planeta.'
+    },
+    {
+      id: 'ingles', nome: 'Inglês', simbolo: '🇬🇧', sub: 'Ponte de Idiomas',
+      descricao: 'Jogos de vocabulário, pronúncia e diálogos divertidos.'
+    },
+    {
+      id: 'historia', nome: 'História', simbolo: '🏛️', sub: 'Templo do Tempo',
+      descricao: 'Viagens no tempo por civilizações antigas e invenções que mudaram a humanidade.'
+    }
+  ];
+
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>'"]/g, char => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
@@ -1636,6 +1663,19 @@
     return (serie?.materias || []).filter(materia => themesWithGames(materia).length > 0);
   }
 
+  function subjectsForSeries(serie) {
+    const materiasDoCatalogo = serie?.materias || [];
+    const catalogoPorId = new Map(materiasDoCatalogo.map(materia => [materia.id, materia]));
+    const materiasPadrao = subjectDestinations.map(materia => ({
+      ...materia,
+      ...(catalogoPorId.get(materia.id) || {})
+    }));
+    const materiasExtras = materiasDoCatalogo.filter(materia =>
+      !subjectDestinations.some(padrao => padrao.id === materia.id)
+    );
+    return [...materiasPadrao, ...materiasExtras];
+  }
+
   function joinInPortuguese(items) {
     if (items.length < 2) return items[0] || '';
     if (items.length === 2) return `${items[0]} e ${items[1]}`;
@@ -1654,9 +1694,8 @@
     if (!container) return;
 
     const serie = getActiveSeries();
-    const materias = subjectsWithGames(serie);
 
-    if (!materias.length) {
+    if (!serie) {
       const seriesWithGames = availableSeriesWithGames();
       container.classList.add('is-empty');
       container.innerHTML = `
@@ -1671,18 +1710,24 @@
       return;
     }
 
+    const materias = subjectsForSeries(serie);
     container.classList.remove('is-empty');
     container.innerHTML = materias.map(materia => {
-      const temaPrincipal = themesWithGames(materia)[0];
+      const temas = themesWithGames(materia);
+      const isAvailable = temas.length > 0;
+      const temaPrincipal = temas[0];
       const toneClass = destinationToneClass[materia.id] || 'dest-default';
       const nome = escapeHtml(materia.nome);
+      const subtitulo = isAvailable
+        ? temaPrincipal.nome
+        : materia.sub || 'Novas aventuras em breve';
       return `
         <button class="destination-card ${toneClass}" data-dest="${escapeHtml(materia.id)}" title="Explorar ${nome}">
           <div class="destination-icon">${escapeHtml(materia.simbolo || '✦')}</div>
           <div class="destination-info">
             <span class="destination-title">${nome}</span>
-            <span class="destination-sub">${escapeHtml(temaPrincipal.nome)}</span>
-            <span class="destination-badge badge-active">Disponível</span>
+            <span class="destination-sub">${escapeHtml(subtitulo)}</span>
+            <span class="destination-badge ${isAvailable ? 'badge-active' : 'badge-soon'}">${isAvailable ? 'Disponível' : 'Em breve'}</span>
           </div>
         </button>
       `;
@@ -1723,9 +1768,24 @@
 
   function openSubjectDestination(subjectKey) {
     const serie = getActiveSeries();
-    const materia = (serie?.materias || []).find(item => item.id === subjectKey);
+    const materia = subjectsForSeries(serie).find(item => item.id === subjectKey);
     const temas = themesWithGames(materia);
-    if (!materia || !temas.length || !gameDialog || !dialogContent) return;
+    if (!materia || !gameDialog || !dialogContent) return;
+
+    if (!temas.length) {
+      dialogContent.innerHTML = `
+        <div class="dialog-symbol">${escapeHtml(materia.simbolo || '✦')}</div>
+        <div class="dialog-eyebrow">${escapeHtml(getSeriesName(serie)).toUpperCase()} • EM BREVE</div>
+        <h2 class="dialog-title">${escapeHtml(materia.nome)}: ${escapeHtml(materia.sub || 'novas descobertas')}</h2>
+        <p class="dialog-desc">${escapeHtml(materia.descricao || 'Esta matéria está sendo preparada com carinho para a sua série.')}</p>
+        <div class="dialog-coming-soon">
+          <span aria-hidden="true">✦</span>
+          <p>Novas missões e brincadeiras chegarão em breve!</p>
+        </div>
+      `;
+      gameDialog.showModal();
+      return;
+    }
 
     const gamesListHtml = temas.map(tema => `
       <section class="dialog-theme">

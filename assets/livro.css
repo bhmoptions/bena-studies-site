@@ -1230,6 +1230,29 @@ dialog#game-dialog::backdrop {
   margin-bottom: 22px;
 }
 
+.dialog-coming-soon {
+  padding: 16px 18px;
+  text-align: center;
+  background: var(--soft);
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+}
+
+.dialog-coming-soon span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--gold);
+  font-size: 18px;
+}
+
+.dialog-coming-soon p {
+  margin: 0;
+  color: var(--accent);
+  font-family: var(--hand);
+  font-size: 16px;
+  line-height: 1.35;
+}
+
 .game-card-list {
   display: grid;
   gap: 12px;
