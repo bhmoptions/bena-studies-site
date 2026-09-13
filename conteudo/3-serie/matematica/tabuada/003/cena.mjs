@@ -1,7 +1,7 @@
 import * as T from 'three';
 import { OrbitControls } from '../../../../../assets/vendor/three/OrbitControls.js';
-import { createWorkshopAssets, ANGLES } from './modelos.mjs?v=puzzles-json-7';
-import { SIDES, total, balanceTilt, valuesForSide } from './logica.mjs?v=puzzles-json-7';
+import { createWorkshopAssets, ANGLES } from './modelos.mjs?v=puzzles-json-8';
+import { SIDES, total, balanceTilt, valuesForSide } from './logica.mjs?v=puzzles-json-8';
 import { createBoxEffects } from './efeitos.mjs';
 import { createBoxControls } from './controles-caixa.mjs';
 import { MECHANISMS } from './mecanismos.mjs';
@@ -9,6 +9,7 @@ const lerp=T.MathUtils.lerp;
 const clamp=T.MathUtils.clamp;
 const smooth=t=>t*t*(3-2*t);
 const ZOOM_FRAME_START=13.2,ZOOM_TARGET_SHIFT=4.4,ZOOM_TARGET_RISE=-.45,ZOOM_POLAR_LIFT=.12;
+const DOUBLE_CLICK_DELAY=450,DOUBLE_CLICK_DISTANCE=14;
 export function createScene(host,config,callbacks,reducedMotion=false) {
   const assets=createWorkshopAssets();let renderer;
   try{renderer=new T.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});}
@@ -73,7 +74,7 @@ export function createScene(host,config,callbacks,reducedMotion=false) {
   const haloGeometry=new T.RingGeometry(.62,.72,48);
   const haloMaterial=new T.MeshBasicMaterial({color:'#fff0ab',transparent:true,opacity:.85,side:T.DoubleSide,depthWrite:false});
   const halo=new T.Mesh(haloGeometry,haloMaterial);halo.rotation.x=-Math.PI/2;halo.visible=false;scene.add(halo);
-  let active='blue',state=null,focusTween=null,dragging=null,down=null,panning=null;
+  let active='blue',state=null,focusTween=null,dragging=null,down=null,panning=null,lastBottleClick=null;
   let reward=null,rewardStart=null,rewardShown=false,disposed=false,lastTime=0,visible=true;
   const boxControls=createBoxControls(host,camera,box,controls,effects,{
     activate:side=>callbacks.activate(side),stopCamera(){focusTween=null;down=null;},
@@ -210,26 +211,30 @@ export function createScene(host,config,callbacks,reducedMotion=false) {
       panning={x:event.clientX,y:event.clientY};renderer.domElement.setPointerCapture?.(event.pointerId);renderer.domElement.style.cursor='grabbing';return;
     }
     focusTween=null;const p=pick(event.clientX,event.clientY);
+    if(p?.kind!=='flask')lastBottleClick=null;
     if(['supply','flask','control'].includes(p?.kind)){
       event.preventDefault();event.stopImmediatePropagation();down=null;
       if(p.kind==='supply')callbacks.dragSupply(p.value,event,p.side);
       else if(p.kind==='flask'){
-        if(!state?.sides[p.side].solved)callbacks.dragPlaced(p,event);
+        if(!state?.sides[p.side].solved){
+          const now=performance.now(),previous=lastBottleClick;
+          const repeated=previous&&previous.side===p.side&&previous.pan===p.pan&&previous.index===p.index&&previous.value===p.value
+            &&now-previous.time<=DOUBLE_CLICK_DELAY&&Math.hypot(event.clientX-previous.x,event.clientY-previous.y)<=DOUBLE_CLICK_DISTANCE;
+          if(repeated){
+            lastBottleClick=null;boxControls.cancel();callbacks.clearScale?.(p.side);return;
+          }
+          lastBottleClick={side:p.side,pan:p.pan,index:p.index,value:p.value,time:now,x:event.clientX,y:event.clientY};
+          callbacks.dragPlaced(p,event);
+        }
         else callbacks.hint?.('Este lado já está aberto.');
       }else boxControls.begin(p.side,event);
       return;
     }
     down={x:event.clientX,y:event.clientY,pick:p};
   },true);
-  on(renderer.domElement,'dblclick',event=>{
-    const p=pick(event.clientX,event.clientY);
-    if(p?.kind!=='flask'||state?.sides[p.side].solved)return;
-    event.preventDefault();event.stopImmediatePropagation();
-    boxControls.cancel();
-    callbacks.clearScale?.(p.side);
-  },true);
   on(renderer.domElement,'pointermove',event=>{
     if(panning){panByPixels(event.clientX-panning.x,event.clientY-panning.y);panning.x=event.clientX;panning.y=event.clientY;return;}
+    if(dragging&&lastBottleClick&&Math.hypot(event.clientX-lastBottleClick.x,event.clientY-lastBottleClick.y)>DOUBLE_CLICK_DISTANCE)lastBottleClick=null;
     if(dragging||!controls.enabled)return;
     const p=pick(event.clientX,event.clientY);
     boxControls.hover(p?.kind==='control'?p.side:null);
