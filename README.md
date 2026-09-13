@@ -11,7 +11,7 @@ Depois de abrir http://localhost:8765/, salve qualquer arquivo do projeto e a p�
 No servidor local, os jogos funcionam em modo de prévia: não registram no banco depósitos de abandono, pontuações normais ou reembolsos. A persistência é ativada somente fora de endereços locais.
 
 ## Série exibida
-Em `config/site.js`, altere `serieAtual: 3`. Apenas a série escolhida aparece.
+Em `config/site.js`, altere `serieAtual: 3` para definir a série padrão antes do login. Depois de entrar, a landing page usa a série salva no perfil do aluno e mostra apenas as matérias que tenham jogos no catálogo daquela série. Quando ainda não houver jogos para a série, o livro mostra um aviso de que novas brincadeiras chegarão em breve.
 
 ## Organização do conteúdo
 Cada jogo tem sua própria pasta numerada dentro do tema:

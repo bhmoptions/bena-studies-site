@@ -884,6 +884,57 @@ html, body {
   transform: translateY(0) translateZ(30px);
 }
 
+/* Bilhete de caderno para séries que ainda não têm aventuras no catálogo. */
+.destinations-container.is-empty {
+  display: block;
+  bottom: 28px;
+}
+
+.destinations-empty {
+  width: min(100%, 560px);
+  margin: 0 auto;
+  padding: 16px 24px 19px;
+  box-sizing: border-box;
+  text-align: center;
+  color: #f3ecdc;
+  background: rgba(25, 29, 41, 0.94);
+  border: 1px solid rgba(215, 179, 106, 0.62);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.destinations-empty-star {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--gold);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.destinations-empty-kicker {
+  margin: 0 0 5px;
+  color: #d7b36a;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+
+.destinations-empty h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 21px;
+  line-height: 1.1;
+  color: #f3ecdc;
+}
+
+.destinations-empty p:last-child {
+  max-width: 450px;
+  margin: 7px auto 0;
+  color: #c7cad4;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 /* Espaçamento em torno da lombada/vinco central (entre coluna 2 e coluna 3) */
 .destination-card:nth-child(4n + 2) {
   margin-right: 9px;
@@ -898,6 +949,18 @@ html, body {
     gap: 8px;
     bottom: 10px;
     padding: 0 10px;
+  }
+  .destinations-container.is-empty {
+    bottom: 14px;
+  }
+  .destinations-empty {
+    padding: 14px 18px 16px;
+  }
+  .destinations-empty h2 {
+    font-size: 18px;
+  }
+  .destinations-empty p:last-child {
+    font-size: 12px;
   }
   .destination-card:nth-child(4n + 2),
   .destination-card:nth-child(4n + 3) {
@@ -965,6 +1028,9 @@ html, body {
 }
 .dest-hist .destination-icon {
   background: #e2c08d;
+}
+.dest-default .destination-icon {
+  background: var(--gold);
 }
 
 .destination-info {
@@ -1150,6 +1216,18 @@ dialog#game-dialog::backdrop {
   gap: 12px;
 }
 
+.dialog-theme + .dialog-theme {
+  margin-top: 22px;
+}
+
+.dialog-theme-title {
+  margin: 0 0 9px;
+  color: var(--accent);
+  font-family: var(--hand);
+  font-size: 16px;
+  line-height: 1.25;
+}
+
 .dialog-game-btn {
   width: 100%;
   display: flex;
@@ -1170,6 +1248,13 @@ dialog#game-dialog::backdrop {
   border-color: var(--gold);
   background: var(--white);
   transform: translateX(4px);
+}
+
+.dialog-game-btn.is-unavailable,
+.dialog-game-btn.is-unavailable:hover {
+  cursor: default;
+  opacity: 0.62;
+  transform: none;
 }
 
 .dialog-game-name {

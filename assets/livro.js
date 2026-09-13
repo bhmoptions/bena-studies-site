@@ -1601,115 +1601,131 @@
   }
 
   // --- Destinos Selecionáveis & Navegação Real ---
-  const subjectDestinations = {
-    matematica: {
-      nome: 'Matemática',
-      simbolo: '×',
-      sub: 'Torre dos Números • 3ª série',
-      desc: 'Desafios de cálculo rápido, labirintos lógicos e tabuada divertida.',
-      isPlayable: true
-    },
-    portugues: {
-      nome: 'Português',
-      simbolo: 'Aa',
-      sub: 'Vale das Letras',
-      desc: 'Histórias fantásticas, aventuras de ortografia e charadas literárias sendo preparadas.',
-      isPlayable: false
-    },
-    ciencias: {
-      nome: 'Ciências',
-      simbolo: '🔬',
-      sub: 'Observatório Cósmico',
-      desc: 'Descubra os planetas do sistema solar, o mistério dos átomos e o ciclo da natureza.',
-      isPlayable: false
-    },
-    geografia: {
-      nome: 'Geografia',
-      simbolo: '🌍',
-      sub: 'Ilha dos Exploradores',
-      desc: 'Mapas interativos, biomas do Brasil e relevos do nosso planeta.',
-      isPlayable: false
-    },
-    ingles: {
-      nome: 'Inglês',
-      simbolo: '🇬🇧',
-      sub: 'Ponte dos Idiomas',
-      desc: 'Jogos de vocabulário, pronúncia e diálogos divertidos.',
-      isPlayable: false
-    },
-    historia: {
-      nome: 'História',
-      simbolo: '🏛️',
-      sub: 'Templo do Tempo',
-      desc: 'Viagens no tempo por civilizações antigas e invenções que mudaram a humanidade.',
-      isPlayable: false
-    }
+  // Os destinos exibidos sempre vêm do catálogo da série ativa do aluno.
+  const destinationToneClass = {
+    matematica: 'dest-math',
+    portugues: 'dest-port',
+    ciencias: 'dest-scie',
+    geografia: 'dest-geog',
+    ingles: 'dest-engl',
+    historia: 'dest-hist'
   };
 
-  // Clique nos Destinos Pop-Up
-  document.querySelectorAll('.destination-card').forEach(card => {
-    card.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const subjectKey = card.dataset.dest;
-      openSubjectDestination(subjectKey);
-    });
-  });
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>'"]/g, char => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+    })[char]);
+  }
 
-  function openSubjectDestination(subjectKey) {
-    const subj = subjectDestinations[subjectKey];
-    if (!subj) return;
+  function getActiveSeries() {
+    const serieKey = Number(window.BENA_CONFIG?.serieAtual);
+    return window.BENA_CONTEUDO?.[serieKey] || null;
+  }
 
-    if (subj.isPlayable && window.BENA_CONTEUDO && window.BENA_CONFIG) {
-      // Matemática: Obtém os jogos reais da 3ª série cadastrados em conteudo/catalogo.js
-      const serie = window.BENA_CONTEUDO[window.BENA_CONFIG.serieAtual];
-      const mat = serie?.materias?.find(m => m.id === 'matematica');
-      const tema = mat?.temas?.[0]; // Multiplicação e Divisão
-      const jogos = tema?.jogos || [];
+  function getSeriesName(serie) {
+    if (serie?.nome) return serie.nome;
+    const serieKey = Number(window.BENA_CONFIG?.serieAtual);
+    return Number.isInteger(serieKey) ? `${serieKey}ª série` : 'sua série';
+  }
 
-      let gamesListHtml = jogos.map((j) => `
-        <a class="dialog-game-btn" href="${base}conteudo/${window.BENA_CONFIG.serieAtual}-serie/${j.pagina}">
-          <div>
-            <span class="dialog-game-name">${j.nome}</span>
-            <span class="dialog-game-sub">${j.descricao}</span>
-          </div>
-          <span class="dialog-game-arrow">Jogar →</span>
-        </a>
-      `).join('');
+  function themesWithGames(materia) {
+    return (materia?.temas || []).filter(tema => (tema.jogos || []).length > 0);
+  }
 
-      dialogContent.innerHTML = `
-        <div class="dialog-symbol">${subj.simbolo}</div>
-        <div class="dialog-eyebrow">3ª SÉRIE • DESTINO CONECTADO</div>
-        <h2 class="dialog-title">${subj.nome}: ${tema?.nome || 'Jogos de Tabuada'}</h2>
-        <p class="dialog-desc">${subj.desc}</p>
-        <div class="game-card-list">
-          ${gamesListHtml}
-        </div>
+  function subjectsWithGames(serie) {
+    return (serie?.materias || []).filter(materia => themesWithGames(materia).length > 0);
+  }
+
+  function renderDestinations() {
+    const container = document.getElementById('destinationsContainer');
+    if (!container) return;
+
+    const serie = getActiveSeries();
+    const materias = subjectsWithGames(serie);
+
+    if (!materias.length) {
+      container.classList.add('is-empty');
+      container.innerHTML = `
+        <section class="destinations-empty" role="status">
+          <span class="destinations-empty-star" aria-hidden="true">✦</span>
+          <p class="destinations-empty-kicker">${escapeHtml(getSeriesName(serie)).toUpperCase()}</p>
+          <h2>Novas aventuras estão a caminho!</h2>
+          <p>Ainda não há jogos disponíveis para a sua série, mas logo teremos novas brincadeiras para você explorar.</p>
+        </section>
       `;
-    } else {
-      // Outras matérias: Exibe um teaser educativo e inspirador em pt-BR
-      dialogContent.innerHTML = `
-        <div class="dialog-symbol">${subj.simbolo}</div>
-        <div class="dialog-eyebrow">DESTINO EM CONSTRUÇÃO • BENA STUDIES</div>
-        <h2 class="dialog-title">${subj.nome}: ${subj.sub}</h2>
-        <p class="dialog-desc">${subj.desc}</p>
-        <div style="background: var(--soft); border: 1px dashed var(--line); border-radius: 12px; padding: 18px; text-align: center; margin-top: 15px;">
-          <p style="font-family: var(--hand); font-size: 16px; color: var(--gold); margin-bottom: 8px;">
-            ✦ Novas missões e desafios para a 3ª série estão sendo preparados pelo clube!
-          </p>
-          <small style="color: var(--muted);">Enquanto isso, explore os desafios da Torre de Matemática!</small>
-        </div>
-        <div style="margin-top: 20px;">
-          <button class="dialog-game-btn" onclick="document.querySelector('[data-dest=matematica]').click();">
-            <div>
-              <span class="dialog-game-name">Ir para os Jogos de Matemática</span>
-              <span class="dialog-game-sub">Treinar tabuada na Torre Helix e Puzzle Box</span>
-            </div>
-            <span class="dialog-game-arrow">Abrir →</span>
-          </button>
+      return;
+    }
+
+    container.classList.remove('is-empty');
+    container.innerHTML = materias.map(materia => {
+      const temaPrincipal = themesWithGames(materia)[0];
+      const toneClass = destinationToneClass[materia.id] || 'dest-default';
+      const nome = escapeHtml(materia.nome);
+      return `
+        <button class="destination-card ${toneClass}" data-dest="${escapeHtml(materia.id)}" title="Explorar ${nome}">
+          <div class="destination-icon">${escapeHtml(materia.simbolo || '✦')}</div>
+          <div class="destination-info">
+            <span class="destination-title">${nome}</span>
+            <span class="destination-sub">${escapeHtml(temaPrincipal.nome)}</span>
+            <span class="destination-badge badge-active">Disponível</span>
+          </div>
+        </button>
+      `;
+    }).join('');
+
+    container.querySelectorAll('.destination-card').forEach(card => {
+      card.addEventListener('click', (event) => {
+        event.stopPropagation();
+        openSubjectDestination(card.dataset.dest);
+      });
+    });
+  }
+
+  function gameLinkMarkup(jogo) {
+    const nome = escapeHtml(jogo.nome);
+    const descricao = escapeHtml(jogo.descricao);
+    if (!jogo.pagina) {
+      return `
+        <div class="dialog-game-btn is-unavailable" aria-disabled="true">
+          <div>
+            <span class="dialog-game-name">${nome}</span>
+            <span class="dialog-game-sub">${descricao}</span>
+          </div>
+          <span class="dialog-game-arrow">Em breve</span>
         </div>
       `;
     }
+    return `
+      <a class="dialog-game-btn" href="${base}conteudo/${window.BENA_CONFIG.serieAtual}-serie/${jogo.pagina}">
+        <div>
+          <span class="dialog-game-name">${nome}</span>
+          <span class="dialog-game-sub">${descricao}</span>
+        </div>
+        <span class="dialog-game-arrow">Jogar →</span>
+      </a>
+    `;
+  }
 
+  function openSubjectDestination(subjectKey) {
+    const serie = getActiveSeries();
+    const materia = (serie?.materias || []).find(item => item.id === subjectKey);
+    const temas = themesWithGames(materia);
+    if (!materia || !temas.length || !gameDialog || !dialogContent) return;
+
+    const gamesListHtml = temas.map(tema => `
+      <section class="dialog-theme">
+        <h3 class="dialog-theme-title">${escapeHtml(tema.nome)}</h3>
+        <div class="game-card-list">${tema.jogos.map(gameLinkMarkup).join('')}</div>
+      </section>
+    `).join('');
+
+    dialogContent.innerHTML = `
+      <div class="dialog-symbol">${escapeHtml(materia.simbolo || '✦')}</div>
+      <div class="dialog-eyebrow">${escapeHtml(getSeriesName(serie)).toUpperCase()} • DESTINO CONECTADO</div>
+      <h2 class="dialog-title">${escapeHtml(materia.nome)}</h2>
+      <p class="dialog-desc">${escapeHtml(materia.descricao || 'Escolha uma nova brincadeira para explorar.')}</p>
+      ${gamesListHtml}
+    `;
     gameDialog.showModal();
   }
 
@@ -1728,47 +1744,14 @@
   }
 
   // ==========================================================================
-  // 6. Badges Automáticos Conforme Conteúdo Disponível
+  // 6. Destinos Atualizados Conforme a Série do Aluno
   // ==========================================================================
-  function updateSubjectBadges() {
-    const serieKey = window.BENA_CONFIG?.serieAtual || '3';
-    const serie = window.BENA_CONTEUDO?.[serieKey];
-    const activeMaterias = new Set(
-      (serie?.materias || [])
-        .filter(m => m.temas?.some(t => (t.jogos || []).length > 0))
-        .map(m => m.id)
-    );
-
-    document.querySelectorAll('.destination-card').forEach(card => {
-      const dest = card.dataset.dest;
-      const isAvailable = activeMaterias.has(dest);
-
-      if (subjectDestinations[dest]) {
-        subjectDestinations[dest].isPlayable = isAvailable;
-      }
-
-      let badge = card.querySelector('.destination-badge');
-      if (!badge) {
-        badge = document.createElement('span');
-        badge.className = 'destination-badge';
-        const info = card.querySelector('.destination-info');
-        if (info) info.appendChild(badge);
-      }
-
-      if (isAvailable) {
-        badge.className = 'destination-badge badge-active';
-        badge.textContent = 'DISPONÍVEL';
-      } else {
-        badge.className = 'destination-badge badge-soon';
-        badge.textContent = 'EM BREVE';
-      }
-    });
-  }
+  window.addEventListener('bena:serie-alterada', renderDestinations);
 
   // ==========================================================================
   // 7. Inicialização
   // ==========================================================================
   randomizeBookImages();
-  updateSubjectBadges();
+  renderDestinations();
 
 })();

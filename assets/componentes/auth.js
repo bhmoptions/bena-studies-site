@@ -20,6 +20,31 @@ const db   = getFirestore(app);
 
 let isAuthInitialized = false;
 const authReadyCallbacks = [];
+const seriePadraoDoSite = Number(window.BENA_CONFIG?.serieAtual) || null;
+
+function atualizarSerieAtiva(serie, origem = 'perfil') {
+  const serieNormalizada = Number(serie);
+  if (!Number.isInteger(serieNormalizada) || serieNormalizada < 1) return false;
+
+  window.BENA_CONFIG = window.BENA_CONFIG || {};
+  const mudou = Number(window.BENA_CONFIG.serieAtual) !== serieNormalizada;
+  window.BENA_CONFIG.serieAtual = serieNormalizada;
+
+  if (mudou) {
+    window.dispatchEvent(new CustomEvent('bena:serie-alterada', {
+      detail: { serie: serieNormalizada, origem }
+    }));
+  }
+  return true;
+}
+
+function concluirInicializacaoAuth(user) {
+  isAuthInitialized = true;
+  while (authReadyCallbacks.length) {
+    const cb = authReadyCallbacks.shift();
+    try { cb(user); } catch (e) { console.error(e); }
+  }
+}
 
 // Interface global para outros modulos (ranking, jogos...)
 window.BENA_AUTH = {
@@ -213,8 +238,9 @@ function showLoginModal(onSuccess) {
       const cred = await signInWithEmailAndPassword(auth, email, pass);
       const snap = await getDoc(doc(db, 'usuarios', cred.user.uid));
       const perfil = snap.exists() ? snap.data() : null;
-      if (perfil && perfil.nome && perfil.escola) {
-        window.BENA_AUTH.sincronizarAluno(perfil.nome, perfil.escola); // sync com MySQL (non-blocking)
+      if (perfil && perfil.nome && perfil.escola && perfil.serie) {
+        atualizarSerieAtiva(perfil.serie);
+        window.BENA_AUTH.sincronizarAluno(perfil.nome, perfil.escola, perfil.serie); // sync com MySQL (non-blocking)
         modal.close();
         if (typeof onSuccess === 'function') onSuccess();
       } else {
@@ -321,6 +347,7 @@ function showPerfilModal(user, perfilExistente, onSuccess) {
         return;
       }
       await salvarPerfil(user.uid, user.email, nome, escola, serie);
+      atualizarSerieAtiva(serie);
       window.BENA_AUTH.sincronizarAluno(nome, escola, serie); // sync com MySQL (non-blocking)
       updateLoginBtn(user, nome);
       modal.close();
@@ -408,6 +435,7 @@ function showEditarPerfilModal(user, perfil) {
         }
       }
       await atualizarPerfil(user.uid, nomeAtual, novoNome, novaEscola, novaSerie);
+      atualizarSerieAtiva(novaSerie);
       window.BENA_AUTH.sincronizarAluno(novoNome, novaEscola, novaSerie); // sync com MySQL (non-blocking)
       updateLoginBtn(user, novoNome);
       modal.close();
@@ -442,27 +470,30 @@ if (loginBtn) {
 }
 
 onAuthStateChanged(auth, async (user) => {
-  isAuthInitialized = true;
-  while (authReadyCallbacks.length) {
-    const cb = authReadyCallbacks.shift();
-    try { cb(user); } catch (e) { console.error(e); }
-  }
   if (user) {
-    const snap = await getDoc(doc(db, 'usuarios', user.uid));
-    const perfil = snap.exists() ? snap.data() : null;
-    const nome   = perfil?.nome || null;
-    const escola = perfil?.escola || null;
-    const serie  = perfil?.serie || null;
-    console.log('[BENA_AUTH] Usuario logado:', { email: user.email, nome, escola, serie });
-    updateLoginBtn(user, nome);
-    if (nome && escola && serie) {
-      window.BENA_AUTH.sincronizarAluno(nome, escola, serie);
-    } else if (modal) {
-      console.log('[BENA_AUTH] Perfil incompleto, solicitando preenchimento...');
-      showPerfilModal(user, perfil);
+    try {
+      const snap = await getDoc(doc(db, 'usuarios', user.uid));
+      const perfil = snap.exists() ? snap.data() : null;
+      const nome   = perfil?.nome || null;
+      const escola = perfil?.escola || null;
+      const serie  = perfil?.serie || null;
+      console.log('[BENA_AUTH] Usuario logado:', { email: user.email, nome, escola, serie });
+      updateLoginBtn(user, nome);
+      if (nome && escola && serie) {
+        atualizarSerieAtiva(serie);
+        window.BENA_AUTH.sincronizarAluno(nome, escola, serie);
+      } else if (modal) {
+        console.log('[BENA_AUTH] Perfil incompleto, solicitando preenchimento...');
+        showPerfilModal(user, perfil);
+      }
+    } catch (error) {
+      console.error('[BENA_AUTH] Não foi possível carregar o perfil:', error);
+      updateLoginBtn(user, null);
     }
   } else {
     console.log('[BENA_AUTH] Nenhum usuario logado');
+    if (seriePadraoDoSite) atualizarSerieAtiva(seriePadraoDoSite, 'padrao-do-site');
     updateLoginBtn(null, null);
   }
+  concluirInicializacaoAuth(user);
 });
