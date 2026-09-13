@@ -212,3 +212,104 @@ body.standalone-game{background:var(--paper);min-height:100dvh}
   .room-page .room-puzzle.game-template-side { overflow: visible; }
   .room-puzzle h3 { font-size: 32px; }
 }
+
+/* O desafio mora no monitor e só é criado quando a criança chega ao computador. */
+.room-monitor[hidden] { display: none; }
+
+.room-monitor {
+  margin: 0 0 16px;
+}
+
+.room-monitor-shell {
+  --monitor-case: #252d39;
+  --monitor-edge: #10151d;
+  --monitor-screen: #dce9e8;
+  --monitor-screen-line: #96b5bc;
+  --monitor-ink: #26333b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.room-monitor-bezel {
+  width: 100%;
+  padding: clamp(11px, 1.25vw, 16px);
+  border: 3px solid var(--monitor-edge);
+  border-radius: 14px 14px 9px 9px;
+  background: linear-gradient(145deg, #3b4654, var(--monitor-case) 58%, #19212c);
+  box-shadow: inset 0 1px 0 #758394, 4px 5px 0 #554938;
+}
+
+.room-monitor-screen {
+  min-height: 164px;
+  padding: 14px;
+  border: 2px solid var(--monitor-screen-line);
+  border-radius: 5px;
+  background-color: var(--monitor-screen);
+  background-image: linear-gradient(#ffffff4d 1px, transparent 1px), linear-gradient(90deg, #ffffff33 1px, transparent 1px);
+  background-size: 18px 18px;
+  color: var(--monitor-ink);
+}
+
+.room-monitor-label {
+  margin: 0 0 8px !important;
+  color: #516e76 !important;
+  font-family: var(--body);
+  font-size: 9px !important;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  line-height: 1.2 !important;
+}
+
+.room-monitor-screen .room-clue {
+  margin: 0 !important;
+  color: var(--monitor-ink) !important;
+  font-size: 15px !important;
+  font-weight: 700;
+  line-height: 1.45 !important;
+}
+
+.room-monitor-screen .room-clue:focus,
+.room-monitor-screen .room-clue:focus-visible { outline: none; }
+
+.room-monitor-stem {
+  width: 18%;
+  height: 13px;
+  margin-top: -1px;
+  border-inline: 3px solid var(--monitor-edge);
+  background: var(--monitor-case);
+}
+
+.room-monitor-base {
+  width: 43%;
+  height: 11px;
+  border: 3px solid var(--monitor-edge);
+  border-radius: 8px 8px 4px 4px;
+  background: #374250;
+  box-shadow: 3px 3px 0 #554938;
+}
+
+.room-monitor-screen .room-options,
+.room-monitor-screen .room-adjust { margin-top: 14px; }
+
+.room-monitor-screen .room-options button,
+.room-monitor-screen .room-adjust button,
+.room-monitor-screen .room-check {
+  border-color: #7e9fa8;
+  background: #f6f0de;
+  color: var(--monitor-ink);
+}
+
+.room-monitor-screen .room-options button[aria-pressed="true"] {
+  background: var(--monitor-ink);
+  color: #f6f0de;
+}
+
+.room-monitor-screen .room-check { margin-top: 12px; }
+.room-monitor-screen .pair-state { color: var(--monitor-ink) !important; }
+.room-monitor-screen .room-crystals { color: #9c6d18; }
+
+@media(max-width:850px) {
+  .room-monitor-bezel { max-width: 520px; }
+  .room-monitor-screen { min-height: 0; }
+}

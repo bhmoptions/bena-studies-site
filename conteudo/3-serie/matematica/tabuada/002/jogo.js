@@ -53,9 +53,9 @@
       function showRoom() {
         respawnDelay = 0; x = 75; y = 373; vy = 0; grounded = true; target = null; held.clear(); tried = false; solved = false; opened = false; exiting = false;
         const level = levels[phase];
-        container.innerHTML = `<div class="room-layout"><div><div class="room-world" role="group" aria-label="Sala explorável. Use as setas esquerda e direita para andar e a seta para cima para pular. Clique no painel ou chegue à sua frente para abrir seu conteúdo."><div class="room-scene"><div class="room-grid"></div>${roomGeometry()}<button class="room-console" aria-label="Usar o computador"><img class="room-computer" src="../../../../../assets/images/TLA/Desktop.png" alt=""></button><button class="room-door" aria-label="Ir até a porta"><span class="door-lamp"></span><b>SAÍDA</b><i></i></button><div class="room-player" aria-hidden="true"><span class="player-eyes">••</span><span class="player-book"></span></div><div class="room-floor"></div></div></div></div><aside class="room-puzzle game-template-side" aria-label="Desafio da fase"><p class="room-game-title">De novo essa fase?</p><h3 tabindex="-1">${level.title}</h3><p class="room-clue">${level.clue}</p><div class="feedback" role="status" aria-live="polite" aria-atomic="true"></div><div class="room-mechanism"></div><button class="primary room-next" hidden>Atravessar a porta →</button><button class="room-instructions-button" aria-haspopup="dialog">ⓘ Instruções</button></aside></div><dialog class="room-instructions" aria-labelledby="instructions-title"><h2 id="instructions-title">Como jogar</h2><ul><li><strong>Sua missão:</strong> resolva os desafios de tabuada para abrir a porta e atravessar as cinco fases. A sala é a mesma, mas a regra muda!</li><li><strong>Ande e pule:</strong> use ← e → para andar e ↑ para pular.</li><li><strong>Explore com um clique:</strong> clique ou toque no painel e na porta para interagir com eles.</li><li><strong>Cuidado com a eletricidade:</strong> pule os arcos vermelhos. Se encostar, o personagem reaparece no início da sala. Suas respostas continuam guardadas e você não perde pontos.</li><li><strong>O painel abre sozinho:</strong> clique nele ou leve o personagem até a sua frente. O conteúdo aparece automaticamente, sem apertar outra tecla.</li></ul><button class="primary instructions-close">Entendi! Vamos jogar →</button></dialog>`;
+        container.innerHTML = `<div class="room-layout"><div><div class="room-world" role="group" aria-label="Sala explorável. Use as setas esquerda e direita para andar e a seta para cima para pular. Leve o personagem até a frente do computador para abrir o desafio."><div class="room-scene"><div class="room-grid"></div>${roomGeometry()}<button class="room-console" aria-label="Computador: leve o personagem até ele para usar"><img class="room-computer" src="../../../../../assets/images/TLA/Desktop.png" alt=""></button><button class="room-door" aria-label="Ir até a porta"><span class="door-lamp"></span><b>SAÍDA</b><i></i></button><div class="room-player" aria-hidden="true"><span class="player-eyes">••</span><span class="player-book"></span></div><div class="room-floor"></div></div></div></div><aside class="room-puzzle game-template-side" aria-label="Desafio da fase"><p class="room-game-title">De novo essa fase?</p><h3 tabindex="-1">${level.title}</h3><div class="room-monitor" hidden></div><div class="feedback" role="status" aria-live="polite" aria-atomic="true"></div><button class="primary room-next" hidden>Atravessar a porta →</button><button class="room-instructions-button" aria-haspopup="dialog">ⓘ Instruções</button></aside></div><dialog class="room-instructions" aria-labelledby="instructions-title"><h2 id="instructions-title">Como jogar</h2><ul><li><strong>Sua missão:</strong> resolva os desafios de tabuada para abrir a porta e atravessar as cinco fases. A sala é a mesma, mas a regra muda!</li><li><strong>Ande e pule:</strong> use ← e → para andar e ↑ para pular.</li><li><strong>Use o computador:</strong> leve o personagem até a frente dele. O conteúdo aparece automaticamente, sem apertar outra tecla.</li><li><strong>Cuidado com a eletricidade:</strong> pule os arcos vermelhos. Se encostar, o personagem reaparece no início da sala. Suas respostas continuam guardadas e você não perde pontos.</li><li><strong>Explore a saída:</strong> depois de resolver o computador, clique ou toque na porta para atravessá-la.</li></ul><button class="primary instructions-close">Entendi! Vamos jogar →</button></dialog>`;
         container.querySelector('.room-puzzle h3').focus();
-        container.querySelector('.room-console').onclick = () => { openPanel(); target = null; };
+        container.querySelector('.room-console').onclick = () => { if (atComputer()) openPanel(); else status('Chegue à frente do computador para usá-lo.'); };
         container.querySelector('.room-door').onclick = () => { if (solved) beginExit(); else status('A porta ainda está trancada. Resolva o computador primeiro.'); };
         const instructions = container.querySelector('.room-instructions');
         container.querySelector('.room-instructions-button').onclick = () => { held.clear(); target = null; instructions.showModal(); };
@@ -65,12 +65,17 @@
         draw();
       }
       function status(message) { const door = container.querySelector('.room-door'); if(door) door.setAttribute('aria-label', message); }
+      // A frente acessível do computador fica logo abaixo da plataforma central.
+      function atComputer() { return grounded && Math.abs(x - 390) < 50; }
       function jump() { if (!respawnDelay && grounded && container.querySelector('.room-world')) { vy = -527; grounded = false; } }
       function openPanel() {
         if (opened) return;
         opened = true; target = null;
         status('Painel ligado. Leia a regra desta sala e experimente!');
-        const level = levels[phase], panel = container.querySelector('.room-mechanism');
+        const level = levels[phase], monitor = container.querySelector('.room-monitor');
+        monitor.hidden = false;
+        monitor.innerHTML = `<section class="room-monitor-shell" aria-label="Monitor do computador"><div class="room-monitor-bezel"><div class="room-monitor-screen"><p class="room-monitor-label">COMPUTADOR DA SALA</p><p class="room-clue" tabindex="-1">${level.clue}</p><div class="room-mechanism"></div></div></div><div class="room-monitor-stem" aria-hidden="true"></div><div class="room-monitor-base" aria-hidden="true"></div></section>`;
+        const panel = monitor.querySelector('.room-mechanism');
         if (level.type === 'choice') {
           panel.innerHTML = `<div class="room-options">${level.choices.map((v,i)=>`<button data-choice="${i}">${v}</button>`).join('')}</div>`;
           panel.querySelectorAll('[data-choice]').forEach(button=>button.onclick=()=>{
@@ -182,7 +187,7 @@
             respawnDelay=.65;target=null;held.clear();vy=0;
             container.querySelector('.room-player').classList.add('electrocuted');
           }
-          if(!respawnDelay&&Math.abs(x-390)<50&&Math.abs(y+32-215)<8)openPanel();
+          if(!respawnDelay&&atComputer())openPanel();
           if(solved&&x+28>=728&&y+32>=404)advancePhase();
           draw(direction!==0);
         }
