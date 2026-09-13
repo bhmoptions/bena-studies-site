@@ -46,23 +46,23 @@
   "levels": [
     {
       "id": 1,
-      "positions": [1]
+      "positions": [2]
     },
     {
       "id": 2,
-      "positions": [1]
+      "positions": [4]
     },
     {
       "id": 3,
-      "positions": [1]
+      "positions": [4]
     },
     {
       "id": 4,
-      "positions": [1]
+      "positions": [4]
     },
     {
       "id": 5,
-      "positions": [1]
+      "positions": [4]
     }
   ]
 }

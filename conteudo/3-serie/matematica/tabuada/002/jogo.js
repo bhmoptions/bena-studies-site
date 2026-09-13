@@ -2,6 +2,7 @@
 (() => {
   const css = new URL('estilo.css', document.currentScript.src).href;
   const monitorPositionUrl = new URL('Config/monitor_position.json', document.currentScript.src);
+  const questionsUrl = new URL('Config/q&a.json', document.currentScript.src);
   if (!document.querySelector(`link[href="${css}"]`)) {
     const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = css; document.head.append(link);
   }
@@ -12,8 +13,9 @@
       const controller = new AbortController();
       const signal = controller.signal;
       let frame, stopped = false, phase = 0, errors = 0, first = 0, tried = false, solved = false, opened = false, exiting = false;
-      let monitorPosition = { left: '46%', top: '41.647%', leftPercent: 46 };
+      let monitorPosition = { left: '46%', top: '41.647%', leftPercent: 46, topPercent: 41.647 };
       let monitorPositionConfig = { levels: [] };
+      let levels = [], activeQuestion = null, questionConfigError = null;
       let x = 75, y = 373, vy = 0, grounded = true, target = null, last = 0;
       const held = new Set();
       // Uma única geometria alimenta desenho e colisões, no espaço de 800 × 425.
@@ -41,13 +43,129 @@
       }
       const key = '3-serie/matematica/tabuada/002';
       let round;
-      const levels = [
-        { title: 'A porta gosta de números', clue: 'O painel pede 3 × 4. Encontre o resultado para ligar a porta.', type: 'choice', choices: ['7', '12', '16'], right: 1, hint: '3 grupos de 4: 4 + 4 + 4.', explanation: '3 × 4 = 12. A porta recebeu energia!' },
-        { title: 'Desta vez, falta uma peça', clue: 'Agora o resultado já está escrito: 4 × ? = 20. Ajuste a engrenagem.', type: 'dial', right: 5, hint: 'Conte de 4 em 4: 4, 8, 12, 16, 20. Quantos grupos?', explanation: '4 × 5 = 20. A engrenagem encaixou!' },
-        { title: 'Não é para somar os números', clue: 'A máquina precisa de 3 grupos com 2 cristais cada. Carregue os cristais e confirme.', type: 'groups', right: 6, hint: 'São 2 + 2 + 2 cristais. O botão + coloca um cristal.', explanation: '3 × 2 = 6 cristais. Energia completa!' },
-        { title: 'Duas chaves, uma saída', clue: 'A fechadura marca 24. Escolha duas chaves que, multiplicadas, abrem a porta.', type: 'pair', choices: [2, 3, 4, 6], hint: 'Experimente pensar na tabuada do 4: qual número multiplicado por 4 dá 24?', explanation: '4 × 6 = 24. As duas chaves funcionaram!' },
-        { title: 'A regra virou do avesso', clue: 'O painel está ao contrário! Desta vez, aperte a conta ERRADA para desligar o bloqueio.', type: 'choice', choices: ['2 × 6 = 12', '3 × 5 = 18', '4 × 4 = 16'], right: 1, hint: 'Confira cada conta. 3 grupos de 5 são 5 + 5 + 5.', explanation: 'Você encontrou a intrusa! 3 × 5 = 15, não 18.' }
-      ];
+      const levelTitles = {
+        1: 'A porta gosta de números',
+        2: 'Desta vez, falta uma peça',
+        3: 'Não é para somar os números',
+        4: 'Duas chaves, uma saída',
+        5: 'A regra virou do avesso'
+      };
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+      }
+      function configurationError(message) { throw new Error(`q&a.json: ${message}`); }
+      function numberFrom(value, context) {
+        const number = Number(value);
+        if (!Number.isFinite(number)) configurationError(`${context} precisa ser um número.`);
+        return number;
+      }
+      function numericList(value, context) {
+        if (!Array.isArray(value) || !value.length) configurationError(`${context} precisa ter pelo menos um valor.`);
+        return value.map((item, index) => numberFrom(item, `${context} (${index + 1})`));
+      }
+      function questionText(value, context) {
+        if (typeof value !== 'string' || !value.trim()) configurationError(`${context} precisa ter o texto da pergunta.`);
+        return value.trim();
+      }
+      function normalizeQuestion(type, question, context) {
+        if (!question || typeof question !== 'object') configurationError(`${context} é inválida.`);
+        if (type === 'pair') {
+          const target = numberFrom(question.target, `${context}: target`);
+          const options = numericList(question.options, `${context}: options`);
+          const answer = numericList(question.answer, `${context}: answer`);
+          if (answer.length !== 2 || new Set(answer).size !== 2 || answer.some(value => !options.includes(value))) {
+            configurationError(`${context}: answer precisa ter duas opções diferentes da lista.`);
+          }
+          return { target, options, answer };
+        }
+        const prompt = questionText(question.question, context);
+        if (type === 'choice') {
+          if (!Array.isArray(question.options) || !question.options.length || question.options.some(option => !['string', 'number'].includes(typeof option))) {
+            configurationError(`${context}: options precisa ter pelo menos uma alternativa de texto ou número.`);
+          }
+          const options = question.options.map(String);
+          const answer = String(question.answer);
+          if (!options.includes(answer)) configurationError(`${context}: answer precisa estar em options.`);
+          return { question: prompt, options, answer };
+        }
+        const options = numericList(question.options, `${context}: options`);
+        const answer = numberFrom(question.answer, `${context}: answer`);
+        if (!options.includes(answer)) configurationError(`${context}: answer precisa estar em options.`);
+        return { question: prompt, options, answer };
+      }
+      function normalizeQuestionConfig(config) {
+        if (!config || typeof config !== 'object' || !Array.isArray(config.levels) || !config.levels.length) {
+          configurationError('levels precisa conter pelo menos uma fase.');
+        }
+        const seenIds = new Set();
+        const supportedTypes = new Set(['choice', 'dial', 'groups', 'pair']);
+        return config.levels.map((level, index) => {
+          const id = numberFrom(level?.id, `Fase ${index + 1}: id`);
+          if (seenIds.has(id)) configurationError(`A fase ${id} foi repetida.`);
+          seenIds.add(id);
+          const type = level?.type;
+          if (!supportedTypes.has(type)) configurationError(`Fase ${id}: type inválido.`);
+          if (!Array.isArray(level.questions) || !level.questions.length) configurationError(`Fase ${id}: questions precisa ter pelo menos uma pergunta.`);
+          return {
+            id,
+            type,
+            questions: level.questions.map((question, questionIndex) => normalizeQuestion(type, question, `Fase ${id}, pergunta ${questionIndex + 1}`))
+          };
+        }).sort((firstLevel, secondLevel) => firstLevel.id - secondLevel.id);
+      }
+      function chooseQuestion(level) {
+        return level.questions[Math.floor(Math.random() * level.questions.length)];
+      }
+      function titleFor(level) { return levelTitles[level.id] || `Desafio ${level.id}`; }
+      function isReverseChoice(question) { return /incorret|errad/i.test(question.question); }
+      function equationWithAnswer(question, answer) {
+        return String(question).replace(/\bX\b|\?/i, String(answer));
+      }
+      function equationHtml(question, answer) {
+        return escapeHtml(question).replace(/\bX\b|\?/i, escapeHtml(answer));
+      }
+      function clueFor(level, question) {
+        if (level.type === 'dial') return `Agora o resultado já está escrito: ${equationHtml(question.question, '?')}. Ajuste a engrenagem.`;
+        if (level.type === 'groups') return `A máquina precisa resolver ${escapeHtml(question.question)}. Carregue os cristais e confirme.`;
+        if (level.type === 'pair') return `A fechadura marca ${escapeHtml(question.target)}. Escolha duas chaves que, multiplicadas, abrem a porta.`;
+        return isReverseChoice(question) ? escapeHtml(question.question) : `O painel pede ${escapeHtml(question.question)}. Encontre o resultado para ligar a porta.`;
+      }
+      function hintFor(level, question) {
+        if (level.type === 'dial') return 'Conte de um fator em um fator até chegar ao resultado.';
+        if (level.type === 'groups') return 'Pense em grupos iguais e conte os cristais com calma.';
+        if (level.type === 'pair') return `Procure duas chaves que formem ${question.target}.`;
+        return isReverseChoice(question) ? 'Confira cada conta usando a tabuada.' : 'Use a tabuada para conferir cada alternativa.';
+      }
+      function explanationFor(level, question) {
+        if (level.type === 'dial') return `${equationWithAnswer(question.question, question.answer)}. A engrenagem encaixou!`;
+        if (level.type === 'groups') return `${question.question} = ${question.answer} cristais. Energia completa!`;
+        if (level.type === 'pair') return `${question.answer.join(' × ')} = ${question.target}. As duas chaves funcionaram!`;
+        return isReverseChoice(question) ? `A conta incorreta é ${question.answer}.` : `${question.question} = ${question.answer}.`;
+      }
+      function dialEquation(question, amount, adjusted) {
+        const displayValue = adjusted ? amount : '?';
+        return escapeHtml(question).replace(/\bX\b|\?/i, `<span class="room-dial-value">${escapeHtml(displayValue)}</span>`);
+      }
+      function equalPair(firstPair, secondPair) {
+        return firstPair.length === secondPair.length
+          && [...firstPair].sort((first, second) => first - second).every((value, index) => value === [...secondPair].sort((first, second) => first - second)[index]);
+      }
+      function loadQuestions() {
+        return fetch(questionsUrl)
+          .then(response => {
+            if (!response.ok) throw new Error(`q&a.json: ${response.status}`);
+            return response.json();
+          })
+          .then(config => { levels = normalizeQuestionConfig(config); })
+          .catch(error => {
+            questionConfigError = error;
+            console.error('[Jogo] Não foi possível carregar q&a.json.', error);
+          });
+      }
+      function showConfigurationError() {
+        container.innerHTML = `<section class="room-finish"><h2 tabindex="-1">Não foi possível carregar os desafios.</h2><p>Confira o arquivo <code>Config/q&amp;a.json</code> e atualize a página.</p></section>`;
+        container.querySelector('h2').focus();
+      }
       function percentValue(value, fallback) {
         const number = typeof value === 'number' ? value : Number.parseFloat(String(value).replace('%', ''));
         return Number.isFinite(number) ? Math.max(0, Math.min(100, number)) : fallback;
@@ -55,7 +173,7 @@
       function normalizeMonitorPosition(position) {
         const leftPercent = percentValue(position?.left, 46);
         const topPercent = percentValue(position?.top, 41.647);
-        return { left: `${leftPercent}%`, top: `${topPercent}%`, leftPercent };
+        return { left: `${leftPercent}%`, top: `${topPercent}%`, leftPercent, topPercent };
       }
       function chooseMonitorPosition(levelNumber) {
         const levelConfig = monitorPositionConfig.levels?.find(item => Number(item.id) === levelNumber);
@@ -89,7 +207,8 @@
         respawnDelay = 0; x = 75; y = 373; vy = 0; grounded = true; target = null; held.clear(); tried = false; solved = false; opened = false; exiting = false;
         monitorPosition = chooseMonitorPosition(phase + 1);
         const level = levels[phase];
-        container.innerHTML = `<div class="room-layout"><div><div class="room-world" role="group" aria-label="Sala explorável. Use as setas esquerda e direita para andar e a seta para cima para pular. Leve o personagem até a frente do computador para abrir o desafio."><div class="room-scene"><div class="room-grid"></div>${roomGeometry()}<button class="room-console" style="left:${monitorPosition.left};top:${monitorPosition.top}" aria-label="Computador: leve o personagem até ele para usar"><img class="room-computer" src="../../../../../assets/images/TLA/Desktop.png" alt=""></button><button class="room-door" aria-label="Ir até a porta"><span class="door-lamp"></span><b>SAÍDA</b><i></i></button><div class="room-player" aria-hidden="true"><span class="player-eyes">••</span><span class="player-book"></span></div><div class="room-floor"></div></div></div></div><aside class="room-puzzle game-template-side" aria-label="Desafio da fase"><p class="room-game-title">De novo essa fase?</p><h3 tabindex="-1">${level.title}</h3><div class="room-monitor" hidden></div><div class="feedback" role="status" aria-live="polite" aria-atomic="true"></div><button class="primary room-next" hidden>Atravessar a porta →</button><button class="room-instructions-button" aria-haspopup="dialog">ⓘ Instruções</button></aside></div><dialog class="room-instructions" aria-labelledby="instructions-title"><h2 id="instructions-title">Como jogar</h2><ul><li><strong>Sua missão:</strong> resolva os desafios de tabuada para abrir a porta e atravessar as cinco fases. A sala é a mesma, mas a regra muda!</li><li><strong>Ande e pule:</strong> use ← e → para andar e ↑ para pular.</li><li><strong>Use o computador:</strong> leve o personagem até a frente dele. O conteúdo aparece automaticamente, sem apertar outra tecla.</li><li><strong>Cuidado com a eletricidade:</strong> pule os arcos vermelhos. Se encostar, o personagem reaparece no início da sala. Suas respostas continuam guardadas e você não perde pontos.</li><li><strong>Explore a saída:</strong> depois de resolver o computador, clique ou toque na porta para atravessá-la.</li></ul><button class="primary instructions-close">Entendi! Vamos jogar →</button></dialog>`;
+        activeQuestion = chooseQuestion(level);
+        container.innerHTML = `<div class="room-layout"><div><div class="room-world" role="group" aria-label="Sala explorável. Use as setas esquerda e direita para andar e a seta para cima para pular. Leve o personagem até a frente do computador para abrir o desafio."><div class="room-scene"><div class="room-grid"></div>${roomGeometry()}<button class="room-console" style="left:${monitorPosition.left};top:${monitorPosition.top}" aria-label="Computador: leve o personagem até ele para usar"><img class="room-computer" src="../../../../../assets/images/TLA/Desktop.png" alt=""></button><button class="room-door" aria-label="Ir até a porta"><span class="door-lamp"></span><b>SAÍDA</b><i></i></button><div class="room-player" aria-hidden="true"><span class="player-eyes">••</span><span class="player-book"></span></div><div class="room-floor"></div></div></div></div><aside class="room-puzzle game-template-side" aria-label="Desafio da fase"><p class="room-game-title">De novo essa fase?</p><h3 tabindex="-1">${titleFor(level)}</h3><div class="room-monitor" hidden></div><div class="feedback" role="status" aria-live="polite" aria-atomic="true"></div><button class="primary room-next" hidden>Atravessar a porta →</button><button class="room-instructions-button" aria-haspopup="dialog">ⓘ Instruções</button></aside></div><dialog class="room-instructions" aria-labelledby="instructions-title"><h2 id="instructions-title">Como jogar</h2><ul><li><strong>Sua missão:</strong> resolva os desafios de tabuada para abrir a porta e atravessar as cinco fases. A sala é a mesma, mas a regra muda!</li><li><strong>Ande e pule:</strong> use ← e → para andar e ↑ para pular.</li><li><strong>Use o computador:</strong> leve o personagem até a frente dele. O conteúdo aparece automaticamente, sem apertar outra tecla.</li><li><strong>Cuidado com a eletricidade:</strong> pule os arcos vermelhos. Se encostar, o personagem reaparece no início da sala. Suas respostas continuam guardadas e você não perde pontos.</li><li><strong>Explore a saída:</strong> depois de resolver o computador, clique ou toque na porta para atravessá-la.</li></ul><button class="primary instructions-close">Entendi! Vamos jogar →</button></dialog>`;
         container.querySelector('.room-puzzle h3').focus();
         container.querySelector('.room-console').onclick = () => { if (atComputer()) openPanel(); else status('Chegue à frente do computador para usá-lo.'); };
         container.querySelector('.room-door').onclick = () => { if (solved) beginExit(); else status('A porta ainda está trancada. Resolva o computador primeiro.'); };
@@ -101,57 +220,69 @@
         draw();
       }
       function status(message) { const door = container.querySelector('.room-door'); if(door) door.setAttribute('aria-label', message); }
-      // A frente acessível do computador fica logo abaixo da plataforma central.
-      function atComputer() { return grounded && Math.abs(x - (monitorPosition.leftPercent * 8 + 22)) < 50; }
+      // A frente acessível acompanha a posição horizontal e vertical configurada para o computador.
+      function atComputer() {
+        const interactionX = monitorPosition.leftPercent * 8 + 22;
+        const interactionY = monitorPosition.topPercent * 4.25 + 6;
+        return grounded && Math.abs(x - interactionX) < 50 && Math.abs(y - interactionY) < 200;
+      }
       function jump() { if (!respawnDelay && grounded && container.querySelector('.room-world')) { vy = -527; grounded = false; } }
       function openPanel() {
         if (opened) return;
         opened = true; target = null;
         status('Painel ligado. Leia a regra desta sala e experimente!');
-        const level = levels[phase], monitor = container.querySelector('.room-monitor');
+        const level = levels[phase], question = activeQuestion, monitor = container.querySelector('.room-monitor');
         monitor.hidden = false;
-        monitor.innerHTML = `<section class="room-monitor-shell" aria-label="Monitor do computador"><div class="room-monitor-bezel"><div class="room-monitor-screen"><p class="room-clue" tabindex="-1">${level.clue}</p><div class="room-mechanism"></div></div></div><div class="room-monitor-stem" aria-hidden="true"></div><div class="room-monitor-base" aria-hidden="true"></div></section>`;
+        monitor.innerHTML = `<section class="room-monitor-shell" aria-label="Monitor do computador"><div class="room-monitor-bezel"><div class="room-monitor-screen"><p class="room-clue" tabindex="-1">${clueFor(level, question)}</p><div class="room-mechanism"></div></div></div><div class="room-monitor-stem" aria-hidden="true"></div><div class="room-monitor-base" aria-hidden="true"></div></section>`;
         const panel = monitor.querySelector('.room-mechanism');
         if (level.type === 'choice') {
-          panel.innerHTML = `<div class="room-options">${level.choices.map((v,i)=>`<button data-choice="${i}">${v}</button>`).join('')}</div>`;
+          panel.innerHTML = `<div class="room-options">${question.options.map((option, index) => `<button data-choice="${index}">${escapeHtml(option)}</button>`).join('')}</div>`;
           panel.querySelectorAll('[data-choice]').forEach(button=>button.onclick=()=>{
             if (solved || button.disabled) return;
-            const correct = Number(button.dataset.choice) === level.right;
-            button.disabled = true; button.classList.add(correct ? 'correct' : 'retry'); button.textContent = `${correct ? '✓' : '×'} ${level.choices[Number(button.dataset.choice)]}`;
+            const option = question.options[Number(button.dataset.choice)];
+            const correct = option === question.answer;
+            button.disabled = true; button.classList.add(correct ? 'correct' : 'retry'); button.textContent = `${correct ? '✓' : '×'} ${option}`;
             judge(correct);
           });
         } else if (level.type === 'dial' || level.type === 'groups') {
-          let amount = level.type === 'dial' ? 1 : 0;
+          const values = question.options;
+          const initialValue = level.type === 'dial' && values.includes(1) ? 1 : level.type === 'groups' && values.includes(0) ? 0 : values[0];
+          let amountIndex = values.indexOf(initialValue), amount = values[amountIndex];
           let adjusted = false;
-          const max = level.type === 'dial' ? 10 : 12;
           panel.innerHTML = `<div class="room-adjust"><button data-minus aria-label="Diminuir">−</button><output aria-live="polite"></output><button data-plus aria-label="Aumentar">+</button></div><div class="room-crystals" aria-hidden="true"></div><button class="topic room-check">${level.type === 'dial' ? 'Testar engrenagem' : 'Carregar a máquina'} →</button>`;
-          const render = () => {const dialValue = !adjusted && amount === 1 ? '?' : amount; panel.querySelector('output').innerHTML = level.type === 'dial' ? `4 × <span class="room-dial-value">${dialValue}</span> = 20` : `${amount} cristais`; panel.querySelector('.room-crystals').textContent = level.type === 'groups' ? '◆ '.repeat(amount) : ''; panel.querySelector('[data-minus]').disabled = amount === 0; panel.querySelector('[data-plus]').disabled = amount === max;};
+          const render = () => {
+            panel.querySelector('output').innerHTML = level.type === 'dial' ? dialEquation(question.question, amount, adjusted) : `${escapeHtml(amount)} cristais`;
+            panel.querySelector('.room-crystals').textContent = level.type === 'groups' ? '◆ '.repeat(amount) : '';
+            panel.querySelector('[data-minus]').disabled = amountIndex === 0;
+            panel.querySelector('[data-plus]').disabled = amountIndex === values.length - 1;
+          };
           let previousWrong = null;
-          panel.querySelector('[data-minus]').onclick = () => {if(!solved) {adjusted = true; amount = Math.max(0,amount-1);render();panel.querySelector('.room-check').disabled=false;}};
-          panel.querySelector('[data-plus]').onclick = () => {if(!solved) {adjusted = true; amount = Math.min(max,amount+1);render();panel.querySelector('.room-check').disabled=false;}};
-          panel.querySelector('.room-check').onclick = () => { if (solved || amount === previousWrong) return; const correct = amount === level.right; if(!correct) {previousWrong=amount;panel.querySelector('.room-check').disabled=true;} judge(correct); };
+          panel.querySelector('[data-minus]').onclick = () => {if(!solved) {adjusted = true; amountIndex = Math.max(0, amountIndex - 1); amount = values[amountIndex]; render(); panel.querySelector('.room-check').disabled = false;}};
+          panel.querySelector('[data-plus]').onclick = () => {if(!solved) {adjusted = true; amountIndex = Math.min(values.length - 1, amountIndex + 1); amount = values[amountIndex]; render(); panel.querySelector('.room-check').disabled = false;}};
+          panel.querySelector('.room-check').onclick = () => { if (solved || amount === previousWrong) return; const correct = amount === question.answer; if(!correct) {previousWrong=amount;panel.querySelector('.room-check').disabled=true;} judge(correct); };
           render();
         } else {
           const selected = new Set(), wrongPairs = new Set();
-          panel.innerHTML = `<div class="room-options room-keys">${level.choices.map(v=>`<button data-factor="${v}" aria-pressed="false">⚿ ${v}</button>`).join('')}</div><p class="pair-state" aria-live="polite">Escolha duas chaves.</p><button class="topic room-check" disabled>Testar as duas chaves →</button>`;
+          panel.innerHTML = `<div class="room-options room-keys">${question.options.map(option=>`<button data-factor="${option}" aria-pressed="false">⚿ ${option}</button>`).join('')}</div><p class="pair-state" aria-live="polite">Escolha duas chaves.</p><button class="topic room-check" disabled>Testar as duas chaves →</button>`;
           panel.querySelectorAll('[data-factor]').forEach(button=>button.onclick=()=>{
             if(solved)return;
             const n=Number(button.dataset.factor);
             if(selected.has(n))selected.delete(n);else if(selected.size<2)selected.add(n);
             button.setAttribute('aria-pressed',String(selected.has(n)));
-            panel.querySelector('.pair-state').textContent = selected.size===2 ? `${[...selected].join(' × ')} = 24?` : 'Escolha duas chaves.';
-            panel.querySelector('.room-check').disabled=selected.size!==2 || wrongPairs.has([...selected].sort().join(','));
+            const selectionKey = [...selected].sort((first, second) => first - second).join(',');
+            panel.querySelector('.pair-state').textContent = selected.size===2 ? `${[...selected].join(' × ')} = ${question.target}?` : 'Escolha duas chaves.';
+            panel.querySelector('.room-check').disabled=selected.size!==2 || wrongPairs.has(selectionKey);
           });
-          panel.querySelector('.room-check').onclick=()=>{if(solved||selected.size!==2)return; const correct=[...selected].reduce((a,b)=>a*b,1)===24; if(!correct){wrongPairs.add([...selected].sort().join(','));panel.querySelector('.room-check').disabled=true;}judge(correct);};
+          panel.querySelector('.room-check').onclick=()=>{if(solved||selected.size!==2)return; const selection = [...selected]; const correct = equalPair(selection, question.answer); if(!correct){wrongPairs.add(selection.sort((first, second) => first - second).join(','));panel.querySelector('.room-check').disabled=true;}judge(correct);};
         }
       }
       function judge(correct) {
         if(solved)return;
-        const level=levels[phase];
-        if(!correct){errors++;tried=true;feedback('error',level.hint);return;}
+        const level = levels[phase], question = activeQuestion;
+        if(!correct){errors++;tried=true;feedback('error',hintFor(level, question));return;}
         solved=true;if(!tried)first++;
         container.querySelectorAll('.room-mechanism button').forEach(b=>b.disabled=true);
-        feedback('success',level.explanation);
+        feedback('success',explanationFor(level, question));
         container.querySelector('.room-door').classList.add('unlocked');
         container.querySelector('.room-world').classList.add('powered');
         const next=container.querySelector('.room-next'); next.hidden=false; next.focus();
@@ -241,8 +372,9 @@
       window.addEventListener('keyup',e=>{if(e.key==='ArrowLeft')held.delete('left');if(e.key==='ArrowRight')held.delete('right');},{signal});
       window.addEventListener('blur',()=>held.clear(),{signal});
       document.addEventListener('visibilitychange',()=>{held.clear();last=0;},{signal});
-      loadMonitorPositions().finally(() => {
+      Promise.all([loadMonitorPositions(), loadQuestions()]).then(() => {
         if (stopped) return;
+        if (questionConfigError) { showConfigurationError(); return; }
         start();
         frame = requestAnimationFrame(tick);
       });
