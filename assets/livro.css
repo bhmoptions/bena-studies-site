@@ -927,12 +927,26 @@ html, body {
   color: #f3ecdc;
 }
 
-.destinations-empty p:last-child {
+.destinations-empty-message {
   max-width: 450px;
   margin: 7px auto 0;
   color: #c7cad4;
   font-size: 13px;
   line-height: 1.4;
+}
+
+.destinations-empty-available {
+  margin: 11px 0 0;
+  padding-top: 9px;
+  border-top: 1px solid rgba(215, 179, 106, 0.25);
+  color: #f3ecdc;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.destinations-empty-available span {
+  color: var(--gold);
+  font-weight: 700;
 }
 
 /* Espaçamento em torno da lombada/vinco central (entre coluna 2 e coluna 3) */
@@ -959,8 +973,13 @@ html, body {
   .destinations-empty h2 {
     font-size: 18px;
   }
-  .destinations-empty p:last-child {
+  .destinations-empty-message {
     font-size: 12px;
+  }
+  .destinations-empty-available {
+    margin-top: 9px;
+    padding-top: 8px;
+    font-size: 11px;
   }
   .destination-card:nth-child(4n + 2),
   .destination-card:nth-child(4n + 3) {

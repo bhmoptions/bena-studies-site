@@ -1636,6 +1636,19 @@
     return (serie?.materias || []).filter(materia => themesWithGames(materia).length > 0);
   }
 
+  function joinInPortuguese(items) {
+    if (items.length < 2) return items[0] || '';
+    if (items.length === 2) return `${items[0]} e ${items[1]}`;
+    return `${items.slice(0, -1).join(', ')} e ${items.at(-1)}`;
+  }
+
+  function availableSeriesWithGames() {
+    return Object.entries(window.BENA_CONTEUDO || {})
+      .filter(([, serie]) => subjectsWithGames(serie).length > 0)
+      .sort(([firstKey], [secondKey]) => Number(firstKey) - Number(secondKey))
+      .map(([serieKey, serie]) => serie?.nome || `${serieKey}ª série`);
+  }
+
   function renderDestinations() {
     const container = document.getElementById('destinationsContainer');
     if (!container) return;
@@ -1644,13 +1657,15 @@
     const materias = subjectsWithGames(serie);
 
     if (!materias.length) {
+      const seriesWithGames = availableSeriesWithGames();
       container.classList.add('is-empty');
       container.innerHTML = `
         <section class="destinations-empty" role="status">
           <span class="destinations-empty-star" aria-hidden="true">✦</span>
           <p class="destinations-empty-kicker">${escapeHtml(getSeriesName(serie)).toUpperCase()}</p>
           <h2>Novas aventuras estão a caminho!</h2>
-          <p>Ainda não há jogos disponíveis para a sua série, mas logo teremos novas brincadeiras para você explorar.</p>
+          <p class="destinations-empty-message">Ainda não há jogos disponíveis para a sua série, mas logo teremos novas brincadeiras para você explorar.</p>
+          ${seriesWithGames.length ? `<p class="destinations-empty-available"><span>Séries com jogos disponíveis:</span> ${escapeHtml(joinInPortuguese(seriesWithGames))}.</p>` : ''}
         </section>
       `;
       return;
