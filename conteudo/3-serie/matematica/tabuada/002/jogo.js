@@ -13,10 +13,14 @@
       const controller = new AbortController();
       const signal = controller.signal;
       let frame, stopped = false, phase = 0, errors = 0, first = 0, tried = false, solved = false, opened = false, exiting = false;
-      let monitorPosition = { left: '46%', top: '41.647%', leftPercent: 46, topPercent: 41.647 };
+      let monitorPosition = {
+        left: '46%', top: '41.647%', leftPercent: 46, topPercent: 41.647,
+        stand: { x: 390, y: 183, toleranceX: 18, toleranceY: 12 }, exitRoute: 'center'
+      };
       let monitorPositionConfig = { levels: [] };
       let levels = [], activeQuestion = null, questionConfigError = null;
       let x = 75, y = 373, vy = 0, grounded = true, target = null, last = 0;
+      let exitPlan = null;
       const held = new Set();
       // Uma única geometria alimenta desenho e colisões, no espaço de 800 × 425.
       const platforms = [
@@ -35,6 +39,53 @@
         {x:370,y:102,w:40,h:22,hanging:true},   // 7. Suspenso sob a plataforma do topo
         {x:615,y:152,w:90,h:22,hanging:true}    // 8. Suspenso sob a plataforma direita
       ];
+      // Cada rota percorre somente trechos livres entre plataformas e arcos.
+      // As coordenadas são as do espaço lógico da sala (800 × 425).
+      const doorFromFloor = [
+        { type: 'walk', x: 470, y: 373 },
+        { type: 'jump', x: 620, y: 373, apex: 96 },
+        { type: 'walk', x: 730, y: 373 }
+      ];
+      const exitRoutes = {
+        'upper-left': [
+          { type: 'walk', x: 195, y: 113 },
+          { type: 'drop', x: 250, y: 233 },
+          { type: 'walk', x: 280, y: 233 },
+          { type: 'drop', x: 300, y: 373 },
+          ...doorFromFloor
+        ],
+        'lower-left': [
+          { type: 'walk', x: 140, y: 283 },
+          { type: 'jump', x: 250, y: 233, apex: 100 },
+          { type: 'walk', x: 280, y: 233 },
+          { type: 'drop', x: 300, y: 373 },
+          ...doorFromFloor
+        ],
+        'top-center': [
+          { type: 'walk', x: 440, y: 58 },
+          { type: 'drop', x: 470, y: 183 },
+          { type: 'walk', x: 490, y: 183 },
+          { type: 'drop', x: 500, y: 373 },
+          ...doorFromFloor
+        ],
+        'center': [
+          { type: 'walk', x: 490, y: 183 },
+          { type: 'drop', x: 500, y: 373 },
+          ...doorFromFloor
+        ],
+        'upper-right': [
+          { type: 'walk', x: 560, y: 108 },
+          { type: 'drop', x: 470, y: 183 },
+          { type: 'walk', x: 490, y: 183 },
+          { type: 'drop', x: 500, y: 373 },
+          ...doorFromFloor
+        ],
+        'lower-right': [
+          { type: 'walk', x: 655, y: 243 },
+          { type: 'drop', x: 680, y: 373 },
+          { type: 'walk', x: 730, y: 373 }
+        ]
+      };
       let respawnDelay = 0;
       function roomGeometry() {
         const ledges = platforms.map(p => `<div class="room-platform lab-ledge" style="left:${p.left/8}%;top:${p.top/4.25}%;width:${(p.right-p.left)/8}%;height:${12/4.25}%"></div>`).join('');
@@ -170,10 +221,24 @@
         const number = typeof value === 'number' ? value : Number.parseFloat(String(value).replace('%', ''));
         return Number.isFinite(number) ? Math.max(0, Math.min(100, number)) : fallback;
       }
+      function coordinateValue(value, fallback, minimum, maximum) {
+        const number = Number(value);
+        return Number.isFinite(number) ? Math.max(minimum, Math.min(maximum, number)) : fallback;
+      }
       function normalizeMonitorPosition(position) {
         const leftPercent = percentValue(position?.left, 46);
         const topPercent = percentValue(position?.top, 41.647);
-        return { left: `${leftPercent}%`, top: `${topPercent}%`, leftPercent, topPercent };
+        const derivedStand = { x: leftPercent * 8 + 22, y: topPercent * 4.25 + 6 };
+        const stand = {
+          x: coordinateValue(position?.stand?.x, derivedStand.x, 20, 748),
+          y: coordinateValue(position?.stand?.y, derivedStand.y, 0, 373),
+          toleranceX: coordinateValue(position?.stand?.toleranceX, 18, 4, 80),
+          toleranceY: coordinateValue(position?.stand?.toleranceY, 12, 4, 80)
+        };
+        const exitRoute = typeof position?.exitRoute === 'string' && exitRoutes[position.exitRoute]
+          ? position.exitRoute
+          : null;
+        return { left: `${leftPercent}%`, top: `${topPercent}%`, leftPercent, topPercent, stand, exitRoute };
       }
       function chooseMonitorPosition(levelNumber) {
         const levelConfig = monitorPositionConfig.levels?.find(item => Number(item.id) === levelNumber);
@@ -185,7 +250,10 @@
             : availablePositions.find(position => Number(position.id) === Number(reference)))
           .filter(Boolean);
         const selected = positions.length ? positions[Math.floor(Math.random() * positions.length)] : null;
-        return normalizeMonitorPosition(selected || { left: 46, top: 41.647 });
+        return normalizeMonitorPosition(selected || {
+          left: 46, top: 41.647,
+          stand: { x: 390, y: 183, toleranceX: 18, toleranceY: 12 }, exitRoute: 'center'
+        });
       }
       function loadMonitorPositions() {
         return fetch(monitorPositionUrl)
@@ -204,7 +272,7 @@
         window.BenaFeedback.mostrar(container.querySelector('.room-puzzle .feedback'), state, detail, 'Ajuste o painel e tente novamente.');
       }
       function showRoom() {
-        respawnDelay = 0; x = 75; y = 373; vy = 0; grounded = true; target = null; held.clear(); tried = false; solved = false; opened = false; exiting = false;
+        respawnDelay = 0; x = 75; y = 373; vy = 0; grounded = true; target = null; exitPlan = null; held.clear(); tried = false; solved = false; opened = false; exiting = false;
         monitorPosition = chooseMonitorPosition(phase + 1);
         const level = levels[phase];
         activeQuestion = chooseQuestion(level);
@@ -220,11 +288,10 @@
         draw();
       }
       function status(message) { const door = container.querySelector('.room-door'); if(door) door.setAttribute('aria-label', message); }
-      // A frente acessível acompanha a posição horizontal e vertical configurada para o computador.
+      // O painel só pode abrir quando o personagem está na zona segura configurada para este computador.
       function atComputer() {
-        const interactionX = monitorPosition.leftPercent * 8 + 22;
-        const interactionY = monitorPosition.topPercent * 4.25 + 6;
-        return grounded && Math.abs(x - interactionX) < 50 && Math.abs(y - interactionY) < 200;
+        const stand = monitorPosition.stand;
+        return grounded && Math.abs(x - stand.x) <= stand.toleranceX && Math.abs(y - stand.y) <= stand.toleranceY;
       }
       function jump() { if (!respawnDelay && grounded && container.querySelector('.room-world')) { vy = -527; grounded = false; } }
       function openPanel() {
@@ -288,17 +355,55 @@
         const next=container.querySelector('.room-next'); next.hidden=false; next.focus();
         status('A porta abriu! Atravesse quando estiver pronto.');
       }
-      // Saída guiada: usa a física normal e salta antes dos arcos do piso.
-      // Preserve esta rota segura ao alterar plataformas, arcos ou a posição da porta.
+      function exitStepDuration(step, start) {
+        const distance = Math.hypot(step.x - start.x, step.y - start.y);
+        const speed = step.type === 'walk' ? 245 : step.type === 'jump' ? 325 : 260;
+        return Math.max(.18, distance / speed);
+      }
+      function exitStepPosition(step, start, progress) {
+        const nextX = start.x + (step.x - start.x) * progress;
+        const straightY = start.y + (step.y - start.y) * progress;
+        if (step.type === 'jump') return { x: nextX, y: straightY - 4 * (step.apex || 90) * progress * (1 - progress) };
+        if (step.type === 'drop') return { x: nextX, y: start.y + (step.y - start.y) * progress * progress };
+        return { x: nextX, y: straightY };
+      }
+      function advanceExitPlan(dt) {
+        const step = exitPlan?.steps[exitPlan.index];
+        if (!step) {
+          x = 730; y = 373; vy = 0; grounded = true; exitPlan = null;
+          advancePhase();
+          return 'finished';
+        }
+        const duration = exitStepDuration(step, exitPlan.start);
+        const elapsed = Math.min(duration, exitPlan.elapsed + dt);
+        const progress = elapsed / duration;
+        const point = exitStepPosition(step, exitPlan.start, progress);
+        x = point.x; y = point.y; vy = 0; grounded = progress === 1;
+        exitPlan.elapsed = elapsed;
+        if (progress === 1) {
+          exitPlan.index++;
+          exitPlan.elapsed = 0;
+          exitPlan.start = { x, y };
+        }
+        return 'moving';
+      }
+      // A saída guiada usa uma rota da plataforma atual; não reutiliza o caminho do piso em todas as posições.
       function beginExit() {
         if (!solved || exiting) return;
+        const route = exitRoutes[monitorPosition.exitRoute];
+        if (!route) {
+          console.error('[Jogo] A posição do computador não possui uma exitRoute válida.', monitorPosition);
+          status('Esta posição do computador ainda não tem uma rota de saída configurada.');
+          return;
+        }
         exiting = true; target = null; held.clear();
+        exitPlan = { steps: route, index: 0, elapsed: 0, start: { x, y } };
         const next = container.querySelector('.room-next'); next.disabled = true;
         status('Caminhando até a porta aberta.');
       }
       function advancePhase() {
         if (!exiting && !solved) return;
-        exiting = false; target = null; held.clear(); phase++;
+        exiting = false; exitPlan = null; target = null; held.clear(); phase++;
         if (phase === levels.length) finish(); else showRoom();
       }
       function finish(){
@@ -330,14 +435,15 @@
             }
             draw();frame=requestAnimationFrame(tick);return;
           }
+          if (exiting) {
+            const exitState = advanceExitPlan(dt);
+            if (exitState === 'finished') { frame = requestAnimationFrame(tick); return; }
+            draw(true); frame = requestAnimationFrame(tick); return;
+          }
           let direction=(held.has('right')?1:0)-(held.has('left')?1:0);
           if(target!==null)direction=Math.abs(target-x)<5?0:Math.sign(target-x);
-          if(exiting) {
-            direction=1;
-            if(grounded && ((x>180&&x<225)||(x>485&&x<525))) jump();
-          }
           const oldX=x;
-          const movementSpeed = exiting ? 352.5 : 235;
+          const movementSpeed = 235;
           x=Math.max(20,Math.min(748,x+direction*movementSpeed*dt));
           // As laterais bloqueiam a passagem, mas deixam o personagem saltar por cima da plataforma.
           for(const p of platforms) {
