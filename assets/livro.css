@@ -160,12 +160,9 @@ html, body {
   border-bottom: 1px solid #303646;
 }
 
-.landing-menu-panel-label {
-  font-family: var(--display, Georgia), serif;
-  font-size: 21px;
-}
+.landing-menu-brand,
+.landing-menu-brand:hover { color: #f3ecdc; }
 
-.landing-menu-panel b,
 .landing-menu-kicker { color: var(--gold); }
 
 .landing-menu-close {

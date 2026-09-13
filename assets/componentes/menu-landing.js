@@ -12,7 +12,7 @@
     <button class="landing-menu-scrim" type="button" data-landing-menu-close aria-label="Fechar menu"></button>
     <aside class="landing-menu-panel" id="${menuId}" role="dialog" aria-modal="true" aria-label="Navegação dos jogos" tabindex="-1">
       <div class="landing-menu-panel-header">
-        <span class="landing-menu-panel-label">Bena Studies <b>✦</b></span>
+        <a class="brand landing-menu-brand" href="${base}index.html" aria-label="Bena Studies, início"><span class="brand-icon">b<span>✦</span></span><span>Bena<span class="brand-light">Studies</span></span></a>
         <button class="landing-menu-close" type="button" data-landing-menu-close aria-label="Fechar menu">×</button>
       </div>
       <div class="landing-menu-content"></div>
