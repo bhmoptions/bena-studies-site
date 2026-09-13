@@ -1,8 +1,8 @@
 {
   "spped": {
     "manual_normal": 235,
-    "auto_walk": 245,
-    "auto_jump": 325,
-    "auto_other": 260 
+    "auto_walk": 2000,
+    "auto_jump": 2000,
+    "auto_other": 2000 
   }
 }
