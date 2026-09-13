@@ -303,6 +303,30 @@
   color: var(--panel-ink);
 }
 
+.game-timer {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 2px 8px 0;
+  color: var(--panel-muted);
+}
+
+.game-timer-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.game-timer-value {
+  color: var(--accent-gold);
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
 .helix-sidebar .mascot-feedback:is(.success, .error) .mascot-caption,
 .helix-sidebar .mascot-feedback:is(.success, .error) .mascot-equation {
   color: #fff6e9 !important;

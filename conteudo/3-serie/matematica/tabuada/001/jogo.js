@@ -26,6 +26,7 @@
       const hudScore = container.querySelector('#hud-score');
       const currentQuestion = container.querySelector('#current-question');
       const feedbackEl = container.querySelector('.feedback');
+      const timerEl = container.querySelector('#game-timer');
       const floatingScore = container.querySelector('#floating-score');
       const activeSection = container.querySelector('#helix-active-section');
       const questionCard = container.querySelector('#helix-question-card');
@@ -34,6 +35,55 @@
       const resGameScore = container.querySelector('#res-game-score');
       const resScoreSummary = container.querySelector('#res-score-summary');
       const btnPlayAgain = container.querySelector('#btn-play-again');
+
+      let timerInterval = null;
+      let timerStartedAt = null;
+      let elapsedSeconds = 0;
+
+      function formatElapsedTime(totalSeconds) {
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      }
+
+      function renderTimer() {
+        if (!timerEl) return;
+        timerEl.textContent = formatElapsedTime(elapsedSeconds);
+        timerEl.dateTime = `PT${elapsedSeconds}S`;
+      }
+
+      function resetTimer() {
+        if (timerInterval !== null) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+        timerStartedAt = null;
+        elapsedSeconds = 0;
+        renderTimer();
+      }
+
+      function startTimer() {
+        if (timerStartedAt !== null) return;
+        timerStartedAt = Date.now();
+        renderTimer();
+        timerInterval = setInterval(() => {
+          elapsedSeconds = Math.floor((Date.now() - timerStartedAt) / 1000);
+          renderTimer();
+        }, 1000);
+      }
+
+      function stopTimer() {
+        if (timerStartedAt !== null) {
+          elapsedSeconds = Math.floor((Date.now() - timerStartedAt) / 1000);
+        }
+        if (timerInterval !== null) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+        timerStartedAt = null;
+        renderTimer();
+        return elapsedSeconds;
+      }
 
       // Exibição do feedback flutuante (+3, +2, -1)
       let floatTimeout = null;
@@ -53,6 +103,8 @@
           helixInstance = null;
         }
 
+        resetTimer();
+
         // Inicia contador de rodada oficial
         if (window.BenaPontuacao) {
           round = window.BenaPontuacao.iniciarRodada(CHAVE_PONTUACAO);
@@ -68,6 +120,8 @@
         import(moduleUrl).then(({ createHelixGame }) => {
           helixInstance = createHelixGame(container, {
             onQuestionChange(platformIndex, problem) {
+              // O tempo começa quando a primeira pergunta fica disponível.
+              if (platformIndex === 0) startTimer();
               const num = platformIndex + 1;
               if (hudLevel) hudLevel.textContent = String(num);
               if (hudProgress) hudProgress.value = num;
@@ -102,6 +156,7 @@
 
             onGameComplete(stats) {
               // Conclusão das 10 plataformas
+              const totalTimeSeconds = stopTimer();
               if (activeSection) activeSection.hidden = true;
               if (resultCard) resultCard.hidden = false;
               if (resGameScore) resGameScore.textContent = String(stats.gameScore);
@@ -122,6 +177,7 @@
                   <p><strong>Pontuação da Torre:</strong> ${stats.gameScore} de 30 pontos acumulados</p>
                   <p><strong>Acertos de 1ª tentativa:</strong> ${stats.firstHits} de ${stats.totalPlatforms} plataformas</p>
                   <p><strong>Impactos em respostas erradas:</strong> ${stats.totalErrors} ${stats.totalErrors === 1 ? 'vez' : 'vezes'}</p>
+                  <p><strong>Tempo total:</strong> ${formatElapsedTime(totalTimeSeconds)}</p>
                   <p>Precisão de primeira: ${resOficial.percentualAcertos}% · Rodada ${round} nesta aba</p>
                 `;
               }
@@ -168,6 +224,7 @@
       startRound();
 
       return () => {
+        stopTimer();
         if (helixInstance) {
           helixInstance.dispose();
           helixInstance = null;
