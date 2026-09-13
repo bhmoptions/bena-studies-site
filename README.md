@@ -1,6 +1,12 @@
 # Bena Studies
 
-Abra `index.html` no navegador ou acesse http://localhost:8765 com o servidor local ligado. O visual escolhido é o Caderno Noturno. Para iniciar o servidor na pasta do projeto: `python -m http.server 8765 --bind 127.0.0.1`.
+Abra `index.html` no navegador ou acesse http://localhost:8765 com o servidor local ligado. O visual escolhido é o Caderno Noturno.
+
+Para desenvolvimento, inicie o servidor com atualização automática na pasta do projeto:
+
+`python scripts/servidor_dev.py`
+
+Depois de abrir http://localhost:8765/, salve qualquer arquivo do projeto e a página será recarregada automaticamente. O servidor observa alterações em HTML, CSS, JavaScript, imagens e demais arquivos usados pelo site. Para servir os arquivos sem atualização automática, ainda é possível usar `python -m http.server 8765 --bind 127.0.0.1`.
 
 ## Série exibida
 Em `config/site.js`, altere `serieAtual: 3`. Apenas a série escolhida aparece.
