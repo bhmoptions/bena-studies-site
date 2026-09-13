@@ -8,7 +8,7 @@
     const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = css; document.head.append(link);
   }
   window.BENA_JOGO = {
-    iniciar(container, voltar) {
+    iniciar(container, voltar, partidaInicial) {
       const dialog = container.closest('dialog') || container;
       dialog.classList.add('room-dialog');
       const controller = new AbortController();
@@ -23,6 +23,7 @@
       let levels = [], activeQuestion = null, questionConfigError = null;
       let x = 75, y = 373, vy = 0, grounded = true, target = null, last = 0;
       let exitPlan = null;
+      let partidaAtual = partidaInicial;
       const held = new Set();
       // Uma única geometria alimenta desenho e colisões, no espaço de 800 × 425.
       const platforms = [
@@ -295,7 +296,20 @@
           });
       }
       function cleanup() { stopped = true; cancelAnimationFrame(frame); controller.abort(); held.clear(); dialog.classList.remove('room-dialog'); }
-      function start() { round = window.BenaPontuacao.iniciarRodada(key); phase = 0; errors = 0; first = 0; showRoom(); }
+      async function start(novaPartida = false) {
+        if (novaPartida) {
+          try {
+            partidaAtual = await window.BenaPartida.iniciar(key);
+          } catch (erro) {
+            console.warn('[Ranking] Não foi possível abrir nova partida:', erro);
+            window.alert(erro.message);
+            return;
+          }
+        }
+        round = partidaAtual?.oficial && Number.isSafeInteger(partidaAtual.rodada)
+          ? partidaAtual.rodada : window.BenaPontuacao.iniciarRodada(key);
+        phase = 0; errors = 0; first = 0; showRoom();
+      }
       function feedback(state, detail) {
         window.BenaFeedback.mostrar(container.querySelector('.room-puzzle .feedback'), state, detail, 'Ajuste o painel e tente novamente.');
       }
@@ -439,18 +453,15 @@
       function finish(){
         target=null;held.clear();
         const result=window.BenaPontuacao.calcular({total:levels.length,acertosPrimeira:first,erros:errors,rodada:round,concluida:true,tempoAtivo:false});
-        if (window.BENA_AUTH && typeof window.BENA_AUTH.salvarPartida === 'function') {
-          window.BENA_AUTH.salvarPartida({
+        window.BenaPartida.concluir(partidaAtual, {
             jogo_id: key,
             total_questoes: levels.length,
             acertos_primeira: first,
-            erros_validos: errors,
-            pontuacao: result.pontos
-          }).then(r => console.log('[Ranking] Partida salva:', r))
+            erros_validos: errors
+          }).then(r => console.log('[Ranking] Partida concluída:', r))
             .catch(e => console.warn('[Ranking] Erro ao salvar partida:', e));
-        }
-        container.innerHTML=`<div class="room-finish"><div class="eyebrow">CINCO REGRAS. UMA GRANDE DESCOBERTA.</div><h2 tabindex="-1">Você escapou da mesma sala!</h2><p>A sala era igual. Seu jeito de pensar mudou a cada porta.</p><div class="score-summary"><strong class="score-value">${result.pontos} pontos</strong><p>${first} de ${levels.length} fases resolvidas de primeira · ${result.percentualAcertos}%</p><p>${errors} erros · Rodada ${round}${result.somenteTreino?' · somente treino':''}</p><p>Sem tempo valendo pontos.</p></div><p class="notice">Pontuação de demonstração nesta aba. Não é salva por aluno; atualizar a página reinicia as repetições.</p><button class="primary room-replay">Voltar à mesma sala →</button><button class="topic room-back">← Voltar aos jogos</button></div>`;
-        container.querySelector('.room-finish h2').focus();container.querySelector('.room-replay').onclick=start;container.querySelector('.room-back').onclick=()=>{cleanup();voltar();};
+        container.innerHTML=`<div class="room-finish"><div class="eyebrow">CINCO REGRAS. UMA GRANDE DESCOBERTA.</div><h2 tabindex="-1">Você escapou da mesma sala!</h2><p>A sala era igual. Seu jeito de pensar mudou a cada porta.</p><div class="score-summary"><strong class="score-value">${result.pontos} pontos</strong><p>${first} de ${levels.length} fases resolvidas de primeira · ${result.percentualAcertos}%</p><p>${errors} erros · Rodada ${round}${result.somenteTreino?' · somente treino':''}</p><p>Sem tempo valendo pontos.</p></div><p class="notice">Pontuação oficial é salva para alunos conectados.</p><button class="primary room-replay">Voltar à mesma sala →</button><button class="topic room-back">← Voltar aos jogos</button></div>`;
+        container.querySelector('.room-finish h2').focus();container.querySelector('.room-replay').onclick=()=>void start(true);container.querySelector('.room-back').onclick=()=>voltar();
       }
       function draw(walking=false){const player=container.querySelector('.room-player');if(player){player.style.left=`${x/8}%`;player.style.top=`${y/4.25}%`;player.classList.toggle('walking',walking&&!respawnDelay);player.classList.toggle('exiting',exiting&&!respawnDelay);}}
       function tick(time){

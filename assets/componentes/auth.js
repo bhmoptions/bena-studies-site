@@ -85,6 +85,24 @@ window.BENA_AUTH = {
     }
   },
 
+  // Abre uma sessão oficial e registra o depósito de abandono no MySQL.
+  iniciarPartida: async (dados) => {
+    const user = auth.currentUser;
+    if (!user) return { ok: false, error: 'Nao autenticado' };
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch('/api/iniciar-partida', {
+        method:  'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body:    JSON.stringify(dados),
+      });
+      return res.json();
+    } catch (e) {
+      console.warn('[BENA_AUTH] iniciarPartida falhou:', e.message);
+      return { ok: false, error: e.message };
+    }
+  },
+
 };
 
 /* DOM */

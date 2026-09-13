@@ -165,7 +165,8 @@ As imagens de verificação ficam em `verificacao/caixa-*.png`.
 
 `#game.benaInspect()` fornece apenas uma cópia de leitura do estado e
 telemetria da cena para os testes. Não é uma API para submeter respostas.
-Como nos demais jogos atuais, os dados do navegador não devem servir a
-um futuro ranking oficial sem validação no servidor.
+Como nos demais jogos, as respostas individuais do navegador ainda precisam
+de validação no servidor antes que qualquer ranking seja considerado resistente
+a manipulação.
 
 

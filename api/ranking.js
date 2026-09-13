@@ -15,7 +15,7 @@ module.exports = async function handler(req, res) {
                 COUNT(*)                AS total_partidas
          FROM partidas p
          JOIN alunos a ON a.id = p.aluno_id
-         WHERE p.jogo_id = ?
+         WHERE p.jogo_id = ? AND p.type IN ('game_score', '')
          GROUP BY a.id, a.nome
          ORDER BY melhor_pontuacao DESC, melhor_acertos DESC
          LIMIT ?`,
@@ -24,14 +24,10 @@ module.exports = async function handler(req, res) {
     } else {
       [rows] = await pool.execute(
         `SELECT a.nome,
-                SUM(sub.melhor)             AS pontuacao_total,
-                COUNT(DISTINCT sub.jogo_id) AS jogos_jogados
+                GREATEST(0, SUM(p.pontuacao)) AS pontuacao_total,
+                COUNT(DISTINCT CASE WHEN p.type IN ('game_score', '') THEN p.jogo_id END) AS jogos_jogados
          FROM alunos a
-         JOIN (
-           SELECT aluno_id, jogo_id, MAX(pontuacao) AS melhor
-           FROM partidas
-           GROUP BY aluno_id, jogo_id
-         ) sub ON sub.aluno_id = a.id
+         JOIN partidas p ON p.aluno_id = a.id
          GROUP BY a.id, a.nome
          ORDER BY pontuacao_total DESC
          LIMIT ?`,

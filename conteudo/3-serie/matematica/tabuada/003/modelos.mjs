@@ -328,7 +328,7 @@ export function createWorkshopAssets() {
       ctx.font='30px Georgia';ctx.fillText(score.acertosPrimeira+' de 4 de primeira',w/2,600);
       ctx.fillText(score.erros+' erros  ·  '+score.percentualAcertos+'% de precisão',w/2,653);
       ctx.font='25px Georgia';ctx.fillText('Rodada '+score.rodada+'  ·  '+(score.somenteTreino?'Treino livre':'Sem pressa, sem cronômetro'),w/2,726);
-      ctx.font='20px Georgia';ctx.fillText('Pontuação de demonstração · não salva',w/2,779);
+      ctx.font='20px Georgia';ctx.fillText('Pontuação oficial para alunos conectados',w/2,779);
     }));
     const mat=new T.MeshStandardMaterial({map:paper,side:T.DoubleSide,roughness:.9});materials.add(mat);
     const sheet=mesh(root,geometry('scroll-sheet',()=>new T.PlaneGeometry(2.22,2.59,1,12)),mat,0,0,0);
@@ -348,7 +348,6 @@ export function createWorkshopAssets() {
       if(node.isMesh && node.material?.map && node.material.map!==grain && node.material.map!==patina){textures.delete(node.material.map);node.material.map.dispose();materials.delete(node.material);node.material.dispose();}});}
   };
 }
-
 
 
 

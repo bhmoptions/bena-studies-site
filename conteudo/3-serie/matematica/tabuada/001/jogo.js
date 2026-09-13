@@ -16,9 +16,10 @@
   const CHAVE_PONTUACAO = '3-serie/matematica/tabuada/001';
 
   window.BENA_JOGO = {
-    iniciar(container, voltar) {
+    iniciar(container, voltar, partidaInicial) {
       let helixInstance = null;
       let round = 1;
+      let partidaAtual = partidaInicial;
 
       // Elementos do DOM
       const hudLevel = container.querySelector('#hud-level');
@@ -97,7 +98,16 @@
         }, 800);
       }
 
-      function startRound() {
+      async function startRound(novaPartida = false) {
+        if (novaPartida) {
+          try {
+            partidaAtual = await window.BenaPartida.iniciar(CHAVE_PONTUACAO);
+          } catch (erro) {
+            console.warn('[Ranking] Não foi possível abrir nova partida:', erro);
+            window.alert(erro.message);
+            return;
+          }
+        }
         if (helixInstance) {
           helixInstance.dispose();
           helixInstance = null;
@@ -106,7 +116,9 @@
         resetTimer();
 
         // Inicia contador de rodada oficial
-        if (window.BenaPontuacao) {
+        if (partidaAtual?.oficial && Number.isSafeInteger(partidaAtual.rodada)) {
+          round = partidaAtual.rodada;
+        } else if (window.BenaPontuacao) {
           round = window.BenaPontuacao.iniciarRodada(CHAVE_PONTUACAO);
         }
 
@@ -182,16 +194,13 @@
                 `;
               }
 
-              if (window.BENA_AUTH && typeof window.BENA_AUTH.salvarPartida === 'function') {
-                window.BENA_AUTH.salvarPartida({
+              window.BenaPartida.concluir(partidaAtual, {
                   jogo_id: CHAVE_PONTUACAO,
                   total_questoes: stats.totalPlatforms,
                   acertos_primeira: stats.firstHits,
-                  erros_validos: stats.totalErrors,
-                  pontuacao: resOficial.pontos
-                }).then(r => console.log('[Ranking] Partida salva:', r))
+                  erros_validos: stats.totalErrors
+                }).then(r => console.log('[Ranking] Partida concluída:', r))
                   .catch(e => console.warn('[Ranking] Erro ao salvar partida:', e));
-              }
 
               if (window.BenaFeedback && resultFeedback) {
                 window.BenaFeedback.mostrar(resultFeedback, 'success', 'Parabéns! Você completou toda a descida pela torre Helix!');
@@ -208,20 +217,21 @@
             <div style="padding: 30px; text-align: center; color: #fff;">
               <h3>Não foi possível carregar a visualização 3D</h3>
               <p>Verifique se o navegador suporta WebGL ou tente recarregar.</p>
-              <button type="button" onclick="location.reload()" class="primary">Tentar novamente</button>
+              <button type="button" class="primary reload-game">Tentar novamente</button>
             </div>
           `;
+          container.querySelector('.reload-game').onclick = () => window.BenaPartida.recarregar();
         });
       }
 
       // Botão de jogar de novo
       if (btnPlayAgain) {
         btnPlayAgain.onclick = () => {
-          startRound();
+          void startRound(true);
         };
       }
 
-      startRound();
+      void startRound();
 
       return () => {
         stopTimer();

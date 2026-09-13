@@ -1,7 +1,8 @@
 // Regras centrais. Alterações exigem nova versão e atualização de docs/pontuacao.md.
 window.BENA_REGRAS_PONTUACAO = Object.freeze({
-  versao: '1.0.0',
+  versao: '1.1.0',
   pontosBase: 1000,
+  percentualDepositoAbandono: 0.10,
   pesoErro: 0.15,
   aumentoErroPorRepeticao: 0.5,
   fatorRepeticao: 0.5,

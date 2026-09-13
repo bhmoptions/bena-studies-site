@@ -1,4 +1,6 @@
-const sair = () => { location.href = '../../../../../index.html#jogos-tabuada'; };
+const sair = () => window.BenaPartida.confirmarSaida(() => {
+  location.href = '../../../../../index.html#jogos-tabuada';
+});
 const gameContainer = document.querySelector('#game');
 if (window.BENA_CONFIG.serieAtual === 3) {
   // Mede o cabeçalho real (incluindo quebra de linha/zoom), sem supor sua altura.
@@ -14,7 +16,20 @@ if (window.BENA_CONFIG.serieAtual === 3) {
   observer.observe(header);
   window.addEventListener('resize', ajustarAltura);
   window.visualViewport?.addEventListener('resize', ajustarAltura);
-  const dispose = window.BENA_JOGO.iniciar(gameContainer, sair);
+  let dispose;
+  async function iniciarJogo() {
+    try {
+      gameContainer.setAttribute('aria-busy', 'true');
+      const partida = await window.BenaPartida.iniciar('3-serie/matematica/tabuada/002');
+      dispose = window.BENA_JOGO.iniciar(gameContainer, sair, partida);
+    } catch (erro) {
+      console.warn('[Partida] Não foi possível iniciar:', erro);
+      gameContainer.innerHTML = `<p class="loading-message">${erro.message}</p>`;
+    } finally {
+      gameContainer.removeAttribute('aria-busy');
+    }
+  }
+  void iniciarJogo();
   ajustarAltura();
   window.addEventListener('pagehide', () => { dispose?.(); observer.disconnect(); window.removeEventListener('resize', ajustarAltura); window.visualViewport?.removeEventListener('resize', ajustarAltura); }, {once:true});
   window.addEventListener('pageshow', event => { if(event.persisted) location.reload(); });

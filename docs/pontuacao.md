@@ -1,9 +1,9 @@
-# Pontuação e ranking — regras v1.0.0
+# Pontuação e ranking — regras v1.1.0
 
 Regra do projeto para todos os jogos. É uma decisão de produto, ajustável pelo responsável após observar o uso real. Fonte executável: `config/pontuacao.js` e `assets/componentes/pontuacao.js`. Não criar fórmulas próprias por jogo.
 
 ## Objetivo
-Valorizar aprender com precisão, reduzir o ganho de repetir o mesmo jogo e tornar os erros mais relevantes nas repetições. Velocidade nunca substitui precisão. Não retirar pontos já conquistados nem impedir treino.
+Valorizar aprender com precisão, reduzir o ganho de repetir o mesmo jogo e tornar os erros mais relevantes nas repetições. Velocidade nunca substitui precisão. Não retirar pontos de rodadas concluídas nem impedir treino.
 
 ## Definições obrigatórias
 - N: número de questões previstas para uma rodada completa, fixado antes de começar.
@@ -11,7 +11,7 @@ Valorizar aprender com precisão, reduzir o ganho de repetir o mesmo jogo e torn
 - E: número total de respostas erradas, incluindo vários erros na mesma questão. Cliques em respostas já desabilitadas e eventos duplicados não contam. Resposta vazia não deve ser enviada.
 - P = A / N: precisão oficial, exibida como percentual de acertos na primeira tentativa. Não usar questões eventualmente resolvidas / N, pois nos jogos com novas tentativas isso terminaria sempre em 100%.
 - r: número da rodada INICIADA pelo mesmo aluno, no mesmo jogo, na mesma temporada. Começa em 1. Reabrir o jogo não zera r.
-- Uma rodada só recebe pontos se for concluída. Sair, fechar a janela ou abandonar rende zero e consome aquela rodada. É permitido continuar treinando. No futuro, falhas técnicas comprovadas devem permitir retomar o mesmo identificador de rodada, sem consumir outra.
+- Uma rodada só recebe pontos se for concluída. Para aluno autenticado, abrir um jogo registra um depósito de abandono de 10% da pontuação-base atual (100 pontos). Concluir a rodada registra a pontuação normal e devolve exatamente o depósito daquela sessão. Sair, atualizar, fechar a janela ou abandonar deixa o depósito sem reembolso. Visitantes não autenticados jogam em prévia e não gravam dados. É permitido continuar treinando.
 - Jogos com dica voluntária, pular ou tempo limite devem tratar a questão como não acertada de primeira e registrar pelo menos um erro por questão não resolvida sem ajuda; não podem simplesmente diminuir N. Se várias dessas ações ocorrerem na mesma questão, evitar duplicar uma única ocorrência. Registrar os eventos para auditoria.
 
 ## Fórmula
@@ -68,24 +68,26 @@ No tempo de referência ou mais lento: nenhum bônus. Na metade da referência o
 
 Não usar tempo de jogos sem cronômetro para desempatar. Não comparar velocidade entre jogos com regras diferentes. Jogos cronometrados e não cronometrados devem estar disponíveis igualmente para os participantes do mesmo ranking. O teto de cinco rodadas perfeitas com bônus máximo é 2132 pontos, pelo arredondamento individual.
 
-## Ranking oficial futuro
-Ainda não existe login nem persistência. As regras abaixo são contrato para a futura implementação, não funcionalidades já entregues.
+## Registro de sessões e ranking
+Login e o livro-razão de pontuação estão implementados para os jogos ativos. O servidor registra depósito, pontuação e reembolso e recalcula a fórmula a partir dos números da rodada e da ordem persistida de início. Como as respostas individuais ainda não são enviadas para validação no servidor, qualquer ranking exibido deve ser tratado como provisório até essa etapa.
 
 - Separar rankings por turma/série, temporada e conjunto de jogos disponível para todos. Não comparar alunos de séries diferentes.
 - Temporada é criada/encerrada explicitamente pelo responsável (por exemplo, preparação para uma prova). Não reiniciar o limite de repetições por dia, atualização de página ou edição visual do jogo.
 - Chave de repetição: aluno + temporada + identificador pedagógico completo do jogo. Exemplo: `3-serie/matematica/tabuada/001`. IDs 001 de temas diferentes não são o mesmo jogo. Atualizar perguntas ou visual não renova a cota; uma atividade realmente nova deve ser cadastrada pelo responsável.
-- Total do ranking = soma dos pontos das rodadas concluídas elegíveis (no máximo as cinco primeiras rodadas iniciadas por jogo). Guardar também jogos distintos concluídos, rodadas iniciadas, concluídas e abandonadas, A, E, N e tempo quando ativo.
+- Cada sessão usa um `partida_id` UUID e produz no máximo três lançamentos: `deposit` (-100), `game_score` (pontuação normal) e `refund` (+100). A restrição única `(aluno_id, partida_id, type)` torna início e conclusão idempotentes.
+- Total exibido do ranking = `max(0, soma(pontuacao))`. O total bruto continua guardado, permitindo que depósitos não reembolsados reduzam ganhos posteriores sem exibir pontuação negativa à criança. Jogos distintos contam apenas lançamentos `game_score`.
 - Desempate: 1) maior total de pontos; 2) maior quantidade de jogos distintos concluídos com pelo menos 80% de precisão em uma rodada pontuável; 3) maior precisão agregada das rodadas pontuáveis concluídas, soma(A)/soma(N); 4) empate real, mesma posição. Sem desempate por quem começou antes, velocidade em jogos sem tempo, ou nome.
 - Rodadas de treino (6+) não afetam nem pontos nem desempate. Quantidade de jogos distintos só beneficia desempate; não há bônus duplicado por diversidade.
 - Congelar conjunto de jogos e configurações na temporada. Se houver mudanças relevantes de fórmula, usar nova versão/temporada; não misturar pontuações calculadas sob regras distintas sem recálculo explícito e auditável.
-- O servidor deve gerar o ID da rodada e reservar r de forma atômica antes da primeira pergunta, autenticando o aluno e impedindo rodadas simultâneas do mesmo jogo. Requisições repetidas para a mesma rodada não geram novos pontos.
-- Validar as respostas e calcular A/E/N/tempo/pontos no servidor. Nunca aceitar pontos, número da repetição ou acertos declarados pelo navegador como verdade. Registrar eventos, configurações, versão da fórmula e timestamps; rejeitar durações impossíveis, respostas fora da rodada e duplicatas. Usar relógio do servidor no ranking oficial.
+- O navegador gera o `partida_id` e o servidor registra o depósito ao abrir a partida. Requisições repetidas com o mesmo identificador não geram novos lançamentos. Sessões simultâneas são permitidas; cada uma possui o seu próprio depósito.
+- Próxima etapa de segurança do ranking: registrar e validar cada resposta no servidor, incluindo eventos, configuração, versão da fórmula e timestamps; rejeitar durações impossíveis, respostas fora da rodada e duplicatas. Enquanto isso, o servidor não aceita uma pontuação declarada pelo navegador: ele calcula os pontos a partir de A/E/N recebidos e da ordem persistida de início.
 
 ## Implementação atual e contrato de uso
 - `BenaPontuacao.calcular({total, acertosPrimeira, erros, rodada, concluida, tempoAtivo, segundos, referenciaSegundos})`: cálculo puro, validado, retorna pontos e detalhes. Quando tempo não é ativo, o tempo não influencia e o retorno é null para segundos.
-- `BenaPontuacao.iniciarRodada(chave)`: contador provisório em memória desta aba. Consumido ao abrir a primeira questão; reabrir o jogo ou clicar “Jogar de novo” incrementa. ATUALIZAR A PÁGINA ZERA O CONTADOR. Não é identificado por aluno, persistido ou seguro para ranking. Não usar esse contador no ranking oficial.
+- `BenaPontuacao.iniciarRodada(chave)`: contador provisório em memória desta aba. Consumido ao abrir a primeira questão; reabrir o jogo ou clicar “Jogar de novo” incrementa. ATUALIZAR A PÁGINA ZERA O CONTADOR. Não é identificado por aluno, persistido ou seguro para ranking. Não usar esse contador como fonte oficial.
+- `BenaPartida.iniciar(jogoId)` e `BenaPartida.concluir(partida, dados)`: criam os lançamentos persistidos de depósito, pontuação e reembolso. Antes de links internos ou botões que saem/recarregam uma sessão ativa, `BenaPartida.confirmarSaida` exibe confirmação em português. Fechar ou atualizar pelo navegador depende do aviso genérico permitido por ele; o depósito já persistido aplica a regra mesmo sem aviso.
 - As páginas carregam `config/pontuacao.js` antes de `assets/componentes/pontuacao.js` e do jogo. Novas páginas independentes devem carregar essas dependências.
-- A tabuada registra cada erro válido e acerto de primeira, apresenta pontos, percentual, erros e repetição ao final. O mascote aprovado continua igual. Pontos exibidos são apenas demonstração.
+- A tabuada registra cada erro válido e acerto de primeira, apresenta pontos, percentual, erros e repetição ao final. O mascote aprovado continua igual. Para aluno conectado, a sessão e a pontuação final são registradas no servidor; o contador de repetição da interface ainda é provisório nesta aba.
 - Tempo futuro em novos jogos: medir do início efetivo à conclusão, congelar na última resposta e passar em segundos. A tabuada já possui medição condicional, sem tempo valendo pontos hoje. Não passar milissegundos ao cálculo.
 
 ## Verificações obrigatórias

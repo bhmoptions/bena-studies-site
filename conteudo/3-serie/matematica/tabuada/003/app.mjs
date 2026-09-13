@@ -16,9 +16,9 @@ async function loadData() {
   if (!puzzleResponse.ok || !contasResponse.ok) throw new Error('Não foi possível carregar as configurações da caixa.');
   return Promise.all([puzzleResponse.json(), contasResponse.json()]);
 }
-export function start(container, voltar) {
+export function start(container, voltar, partidaInicial) {
   const abort=new AbortController(), audio=createAudio(), motion=matchMedia('(prefers-reduced-motion: reduce)');
-  let state,active='blue',scene=null,interaction=null,disposed=false,toastTimer=null,history=[],puzzleEntries=null,contasEntries=null;
+  let state,active='blue',scene=null,interaction=null,disposed=false,toastTimer=null,history=[],puzzleEntries=null,contasEntries=null,partidaAtual=partidaInicial;
   try { const saved=JSON.parse(sessionStorage.getItem('bena-caixa-puzzles')||'[]'); if(Array.isArray(saved))history=saved.filter(v=>typeof v==='string').slice(-8); } catch {}
   container.innerHTML=`
     <section class="workshop">
@@ -92,7 +92,11 @@ export function start(container, voltar) {
     }else{render();audio.play(action.type==='add'?'place':'move');}
   }
   function drop(value,destination){apply({type:'add',...destination,value});}
-  function newRound() {
+  async function newRound(novaPartida=false) {
+    if(novaPartida){
+      try { partidaAtual=await window.BenaPartida.iniciar(KEY); }
+      catch(error){ console.warn('[Ranking] Não foi possível abrir nova partida:',error);window.alert(error.message);return; }
+    }
     interaction?.dispose();scene?.dispose();
     active='blue';const config=generatePuzzle(puzzleEntries,Math.random,history,contasEntries);
     history.push(signature(config));history=history.slice(-8);
@@ -108,24 +112,21 @@ export function start(container, voltar) {
       rewardReady(){
         if(disposed)return;
         state.reward='revealed';audio.play('scroll');const score=window.BenaPontuacao.calcular(scoreInput(state));
-        if (window.BENA_AUTH && typeof window.BENA_AUTH.salvarPartida === 'function') {
-          const inp = scoreInput(state);
-          window.BENA_AUTH.salvarPartida({
+        const inp = scoreInput(state);
+        window.BenaPartida.concluir(partidaAtual, {
             jogo_id: KEY,
             total_questoes: inp.total,
             acertos_primeira: inp.acertosPrimeira,
-            erros_validos: inp.erros,
-            pontuacao: score.pontos
-          }).then(r => console.log('[Ranking] Partida salva:', r))
+            erros_validos: inp.erros
+          }).then(r => console.log('[Ranking] Partida concluída:', r))
             .catch(e => console.warn('[Ranking] Erro ao salvar partida:', e));
-        }
         q('.game-instructions').hidden=true;
         q('.reward-summary').hidden=false;
         q('.reward-summary').innerHTML=`<p class="panel-kicker">SEU PERGAMINHO</p><h2>Caixa desvendada!</h2><p class="reward-points"><strong>${score.pontos}</strong> pontos</p>
         <dl><div><dt>De primeira</dt><dd>${score.acertosPrimeira} de 4</dd></div><div><dt>Respostas erradas</dt><dd>${score.erros}</dd></div><div><dt>Precisão</dt><dd>${score.percentualAcertos}%</dd></div><div><dt>Rodada</dt><dd>${score.rodada}</dd></div></dl>
         <p>${score.somenteTreino?'Treino livre: a partir da 6ª rodada, os desafios continuam sem pontos.':'Os quatro mecanismos guardam as suas descobertas.'}</p>
         <button type="button" data-action="restart" class="check-mechanism">Descobrir uma nova caixa →</button>
-        <p class="score-disclaimer">Pontos de demonstração, em memória nesta página. Não são salvos. Recarregar ou sair reinicia o contador.</p>`;
+        <p class="score-disclaimer">A pontuação oficial é salva para alunos conectados. Recarregar ou sair antes do fim não devolve os pontos de participação.</p>`;
         q('.reward-summary').focus({preventScroll:true});
       },
       contextLost(){
@@ -133,7 +134,9 @@ export function start(container, voltar) {
         q('.scene-host').insertAdjacentHTML('beforeend','<div class="context-error" role="alert"><h2>A imagem 3D foi interrompida</h2><p>Reabra a oficina para continuar.</p><button type="button" data-action="reload">Reabrir oficina</button></div>');
       }
     },motion.matches);
-    state=createState(config,window.BenaPontuacao.iniciarRodada(KEY));
+    const rodada = partidaAtual?.oficial && Number.isSafeInteger(partidaAtual.rodada)
+      ? partidaAtual.rodada : window.BenaPontuacao.iniciarRodada(KEY);
+    state=createState(config,rodada);
     q('.game-instructions').hidden=false;
     q('.reward-summary').hidden=true;
     q('.scene-caption').textContent='Explore a caixa';
@@ -149,7 +152,7 @@ export function start(container, voltar) {
   container.addEventListener('click',event=>{
     const button=event.target.closest('button');if(!button||button.disabled)return;
     switch(button.dataset.action){
-      case 'restart':newRound();break;
+      case 'restart':void newRound(true);break;
       case 'orbit-left':scene.orbit(-1);break;
       case 'orbit-right':scene.orbit(1);break;
       case 'pan-up':scene.pan('up');break;
@@ -159,21 +162,21 @@ export function start(container, voltar) {
       case 'zoom-in':scene.zoom(.9);break;
       case 'zoom-out':scene.zoom(1.1);break;
       case 'focus':scene.focus(active);break;
-      case 'reload':location.reload();break;
+      case 'reload':window.BenaPartida.recarregar();break;
     }
   },{signal:abort.signal});
   motion.addEventListener('change',()=>scene?.setReducedMotion(motion.matches),{signal:abort.signal});
   function showLoadError(error, message) {
     console.error(error);
     if(!disposed)container.innerHTML='<div class="load-error" role="alert"><h1>A oficina não conseguiu abrir</h1><p>'+message+'</p><button type="button">Tentar novamente</button></div>';
-    container.querySelector('.load-error button')?.addEventListener('click',()=>location.reload(),{once:true});
+    container.querySelector('.load-error button')?.addEventListener('click',()=>window.BenaPartida.recarregar(),{once:true});
   }
   loadData().then(([entries, contas])=>{
     if(disposed)return;
     puzzleEntries=entries;
     contasEntries=contas;
     try {
-      newRound();
+      void newRound();
       // Snapshot only; browser tests still perform all gameplay through the real controls.
       container.benaInspect=()=>({state:structuredClone(state),scene:scene.inspect()});
     } catch (error) {
