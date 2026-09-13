@@ -132,24 +132,26 @@ async function nomeDisponivel(nome, uid) {
   return snap.data().uid === uid;
 }
 
-async function salvarPerfil(uid, email, nome, escola) {
+async function salvarPerfil(uid, email, nome, escola, serie) {
   await setDoc(doc(db, 'nomes', nome.toLowerCase()), { uid });
   await setDoc(doc(db, 'usuarios', uid), {
     nome,
     escola: escola || '',
+    serie: serie || null,
     email,
     criadoEm: serverTimestamp()
   }, { merge: true });
 }
 
-async function atualizarPerfil(uid, nomeAntigo, nomeNovo, escolaNova) {
+async function atualizarPerfil(uid, nomeAntigo, nomeNovo, escolaNova, serieNova) {
   if (nomeAntigo && nomeAntigo.toLowerCase() !== nomeNovo.toLowerCase()) {
     await deleteDoc(doc(db, 'nomes', nomeAntigo.toLowerCase()));
   }
   await setDoc(doc(db, 'nomes', nomeNovo.toLowerCase()), { uid });
   await setDoc(doc(db, 'usuarios', uid), {
     nome: nomeNovo,
-    escola: escolaNova || ''
+    escola: escolaNova || '',
+    serie: serieNova || null
   }, { merge: true });
 }
 
@@ -262,11 +264,20 @@ function showSignupModal(onSuccess) {
   };
 }
 
+/* Opcoes de serie para dropdown */
+function serieOptions(valorAtual) {
+  const series = [3, 4, 5, 6, 7, 8, 9];
+  return series.map(s =>
+    `<option value="${s}" ${Number(valorAtual) === s ? 'selected' : ''}>Fundamental - ${s}ª Série</option>`
+  ).join('');
+}
+
 /* VIEW: Escolher nome e escola (primeira vez ou perfil incompleto) */
 function showPerfilModal(user, perfilExistente, onSuccess) {
   if (!modal || !content) return;
   const nomePadrao   = perfilExistente?.nome || '';
   const escolaPadrao = perfilExistente?.escola || '';
+  const seriePadrao  = perfilExistente?.serie || '';
   content.innerHTML = `
     <div class="modal-symbol">\u270f\ufe0f</div>
     <div class="eyebrow"><span></span>COMPLETE SEU PERFIL</div>
@@ -277,6 +288,10 @@ function showPerfilModal(user, perfilExistente, onSuccess) {
              value="${nomePadrao}" required minlength="2" maxlength="30">
       <input type="text" id="auth-escola" placeholder="Nome da sua escola" autocomplete="off"
              value="${escolaPadrao}" required minlength="2" maxlength="80">
+      <select id="auth-serie" class="auth-select" required>
+        <option value="" disabled ${!seriePadrao ? 'selected' : ''}>Série — selecione</option>
+        ${serieOptions(seriePadrao)}
+      </select>
       <p class="auth-error" id="perfil-error" role="alert" hidden></p>
       <button type="submit" class="primary">Salvar e entrar <span>\u2192</span></button>
     </form>
@@ -291,9 +306,11 @@ function showPerfilModal(user, perfilExistente, onSuccess) {
     e.preventDefault();
     const nome   = document.querySelector('#auth-nome').value.trim();
     const escola = document.querySelector('#auth-escola').value.trim();
+    const serie  = Number(document.querySelector('#auth-serie').value) || null;
     const btn    = e.target.querySelector('[type="submit"]');
     if (nome.length < 2) { setError('perfil-error', 'Nome muito curto. Use pelo menos 2 caracteres.'); return; }
     if (escola.length < 2) { setError('perfil-error', 'Informe o nome da sua escola.'); return; }
+    if (!serie) { setError('perfil-error', 'Selecione a sua s\u00e9rie.'); return; }
     setLoading(btn, true, 'Salvar e entrar <span>\u2192</span>');
     setError('perfil-error', '');
     try {
@@ -303,8 +320,8 @@ function showPerfilModal(user, perfilExistente, onSuccess) {
         setLoading(btn, false, 'Salvar e entrar <span>\u2192</span>');
         return;
       }
-      await salvarPerfil(user.uid, user.email, nome, escola);
-      window.BENA_AUTH.sincronizarAluno(nome, escola); // sync com MySQL (non-blocking)
+      await salvarPerfil(user.uid, user.email, nome, escola, serie);
+      window.BENA_AUTH.sincronizarAluno(nome, escola, serie); // sync com MySQL (non-blocking)
       updateLoginBtn(user, nome);
       modal.close();
       if (typeof onSuccess === 'function') onSuccess();
@@ -316,16 +333,18 @@ function showPerfilModal(user, perfilExistente, onSuccess) {
   };
 }
 
-/* VIEW: Minha Conta */
+//* VIEW: Minha Conta */
 function showContaModal(user, perfil) {
   const nome   = perfil?.nome || user.email.split('@')[0];
   const escola = perfil?.escola || 'Escola n\u00e3o informada';
+  const serie  = perfil?.serie ? `Fundamental - ${perfil.serie}\u00aa S\u00e9rie` : 'S\u00e9rie n\u00e3o informada';
   content.innerHTML = `
     <div class="modal-symbol">\u263a</div>
     <div class="eyebrow"><span></span>MINHA CONTA</div>
     <h2>${nome}</h2>
     <p class="auth-email-label">${user.email}</p>
     <p class="auth-escola-badge">\ud83c\udfeb ${escola}</p>
+    <p class="auth-escola-badge">\ud83d\udcd6 ${serie}</p>
     <div id="conta-body">
       <button class="topic" id="btn-editar-perfil">\u270f\ufe0f Editar perfil <span>\u2192</span></button>
       <button class="topic auth-sair" id="btn-sair">Sair <span>\u2192</span></button>
@@ -340,6 +359,7 @@ function showContaModal(user, perfil) {
 function showEditarPerfilModal(user, perfil) {
   const nomeAtual   = perfil?.nome || '';
   const escolaAtual = perfil?.escola || '';
+  const serieAtual  = perfil?.serie || '';
   document.querySelector('#conta-body').innerHTML = `
     <form id="editar-perfil-form" class="auth-form">
       <div class="auth-field-row">
@@ -352,6 +372,13 @@ function showEditarPerfilModal(user, perfil) {
         <input type="text" id="nova-escola" value="${escolaAtual}" placeholder="Nome da sua escola" autocomplete="off"
                required minlength="2" maxlength="80">
       </div>
+      <div class="auth-field-row">
+        <label class="auth-field-label" for="nova-serie">S\u00e9rie</label>
+        <select id="nova-serie" class="auth-select" required>
+          <option value="" disabled ${!serieAtual ? 'selected' : ''}>Selecione</option>
+          ${serieOptions(serieAtual)}
+        </select>
+      </div>
       <p class="auth-error" id="perfil-edit-error" role="alert" hidden></p>
       <button type="submit" class="primary">Salvar altera\u00e7\u00f5es <span>\u2192</span></button>
     </form>
@@ -363,10 +390,12 @@ function showEditarPerfilModal(user, perfil) {
     e.preventDefault();
     const novoNome   = document.querySelector('#novo-nome').value.trim();
     const novaEscola = document.querySelector('#nova-escola').value.trim();
+    const novaSerie  = Number(document.querySelector('#nova-serie').value) || null;
     const btn        = e.target.querySelector('[type="submit"]');
     if (novoNome.length < 2) { setError('perfil-edit-error', 'Nome muito curto. Use pelo menos 2 caracteres.'); return; }
     if (novaEscola.length < 2) { setError('perfil-edit-error', 'Informe o nome da sua escola.'); return; }
-    if (novoNome === nomeAtual && novaEscola === escolaAtual) { modal.close(); return; }
+    if (!novaSerie) { setError('perfil-edit-error', 'Selecione a sua s\u00e9rie.'); return; }
+    if (novoNome === nomeAtual && novaEscola === escolaAtual && novaSerie === Number(serieAtual)) { modal.close(); return; }
     setLoading(btn, true, 'Salvar altera\u00e7\u00f5es <span>\u2192</span>');
     setError('perfil-edit-error', '');
     try {
@@ -378,8 +407,8 @@ function showEditarPerfilModal(user, perfil) {
           return;
         }
       }
-      await atualizarPerfil(user.uid, nomeAtual, novoNome, novaEscola);
-      window.BENA_AUTH.sincronizarAluno(novoNome, novaEscola); // sync com MySQL (non-blocking)
+      await atualizarPerfil(user.uid, nomeAtual, novoNome, novaEscola, novaSerie);
+      window.BENA_AUTH.sincronizarAluno(novoNome, novaEscola, novaSerie); // sync com MySQL (non-blocking)
       updateLoginBtn(user, novoNome);
       modal.close();
     } catch (err) {
@@ -423,12 +452,13 @@ onAuthStateChanged(auth, async (user) => {
     const perfil = snap.exists() ? snap.data() : null;
     const nome   = perfil?.nome || null;
     const escola = perfil?.escola || null;
-    console.log('[BENA_AUTH] Usuario logado:', { email: user.email, nome, escola });
+    const serie  = perfil?.serie || null;
+    console.log('[BENA_AUTH] Usuario logado:', { email: user.email, nome, escola, serie });
     updateLoginBtn(user, nome);
-    if (nome && escola) {
-      window.BENA_AUTH.sincronizarAluno(nome, escola);
+    if (nome && escola && serie) {
+      window.BENA_AUTH.sincronizarAluno(nome, escola, serie);
     } else if (modal) {
-      console.log('[BENA_AUTH] Perfil incompleto (falta escola ou nome), solicitando preenchimento...');
+      console.log('[BENA_AUTH] Perfil incompleto, solicitando preenchimento...');
       showPerfilModal(user, perfil);
     }
   } else {
