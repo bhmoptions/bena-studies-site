@@ -59,7 +59,13 @@
       }
       function chooseMonitorPosition(levelNumber) {
         const levelConfig = monitorPositionConfig.levels?.find(item => Number(item.id) === levelNumber);
-        const positions = Array.isArray(levelConfig?.positions) ? levelConfig.positions.filter(Boolean) : [];
+        const availablePositions = Array.isArray(monitorPositionConfig.positions) ? monitorPositionConfig.positions : [];
+        const references = Array.isArray(levelConfig?.positions) ? levelConfig.positions : [];
+        const positions = references
+          .map(reference => typeof reference === 'object'
+            ? reference
+            : availablePositions.find(position => Number(position.id) === Number(reference)))
+          .filter(Boolean);
         const selected = positions.length ? positions[Math.floor(Math.random() * positions.length)] : null;
         return normalizeMonitorPosition(selected || { left: 46, top: 41.647 });
       }

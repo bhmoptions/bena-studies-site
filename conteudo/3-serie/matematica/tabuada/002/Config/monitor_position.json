@@ -5,94 +5,64 @@
     "reference": "room-scene",
     "description": "left and top are percentages of the game scene. Add more objects to a level's positions list to enable random selection."
   },
-  "levels": [
+  "positions": [
     {
       "id": 1,
-      "positions": [
-        {
-          "left": "74.5%",
-          "top": "55.5%"
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "positions": [
-        {
-          "left": "73%",
-          "top": "24%"
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "positions": [
-        {
-          "left": "46%",
-          "top": "41.647%"
-        }
-      ]
-    },
-    {
-      "id": 4,
-      "positions": [
-        {
-          "left": "46%",
-          "top": "41.647%"
-        }
-      ]
-    },
-    {
-      "id": 5,
-      "positions": [
-        {
-          "left": "46%",
-          "top": "41.647%"
-        }
-      ]
-    }
-  ],
-  "Positions":[
-    {
-      "id": 1,
-      "Descricao": "Coluna 1, linha 1",
+      "description": "Coluna 1, linha 1",
       "left": "8%",
       "top": "25.1%"
-    },    
+    },
     {
       "id": 2,
-      "Descricao": "Coluna 1, linha 2",
+      "description": "Coluna 1, linha 2",
       "left": "0%",
       "top": "65%"
     },
-    
-    
     {
-      "id": 3,      
-      "Descricao": "Coluna 2, linha 1",
+      "id": 3,
+      "description": "Coluna 2, linha 1",
       "left": "47.5%",
       "top": "12%"
     },
     {
-      "id": 4,      
-      "Descricao": "Coluna 2, linha 2",
+      "id": 4,
+      "description": "Coluna 2, linha 2",
       "left": "46%",
       "top": "41.647%"
     },
-    
-    
-    
     {
-      "id": 5,      
-      "Descricao": "Coluna 3, linha 1",
+      "id": 5,
+      "description": "Coluna 3, linha 1",
       "left": "73%",
       "top": "24%"
     },
     {
-      "id": 6,      
-      "Descricao": "Coluna 3, linha 2",
+      "id": 6,
+      "description": "Coluna 3, linha 2",
       "left": "74.5%",
       "top": "55.5%"
     }
+  ],
+  "levels": [
+    {
+      "id": 1,
+      "positions": [1]
+    },
+    {
+      "id": 2,
+      "positions": [1]
+    },
+    {
+      "id": 3,
+      "positions": [1]
+    },
+    {
+      "id": 4,
+      "positions": [1]
+    },
+    {
+      "id": 5,
+      "positions": [1]
+    }
   ]
-}      
+}
