@@ -69,6 +69,24 @@ test('manipulação não conta tentativa; mistura e capacidade são bloqueadas',
  assert.equal(act(state,{type:'add',side:'blue',value}).outcome,'invalid');
  assert.equal(act(state,{type:'add',side:'blue',pan:'right',value}).outcome,'invalid');
 });
+test('dois cliques podem esvaziar a balança inteira sem contar erro',()=>{
+ let state=createState(config),value=valuesForSide(config,'blue')[0];
+ state=act(state,{type:'add',side:'blue',value}).state;
+ state=act(state,{type:'add',side:'blue',value}).state;
+ const cleared=act(state,{type:'clearScale',side:'blue'});
+ assert.equal(cleared.outcome,'changed');
+ assert.deepEqual(cleared.state.sides.blue.left,[]);
+ assert.deepEqual(cleared.state.sides.blue.right,[]);
+ assert.equal(cleared.state.events.length,0);
+ assert.equal(cleared.state.sides.blue.errors,0);
+});
+test('esvaziar a balança roxa limpa os dois pratos',()=>{
+ let state=createState(config),value=valuesForSide(config,'purple')[0],other=valuesForSide(config,'purple')[1];
+ state=act(state,{type:'add',side:'purple',pan:'left',value}).state;
+ state=act(state,{type:'add',side:'purple',pan:'right',value:other}).state;
+ state=act(state,{type:'clearScale',side:'purple'}).state;
+ assert.deepEqual(state.sides.purple.left,[]);assert.deepEqual(state.sides.purple.right,[]);
+});
 test('vazio e duplicatas não contam; erros diferentes contam; corrigir não restaura acerto de primeira',()=>{
  let state=createState(config);assert.equal(act(state,{type:'submit',side:'blue'}).state,state);
  const [count,value]=config.dialPuzzles.blue.correct[0],wrong=valuesForSide(config,'blue').find(v=>v!==value),otherWrong=valuesForSide(config,'blue').find(v=>v!==value&&v!==wrong);

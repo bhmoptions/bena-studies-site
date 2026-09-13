@@ -180,6 +180,11 @@ export function act(state, action) {
     values.splice(action.index===undefined?values.length-1:action.index,1);
   } else if (type === 'clear') {
     puzzle[pan] = [];
+  } else if (type === 'clearScale') {
+    if (!puzzle.left.length && !puzzle.right.length)
+      return { state, outcome: 'empty', reason: 'Esta balança já está vazia.' };
+    puzzle.left = [];
+    puzzle.right = [];
   } else if (type === 'submit') {
     if (!canSubmit(state, side)) return { state, outcome: 'ignored', reason: 'Ajuste os frascos antes de conferir.' };
     const success = side === 'purple' ? validatePurple(puzzle.left, puzzle.right) : validateConfiguredDial(puzzle.left, state.config.dialPuzzles[side]);

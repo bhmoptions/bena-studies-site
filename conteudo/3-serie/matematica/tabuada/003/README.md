@@ -17,6 +17,9 @@ Arrastar entre pratos faz uma transferência: se o destino estiver cheio,
 resolvido ou tiver outro tipo, o frasco volta à origem. **− 1** e **Esvaziar**
 continuam disponíveis como alternativas. Cada prato comporta dez frascos e
 até cem bolinhas. Lados resolvidos permanecem bloqueados durante a rodada.
+Dar **dois cliques em qualquer frasco que já esteja na balança** esvazia os
+dois pratos daquela balança de uma vez; essa ação é apenas de organização e
+não conta como resposta nem altera a pontuação.
 
 A conferência acontece no próprio objeto 3D, sem um botão genérico no painel:
 

@@ -1,7 +1,7 @@
 import * as T from 'three';
 import { OrbitControls } from '../../../../../assets/vendor/three/OrbitControls.js';
-import { createWorkshopAssets, ANGLES } from './modelos.mjs?v=puzzles-json-6';
-import { SIDES, total, balanceTilt, valuesForSide } from './logica.mjs?v=puzzles-json-6';
+import { createWorkshopAssets, ANGLES } from './modelos.mjs?v=puzzles-json-7';
+import { SIDES, total, balanceTilt, valuesForSide } from './logica.mjs?v=puzzles-json-7';
 import { createBoxEffects } from './efeitos.mjs';
 import { createBoxControls } from './controles-caixa.mjs';
 import { MECHANISMS } from './mecanismos.mjs';
@@ -16,7 +16,7 @@ export function createScene(host,config,callbacks,reducedMotion=false) {
   renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
   renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.23;
-  renderer.domElement.setAttribute('aria-label','Oficina 3D. Arraste o fundo para girar, use Shift + arraste ou arraste com o botão direito para deslocar, os frascos para colocar ou retirar, e as engrenagens para conferir. Os controles da caixa também recebem foco com Tab.');
+  renderer.domElement.setAttribute('aria-label','Oficina 3D. Arraste o fundo para girar, use Shift + arraste ou arraste com o botão direito para deslocar, os frascos para colocar ou retirar, dê dois cliques em um frasco para esvaziar a balança, e use as engrenagens para conferir. Os controles da caixa também recebem foco com Tab.');
   renderer.domElement.tabIndex=0;host.append(renderer.domElement);
   const scene=new T.Scene();scene.background=new T.Color('#293b3c');scene.fog=new T.Fog('#293b3c',23,55);
   const env=assets.texture(assets.canvas(1024,512,(ctx,w,h)=>{
@@ -220,6 +220,13 @@ export function createScene(host,config,callbacks,reducedMotion=false) {
       return;
     }
     down={x:event.clientX,y:event.clientY,pick:p};
+  },true);
+  on(renderer.domElement,'dblclick',event=>{
+    const p=pick(event.clientX,event.clientY);
+    if(p?.kind!=='flask'||state?.sides[p.side].solved)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    boxControls.cancel();
+    callbacks.clearScale?.(p.side);
   },true);
   on(renderer.domElement,'pointermove',event=>{
     if(panning){panByPixels(event.clientX-panning.x,event.clientY-panning.y);panning.x=event.clientX;panning.y=event.clientY;return;}

@@ -1,7 +1,7 @@
 // Keep the data-driven modules on the same cache version. A stale scene paired
 // with the new puzzle logic would otherwise fail while importing.
-import { SIDES, generatePuzzle, signature, createState, act, scoreInput } from './logica.mjs?v=puzzles-json-6';
-import { createScene } from './cena.mjs?v=puzzles-json-6';
+import { SIDES, generatePuzzle, signature, createState, act, scoreInput } from './logica.mjs?v=puzzles-json-7';
+import { createScene } from './cena.mjs?v=puzzles-json-7';
 import { LABELS, COLORS } from './modelos.mjs';
 import { createAudio } from './audio.mjs';
 import { connectInteraction } from './interacao.mjs';
@@ -50,6 +50,7 @@ export function start(container, voltar, partidaInicial) {
                 <li><strong>Arraste o fundo</strong> para girar o cenário.</li>
                 <li><strong>Segure Shift e arraste, ou arraste com o botão direito</strong> para mover o cenário.</li>
                 <li><strong>Role a rodinha do mouse</strong> para aproximar ou afastar a visão.</li>
+                <li><strong>Dê dois cliques em qualquer frasco da balança</strong> para esvaziar os pratos de uma vez.</li>
               </ul>
             </div>
             <p class="instruction-good-luck">Boa sorte e divirta-se!</p>
@@ -89,7 +90,10 @@ export function start(container, voltar, partidaInicial) {
         const score=window.BenaPontuacao.calcular(scoreInput(state));scene.reveal(score);audio.play('open');
         q('.scene-caption').textContent='Os quatro segredos se encontraram';
       }
-    }else{render();audio.play(action.type==='add'?'place':'move');}
+    }else{
+      render();audio.play(action.type==='add'?'place':'move');
+      if(action.type==='clearScale')toast('A balança foi esvaziada. Monte outro grupo quando quiser.');
+    }
   }
   function drop(value,destination){apply({type:'add',...destination,value});}
   async function newRound(novaPartida=false) {
@@ -106,6 +110,7 @@ export function start(container, voltar, partidaInicial) {
       selectSide,pan(){toast('Arraste um frasco até o prato para formar o grupo.');},
       dragSupply(value,event,side){interaction?.begin(value,event,null,side);},
       dragPlaced(f,event){interaction?.begin(f.value,event,{side:f.side,pan:f.pan,index:f.index},f.side);},
+      clearScale(side){apply({type:'clearScale',side});},
       activate(side){apply({type:'submit',side});},
       sound:audio.play,hint:message=>toast(message),
       unlocked(){audio.play('unlock');},
