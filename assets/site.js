@@ -15,7 +15,7 @@ const art = {
  caderno: `<div class="notebook-scene" aria-hidden="true"><div class="paper"><span class="tape"></span><span class="paper-date">meu diário de descobertas</span><h2>Hoje é dia<br>de aprender<br><em>algo incrível!</em></h2><div class="doodle-flower">✳</div><div class="scribble">errando, tentando,<br>e tentando de novo.</div><span class="paper-star">☆</span></div><div class="sticker">100%<br><small>curiosidade</small></div><div class="pencil"></div></div>`
 };
 document.querySelector('#app').innerHTML = `
-<header class="site-header"><div class="header wrap"><div class="landing-brand-area"><button class="landing-menu-toggle" type="button" data-landing-menu-toggle aria-label="Abrir menu dos jogos"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><a class="brand" href="${base}index.html" aria-label="Bena Studies, início"><span class="brand-icon">b<span>✦</span></span><span>Bena<span class="brand-light">Studies</span></span></a></div><button class="login" data-login>Entrar <span>↗</span></button></div></header>
+<div data-shared-header data-base="${base}"></div>
 <main class="main-stage">
   <div class="ambient-halo"></div>
   <div class="book-wrap is-closed" id="bookWrap">
@@ -73,7 +73,6 @@ const modal = document.querySelector('#modal');
 const content = document.querySelector('#modal-content');
 modal.querySelector('.close').onclick = () => modal.close();
 modal.addEventListener('click', e => {if(e.target===modal) { const r=modal.getBoundingClientRect(); if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom) modal.close(); }});
-document.querySelector('[data-login]').onclick = () => {}; // Firebase Auth — ver assets/componentes/auth.js
 document.querySelectorAll('[data-subject]').forEach(button => button.onclick = () => {
   showTopics(materias[Number(button.dataset.subject)]);
   modal.showModal();

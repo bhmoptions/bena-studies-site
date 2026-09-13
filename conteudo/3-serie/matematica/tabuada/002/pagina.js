@@ -4,7 +4,7 @@ const sair = () => window.BenaPartida.confirmarSaida(() => {
 const gameContainer = document.querySelector('#game');
 if (window.BENA_CONFIG.serieAtual === 3) {
   // Mede o cabeçalho real (incluindo quebra de linha/zoom), sem supor sua altura.
-  const header = document.querySelector('.game-page-header');
+  const header = document.querySelector('.shared-site-header');
   function ajustarAltura() {
     const style = getComputedStyle(gameContainer);
     const viewport = window.visualViewport?.height || window.innerHeight;
