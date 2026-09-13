@@ -479,6 +479,10 @@ if (loginBtn) {
 }
 
 onAuthStateChanged(auth, async (user) => {
+  window.dispatchEvent(new CustomEvent('bena:auth-state', {
+    detail: { loggedIn: Boolean(user) }
+  }));
+
   if (user) {
     try {
       const snap = await getDoc(doc(db, 'usuarios', user.uid));

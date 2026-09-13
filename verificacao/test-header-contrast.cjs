@@ -18,6 +18,7 @@ const pages = [
 
   try {
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    await page.route('**/assets/componentes/auth.js*', route => route.abort());
 
     for (const [name, url] of pages) {
       await page.goto(url, { waitUntil: 'domcontentloaded' });
@@ -27,7 +28,6 @@ const pages = [
         const element = document.querySelector('.shared-site-header');
         const rect = element.getBoundingClientRect();
         const style = getComputedStyle(element);
-        const toggle = element.querySelector('[data-shared-menu-toggle]').getBoundingClientRect();
         const brand = element.querySelector('.brand').getBoundingClientRect();
         const login = element.querySelector('[data-login]').getBoundingClientRect();
         return {
@@ -36,9 +36,9 @@ const pages = [
           borderBottom: style.borderBottomColor,
           brandText: element.querySelector('.brand > span:last-child').innerText,
           brandHref: element.querySelector('.brand').href,
-          toggleLeft: Math.round(toggle.left),
           brandLeft: Math.round(brand.left),
-          loginLeft: Math.round(login.left)
+          loginLeft: Math.round(login.left),
+          menuHidden: element.querySelector('[data-shared-menu-toggle]').hidden
         };
       });
 
@@ -48,7 +48,18 @@ const pages = [
       assert.equal(header.borderBottom, 'rgb(48, 54, 70)', `${name}: borda inferior`);
       assert.equal(header.brandText, 'BenaStudies', `${name}: marca compartilhada`);
       assert(header.brandHref.endsWith('/index.html'), `${name}: logo deve levar ao início`);
-      assert(header.toggleLeft < header.brandLeft && header.brandLeft < header.loginLeft, `${name}: ordem menu, marca e login`);
+      assert.equal(header.menuHidden, true, `${name}: visitantes não devem ver o menu`);
+      assert(header.brandLeft < header.loginLeft, `${name}: ordem marca e login`);
+
+      await page.evaluate(() => {
+        window.dispatchEvent(new CustomEvent('bena:auth-state', { detail: { loggedIn: true } }));
+      });
+      await page.locator('[data-shared-menu-toggle]').waitFor({ state: 'visible' });
+      const signedInHeader = await page.evaluate(() => ({
+        toggleLeft: Math.round(document.querySelector('[data-shared-menu-toggle]').getBoundingClientRect().left),
+        brandLeft: Math.round(document.querySelector('.shared-site-header .brand').getBoundingClientRect().left)
+      }));
+      assert(signedInHeader.toggleLeft < signedInHeader.brandLeft, `${name}: menu deve ficar antes da marca após o login`);
 
       await page.locator('[data-shared-menu-toggle]').click();
       await page.waitForSelector('.shared-menu-layer.is-open');
@@ -67,6 +78,11 @@ const pages = [
       assert(menu.homeHref.endsWith('/index.html'), `${name}: logo do menu deve levar ao início`);
       await page.keyboard.press('Escape');
       await page.waitForSelector('.shared-menu-layer', { state: 'hidden' });
+
+      await page.evaluate(() => {
+        window.dispatchEvent(new CustomEvent('bena:auth-state', { detail: { loggedIn: false } }));
+      });
+      await page.locator('[data-shared-menu-toggle]').waitFor({ state: 'hidden' });
     }
 
     console.log('OK: cabeçalho e menu compartilhados em todas as páginas ativas.');

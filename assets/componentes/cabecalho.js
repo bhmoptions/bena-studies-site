@@ -29,7 +29,7 @@
       <header class="site-header shared-site-header">
         <div class="header shared-header-row">
           <div class="shared-brand-area">
-            <button class="shared-menu-toggle" type="button" data-shared-menu-toggle aria-label="Abrir menu dos jogos"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+            <button class="shared-menu-toggle" type="button" data-shared-menu-toggle aria-label="Abrir menu dos jogos" hidden><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
             <a class="brand" href="${base}index.html" aria-label="Bena Studies, início"><span class="brand-icon">b<span>✦</span></span><span>Bena<span class="brand-light">Studies</span></span></a>
           </div>
           <button class="login" data-login>Entrar <span>↗</span></button>
@@ -117,6 +117,7 @@
     }
 
     function openMenu() {
+      if (toggle.hidden) return;
       lastFocus = document.activeElement;
       renderSubjects();
       layer.hidden = false;
@@ -131,6 +132,11 @@
       toggle.setAttribute('aria-expanded', 'false');
       window.setTimeout(() => { layer.hidden = true; }, 220);
       lastFocus?.focus?.();
+    }
+
+    function setMenuAccess(loggedIn) {
+      if (!loggedIn) closeMenu();
+      toggle.hidden = !loggedIn;
     }
 
     function trapFocus(event) {
@@ -150,6 +156,13 @@
       trapFocus(event);
     });
     window.addEventListener('bena:serie-alterada', () => { if (!layer.hidden) renderSubjects(); });
+    window.addEventListener('bena:auth-state', event => setMenuAccess(Boolean(event.detail?.loggedIn)));
+
+    if (window.BENA_AUTH?.isAuthReady?.()) {
+      setMenuAccess(window.BENA_AUTH.isLoggedIn());
+    } else {
+      window.BENA_AUTH?.onAuthReady?.(user => setMenuAccess(Boolean(user)));
+    }
   }
 
   document.querySelectorAll('[data-shared-header]').forEach(createHeader);
