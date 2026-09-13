@@ -310,14 +310,23 @@ function showPerfilModal(user, perfilExistente, onSuccess) {
     <h2>Quase l\u00e1!</h2>
     <p>Escolha um nome \u00fanico para o ranking e conte para n\u00f3s o nome da sua escola.</p>
     <form id="perfil-form" class="auth-form">
-      <input type="text" id="auth-nome" placeholder="Seu nome \u00fanico" autocomplete="off"
-             value="${nomePadrao}" required minlength="2" maxlength="30">
-      <input type="text" id="auth-escola" placeholder="Nome da sua escola" autocomplete="off"
-             value="${escolaPadrao}" required minlength="2" maxlength="80">
-      <select id="auth-serie" class="auth-select" required>
-        <option value="" disabled ${!seriePadrao ? 'selected' : ''}>Série — selecione</option>
-        ${serieOptions(seriePadrao)}
-      </select>
+      <div class="auth-field-row">
+        <label class="auth-field-label" for="auth-nome">Nome</label>
+        <input type="text" id="auth-nome" placeholder="Seu nome \u00fanico" autocomplete="off"
+               value="${nomePadrao}" required minlength="2" maxlength="30">
+      </div>
+      <div class="auth-field-row">
+        <label class="auth-field-label" for="auth-escola">Escola</label>
+        <input type="text" id="auth-escola" placeholder="Nome da sua escola" autocomplete="off"
+               value="${escolaPadrao}" required minlength="2" maxlength="80">
+      </div>
+      <div class="auth-field-row">
+        <label class="auth-field-label" for="auth-serie">Série</label>
+        <select id="auth-serie" class="auth-select" required>
+          <option value="" disabled ${!seriePadrao ? 'selected' : ''}>Série — selecione</option>
+          ${serieOptions(seriePadrao)}
+        </select>
+      </div>
       <p class="auth-error" id="perfil-error" role="alert" hidden></p>
       <button type="submit" class="primary">Salvar e entrar <span>\u2192</span></button>
     </form>
