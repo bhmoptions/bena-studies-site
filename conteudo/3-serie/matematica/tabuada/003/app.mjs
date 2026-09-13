@@ -125,7 +125,8 @@ export function start(container, voltar, partidaInicial) {
         q('.reward-summary').innerHTML=`<p class="panel-kicker">SEU PERGAMINHO</p><h2>Caixa desvendada!</h2><p class="reward-points"><strong>${score.pontos}</strong> pontos</p>
         <dl><div><dt>De primeira</dt><dd>${score.acertosPrimeira} de 4</dd></div><div><dt>Respostas erradas</dt><dd>${score.erros}</dd></div><div><dt>Precisão</dt><dd>${score.percentualAcertos}%</dd></div><div><dt>Rodada</dt><dd>${score.rodada}</dd></div></dl>
         <p>${score.somenteTreino?'Treino livre: a partir da 6ª rodada, os desafios continuam sem pontos.':'Os quatro mecanismos guardam as suas descobertas.'}</p>
-        <button type="button" data-action="restart" class="check-mechanism">Descobrir uma nova caixa →</button>
+        <button type="button" data-action="restart" class="check-mechanism">Repetir caixa com novos desafios →</button>
+        <button type="button" data-action="home" class="check-mechanism">Volta à Página Inicial</button>
         <p class="score-disclaimer">A pontuação oficial é salva para alunos conectados. Recarregar ou sair antes do fim não devolve os pontos de participação.</p>`;
         q('.reward-summary').focus({preventScroll:true});
       },
@@ -153,6 +154,7 @@ export function start(container, voltar, partidaInicial) {
     const button=event.target.closest('button');if(!button||button.disabled)return;
     switch(button.dataset.action){
       case 'restart':void newRound(true);break;
+      case 'home':window.BenaPartida.confirmarSaida(()=>{window.location.href='../../../../../index.html';});break;
       case 'orbit-left':scene.orbit(-1);break;
       case 'orbit-right':scene.orbit(1);break;
       case 'pan-up':scene.pan('up');break;
