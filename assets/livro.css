@@ -72,6 +72,14 @@ html, body {
   perspective: 2000px;
 }
 
+/* Keep the landing brand aligned with the game-page header. */
+.site-header .header {
+  width: 100%;
+  height: 62px;
+  margin-inline: 0;
+  padding-inline: clamp(18px, 3vw, 32px);
+}
+
 /* Halo de luz ambiente atrás do livro */
 .ambient-halo {
   position: absolute;
