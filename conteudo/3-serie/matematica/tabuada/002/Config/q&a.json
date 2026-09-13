@@ -7,8 +7,273 @@
       "questions": [
         {
           "question": "3 × 4",
-          "options": ["7", "12", "16"],
+          "options": [
+            "7",
+            "12",
+            "16"
+          ],
           "answer": "12"
+        },
+        {
+          "question": "6 × 3",
+          "options": [
+            "18",
+            "21",
+            "15"
+          ],
+          "answer": "18"
+        },
+        {
+          "question": "7 × 4",
+          "options": [
+            "24",
+            "28",
+            "32"
+          ],
+          "answer": "28"
+        },
+        {
+          "question": "8 × 5",
+          "options": [
+            "35",
+            "40",
+            "45"
+          ],
+          "answer": "40"
+        },
+        {
+          "question": "9 × 3",
+          "options": [
+            "18",
+            "27",
+            "36"
+          ],
+          "answer": "27"
+        },
+        {
+          "question": "6 × 7",
+          "options": [
+            "36",
+            "42",
+            "48"
+          ],
+          "answer": "42"
+        },
+        {
+          "question": "4 × 8",
+          "options": [
+            "24",
+            "28",
+            "32"
+          ],
+          "answer": "32"
+        },
+        {
+          "question": "5 × 9",
+          "options": [
+            "40",
+            "45",
+            "50"
+          ],
+          "answer": "45"
+        },
+        {
+          "question": "7 × 7",
+          "options": [
+            "42",
+            "49",
+            "56"
+          ],
+          "answer": "49"
+        },
+        {
+          "question": "8 × 6",
+          "options": [
+            "42",
+            "48",
+            "54"
+          ],
+          "answer": "48"
+        },
+        {
+          "question": "2 × 2",
+          "options": [
+            "4",
+            "6",
+            "2"
+          ],
+          "answer": "4"
+        },
+        {
+          "question": "2 × 3",
+          "options": [
+            "4",
+            "8",
+            "6"
+          ],
+          "answer": "6"
+        },
+        {
+          "question": "2 × 4",
+          "options": [
+            "10",
+            "8",
+            "6"
+          ],
+          "answer": "8"
+        },
+        {
+          "question": "2 × 5",
+          "options": [
+            "10",
+            "12",
+            "8"
+          ],
+          "answer": "10"
+        },
+        {
+          "question": "2 × 6",
+          "options": [
+            "10",
+            "14",
+            "12"
+          ],
+          "answer": "12"
+        },
+        {
+          "question": "2 × 7",
+          "options": [
+            "12",
+            "14",
+            "16"
+          ],
+          "answer": "14"
+        },
+        {
+          "question": "2 × 8",
+          "options": [
+            "18",
+            "16",
+            "14"
+          ],
+          "answer": "16"
+        },
+        {
+          "question": "2 × 9",
+          "options": [
+            "16",
+            "18",
+            "20"
+          ],
+          "answer": "18"
+        },
+        {
+          "question": "3 × 2",
+          "options": [
+            "6",
+            "3",
+            "9"
+          ],
+          "answer": "6"
+        },
+        {
+          "question": "3 × 3",
+          "options": [
+            "6",
+            "12",
+            "9"
+          ],
+          "answer": "9"
+        },
+        {
+          "question": "3 × 5",
+          "options": [
+            "18",
+            "12",
+            "15"
+          ],
+          "answer": "15"
+        },
+        {
+          "question": "3 × 6",
+          "options": [
+            "21",
+            "18",
+            "15"
+          ],
+          "answer": "18"
+        },
+        {
+          "question": "3 × 7",
+          "options": [
+            "21",
+            "18",
+            "24"
+          ],
+          "answer": "21"
+        },
+        {
+          "question": "3 × 8",
+          "options": [
+            "21",
+            "27",
+            "24"
+          ],
+          "answer": "24"
+        },
+        {
+          "question": "3 × 9",
+          "options": [
+            "30",
+            "24",
+            "27"
+          ],
+          "answer": "27"
+        },
+        {
+          "question": "4 × 2",
+          "options": [
+            "12",
+            "8",
+            "4"
+          ],
+          "answer": "8"
+        },
+        {
+          "question": "4 × 3",
+          "options": [
+            "16",
+            "8",
+            "12"
+          ],
+          "answer": "12"
+        },
+        {
+          "question": "4 × 4",
+          "options": [
+            "20",
+            "12",
+            "16"
+          ],
+          "answer": "16"
+        },
+        {
+          "question": "4 × 5",
+          "options": [
+            "16",
+            "24",
+            "20"
+          ],
+          "answer": "20"
+        },
+        {
+          "question": "4 × 6",
+          "options": [
+            "24",
+            "28",
+            "20"
+          ],
+          "answer": "24"
         }
       ]
     },
@@ -18,8 +283,483 @@
       "questions": [
         {
           "question": "4 × X = 20",
-          "options": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
           "answer": 5
+        },
+        {
+          "question": "3 × X = 18",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 6
+        },
+        {
+          "question": "5 × X = 35",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 7
+        },
+        {
+          "question": "6 × X = 48",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 8
+        },
+        {
+          "question": "7 × X = 42",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 6
+        },
+        {
+          "question": "8 × X = 56",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 7
+        },
+        {
+          "question": "9 × X = 45",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 5
+        },
+        {
+          "question": "4 × X = 32",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 8
+        },
+        {
+          "question": "6 × X = 54",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 9
+        },
+        {
+          "question": "9 × X = 63",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 7
+        },
+        {
+          "question": "2 × X = 4",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 2
+        },
+        {
+          "question": "2 × X = 6",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 3
+        },
+        {
+          "question": "2 × X = 8",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 4
+        },
+        {
+          "question": "2 × X = 10",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 5
+        },
+        {
+          "question": "2 × X = 12",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 6
+        },
+        {
+          "question": "2 × X = 14",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 7
+        },
+        {
+          "question": "2 × X = 16",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 8
+        },
+        {
+          "question": "2 × X = 18",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 9
+        },
+        {
+          "question": "3 × X = 6",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 2
+        },
+        {
+          "question": "3 × X = 9",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 3
+        },
+        {
+          "question": "3 × X = 12",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 4
+        },
+        {
+          "question": "3 × X = 15",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 5
+        },
+        {
+          "question": "3 × X = 21",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 7
+        },
+        {
+          "question": "3 × X = 24",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 8
+        },
+        {
+          "question": "3 × X = 27",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 9
+        },
+        {
+          "question": "4 × X = 8",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 2
+        },
+        {
+          "question": "4 × X = 12",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 3
+        },
+        {
+          "question": "4 × X = 16",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 4
+        },
+        {
+          "question": "4 × X = 24",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 6
+        },
+        {
+          "question": "4 × X = 28",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "answer": 7
         }
       ]
     },
@@ -29,8 +769,573 @@
       "questions": [
         {
           "question": "3 × 2",
-          "options": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
           "answer": 6
+        },
+        {
+          "question": "4 × 2",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 8
+        },
+        {
+          "question": "5 × 2",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 10
+        },
+        {
+          "question": "3 × 3",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 9
+        },
+        {
+          "question": "6 × 2",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 12
+        },
+        {
+          "question": "2 × 4",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 8
+        },
+        {
+          "question": "2 × 5",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 10
+        },
+        {
+          "question": "4 × 3",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 12
+        },
+        {
+          "question": "3 × 4",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 12
+        },
+        {
+          "question": "2 × 6",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 12
+        },
+        {
+          "question": "2 × 2",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 4
+        },
+        {
+          "question": "2 × 3",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 6
+        },
+        {
+          "question": "1 × 1",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 1
+        },
+        {
+          "question": "1 × 2",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 2
+        },
+        {
+          "question": "1 × 3",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 3
+        },
+        {
+          "question": "1 × 4",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 4
+        },
+        {
+          "question": "1 × 5",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 5
+        },
+        {
+          "question": "1 × 6",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 6
+        },
+        {
+          "question": "1 × 7",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 7
+        },
+        {
+          "question": "1 × 8",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 8
+        },
+        {
+          "question": "1 × 9",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 9
+        },
+        {
+          "question": "1 × 10",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 10
+        },
+        {
+          "question": "1 × 11",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 11
+        },
+        {
+          "question": "1 × 12",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 12
+        },
+        {
+          "question": "2 × 1",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 2
+        },
+        {
+          "question": "3 × 1",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 3
+        },
+        {
+          "question": "4 × 1",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 4
+        },
+        {
+          "question": "5 × 1",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 5
+        },
+        {
+          "question": "6 × 1",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 6
+        },
+        {
+          "question": "7 × 1",
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "answer": 7
         }
       ]
     },
@@ -40,8 +1345,393 @@
       "questions": [
         {
           "target": 24,
-          "options": [2, 3, 4, 6],
-          "answer": [4, 6]
+          "options": [
+            2,
+            3,
+            4,
+            6
+          ],
+          "answer": [
+            4,
+            6
+          ]
+        },
+        {
+          "target": 18,
+          "options": [
+            2,
+            3,
+            6,
+            8
+          ],
+          "answer": [
+            3,
+            6
+          ]
+        },
+        {
+          "target": 21,
+          "options": [
+            2,
+            3,
+            7,
+            9
+          ],
+          "answer": [
+            3,
+            7
+          ]
+        },
+        {
+          "target": 28,
+          "options": [
+            2,
+            4,
+            7,
+            8
+          ],
+          "answer": [
+            4,
+            7
+          ]
+        },
+        {
+          "target": 30,
+          "options": [
+            3,
+            5,
+            6,
+            15
+          ],
+          "answer": [
+            5,
+            6
+          ]
+        },
+        {
+          "target": 32,
+          "options": [
+            2,
+            4,
+            8,
+            9
+          ],
+          "answer": [
+            4,
+            8
+          ]
+        },
+        {
+          "target": 35,
+          "options": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "answer": [
+            5,
+            7
+          ]
+        },
+        {
+          "target": 42,
+          "options": [
+            4,
+            6,
+            7,
+            8
+          ],
+          "answer": [
+            6,
+            7
+          ]
+        },
+        {
+          "target": 48,
+          "options": [
+            5,
+            6,
+            8,
+            9
+          ],
+          "answer": [
+            6,
+            8
+          ]
+        },
+        {
+          "target": 54,
+          "options": [
+            5,
+            6,
+            9,
+            10
+          ],
+          "answer": [
+            6,
+            9
+          ]
+        },
+        {
+          "target": 14,
+          "options": [
+            2,
+            7,
+            4,
+            3
+          ],
+          "answer": [
+            2,
+            7
+          ]
+        },
+        {
+          "target": 16,
+          "options": [
+            8,
+            2,
+            4,
+            3
+          ],
+          "answer": [
+            2,
+            8
+          ]
+        },
+        {
+          "target": 18,
+          "options": [
+            2,
+            4,
+            3,
+            9
+          ],
+          "answer": [
+            2,
+            9
+          ]
+        },
+        {
+          "target": 12,
+          "options": [
+            4,
+            5,
+            3,
+            2
+          ],
+          "answer": [
+            3,
+            4
+          ]
+        },
+        {
+          "target": 24,
+          "options": [
+            8,
+            2,
+            3,
+            4
+          ],
+          "answer": [
+            3,
+            8
+          ]
+        },
+        {
+          "target": 27,
+          "options": [
+            2,
+            9,
+            3,
+            4
+          ],
+          "answer": [
+            3,
+            9
+          ]
+        },
+        {
+          "target": 20,
+          "options": [
+            3,
+            2,
+            4,
+            5
+          ],
+          "answer": [
+            4,
+            5
+          ]
+        },
+        {
+          "target": 36,
+          "options": [
+            9,
+            2,
+            4,
+            3
+          ],
+          "answer": [
+            4,
+            9
+          ]
+        },
+        {
+          "target": 40,
+          "options": [
+            5,
+            3,
+            8,
+            2
+          ],
+          "answer": [
+            5,
+            8
+          ]
+        },
+        {
+          "target": 45,
+          "options": [
+            9,
+            5,
+            2,
+            3
+          ],
+          "answer": [
+            5,
+            9
+          ]
+        },
+        {
+          "target": 60,
+          "options": [
+            2,
+            10,
+            6,
+            3
+          ],
+          "answer": [
+            6,
+            10
+          ]
+        },
+        {
+          "target": 63,
+          "options": [
+            2,
+            7,
+            9,
+            3
+          ],
+          "answer": [
+            7,
+            9
+          ]
+        },
+        {
+          "target": 70,
+          "options": [
+            7,
+            3,
+            10,
+            2
+          ],
+          "answer": [
+            7,
+            10
+          ]
+        },
+        {
+          "target": 72,
+          "options": [
+            3,
+            2,
+            8,
+            9
+          ],
+          "answer": [
+            8,
+            9
+          ]
+        },
+        {
+          "target": 80,
+          "options": [
+            3,
+            2,
+            10,
+            8
+          ],
+          "answer": [
+            8,
+            10
+          ]
+        },
+        {
+          "target": 90,
+          "options": [
+            10,
+            2,
+            9,
+            3
+          ],
+          "answer": [
+            9,
+            10
+          ]
+        },
+        {
+          "target": 30,
+          "options": [
+            4,
+            3,
+            2,
+            10
+          ],
+          "answer": [
+            3,
+            10
+          ]
+        },
+        {
+          "target": 40,
+          "options": [
+            10,
+            3,
+            4,
+            2
+          ],
+          "answer": [
+            4,
+            10
+          ]
+        },
+        {
+          "target": 50,
+          "options": [
+            5,
+            2,
+            3,
+            10
+          ],
+          "answer": [
+            5,
+            10
+          ]
+        },
+        {
+          "target": 20,
+          "options": [
+            4,
+            10,
+            3,
+            2
+          ],
+          "answer": [
+            2,
+            10
+          ]
         }
       ]
     },
@@ -57,6 +1747,267 @@
             "4 × 4 = 16"
           ],
           "answer": "3 × 5 = 18"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "5 × 4 = 20",
+            "6 × 3 = 18",
+            "7 × 2 = 16"
+          ],
+          "answer": "7 × 2 = 16"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "8 × 3 = 24",
+            "4 × 6 = 24",
+            "5 × 5 = 30"
+          ],
+          "answer": "5 × 5 = 30"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "7 × 4 = 28",
+            "6 × 5 = 30",
+            "9 × 3 = 24"
+          ],
+          "answer": "9 × 3 = 24"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "8 × 4 = 32",
+            "7 × 5 = 35",
+            "6 × 6 = 30"
+          ],
+          "answer": "6 × 6 = 30"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "9 × 4 = 36",
+            "8 × 5 = 40",
+            "7 × 6 = 40"
+          ],
+          "answer": "7 × 6 = 40"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "3 × 9 = 27",
+            "4 × 7 = 28",
+            "5 × 8 = 35"
+          ],
+          "answer": "5 × 8 = 35"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "6 × 8 = 48",
+            "7 × 7 = 49",
+            "8 × 8 = 56"
+          ],
+          "answer": "8 × 8 = 56"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "9 × 5 = 45",
+            "6 × 7 = 42",
+            "8 × 6 = 46"
+          ],
+          "answer": "8 × 6 = 46"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "7 × 8 = 56",
+            "9 × 6 = 54",
+            "8 × 7 = 54"
+          ],
+          "answer": "8 × 7 = 54"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "2 × 7 = 14",
+            "2 × 2 = 2",
+            "3 × 5 = 15"
+          ],
+          "answer": "2 × 2 = 2"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "2 × 3 = 4",
+            "4 × 4 = 16",
+            "3 × 2 = 6"
+          ],
+          "answer": "2 × 3 = 4"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "5 × 3 = 15",
+            "2 × 4 = 6",
+            "3 × 5 = 15"
+          ],
+          "answer": "2 × 4 = 6"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "6 × 2 = 12",
+            "3 × 8 = 24",
+            "2 × 5 = 8"
+          ],
+          "answer": "2 × 5 = 8"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "2 × 6 = 10",
+            "6 × 9 = 54",
+            "4 × 3 = 12"
+          ],
+          "answer": "2 × 6 = 10"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "7 × 8 = 56",
+            "4 × 6 = 24",
+            "2 × 7 = 12"
+          ],
+          "answer": "2 × 7 = 12"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "2 × 8 = 14",
+            "8 × 7 = 56",
+            "4 × 9 = 36"
+          ],
+          "answer": "2 × 8 = 14"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "2 × 9 = 16",
+            "9 × 6 = 54",
+            "5 × 4 = 20"
+          ],
+          "answer": "2 × 9 = 16"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "2 × 5 = 10",
+            "5 × 7 = 35",
+            "3 × 2 = 4"
+          ],
+          "answer": "3 × 2 = 4"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "6 × 2 = 12",
+            "3 × 3 = 7",
+            "3 × 4 = 12"
+          ],
+          "answer": "3 × 3 = 7"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "4 × 3 = 12",
+            "3 × 4 = 10",
+            "6 × 5 = 30"
+          ],
+          "answer": "3 × 4 = 10"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "5 × 2 = 10",
+            "3 × 5 = 13",
+            "6 × 8 = 48"
+          ],
+          "answer": "3 × 5 = 13"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "7 × 3 = 21",
+            "3 × 6 = 16",
+            "5 × 9 = 45"
+          ],
+          "answer": "3 × 6 = 16"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "6 × 8 = 48",
+            "3 × 7 = 19",
+            "7 × 6 = 42"
+          ],
+          "answer": "3 × 7 = 19"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "7 × 9 = 63",
+            "3 × 8 = 22",
+            "7 × 7 = 49"
+          ],
+          "answer": "3 × 8 = 22"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "8 × 6 = 48",
+            "8 × 4 = 32",
+            "3 × 9 = 25"
+          ],
+          "answer": "3 × 9 = 25"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "8 × 7 = 56",
+            "9 × 5 = 45",
+            "4 × 2 = 6"
+          ],
+          "answer": "4 × 2 = 6"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "4 × 3 = 10",
+            "9 × 2 = 18",
+            "2 × 4 = 8"
+          ],
+          "answer": "4 × 3 = 10"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "9 × 5 = 45",
+            "3 × 3 = 9",
+            "4 × 4 = 14"
+          ],
+          "answer": "4 × 4 = 14"
+        },
+        {
+          "question": "Escolha a conta incorreta",
+          "options": [
+            "4 × 2 = 8",
+            "9 × 8 = 72",
+            "4 × 5 = 18"
+          ],
+          "answer": "4 × 5 = 18"
         }
       ]
     }
