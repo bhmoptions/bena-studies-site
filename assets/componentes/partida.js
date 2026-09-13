@@ -5,6 +5,13 @@ window.BenaPartida = (() => {
 
   const esperar = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+  // O servidor de desenvolvimento em localhost só serve arquivos estáticos;
+  // ele não hospeda as APIs da Vercel. Portanto, jogar localmente é sempre
+  // uma prévia sem histórico, depósito, reembolso ou penalidade.
+  function emPreviewLocal() {
+    return ['localhost', '127.0.0.1', '::1', '[::1]'].includes(window.location.hostname);
+  }
+
   async function obterAuth() {
     const limite = Date.now() + 10000;
     while (!window.BENA_AUTH && Date.now() < limite) await esperar(25);
@@ -30,6 +37,10 @@ window.BenaPartida = (() => {
   }
 
   async function iniciar(jogoId) {
+    if (emPreviewLocal()) {
+      return { oficial: false, ativa: false, previewLocal: true, jogoId };
+    }
+
     const auth = await obterAuth();
     if (!auth.currentUser()) return { oficial: false, ativa: false, jogoId };
 

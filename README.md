@@ -8,6 +8,8 @@ Para desenvolvimento, inicie o servidor com atualização automática na pasta d
 
 Depois de abrir http://localhost:8765/, salve qualquer arquivo do projeto e a página será recarregada automaticamente. O servidor observa alterações em HTML, CSS, JavaScript, imagens e demais arquivos usados pelo site. Para servir os arquivos sem atualização automática, ainda é possível usar `python -m http.server 8765 --bind 127.0.0.1`.
 
+No servidor local, os jogos funcionam em modo de prévia: não registram no banco depósitos de abandono, pontuações normais ou reembolsos. A persistência é ativada somente fora de endereços locais.
+
 ## Série exibida
 Em `config/site.js`, altere `serieAtual: 3`. Apenas a série escolhida aparece.
 
