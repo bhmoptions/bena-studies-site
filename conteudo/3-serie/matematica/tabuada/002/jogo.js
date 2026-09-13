@@ -110,7 +110,7 @@
         status('Painel ligado. Leia a regra desta sala e experimente!');
         const level = levels[phase], monitor = container.querySelector('.room-monitor');
         monitor.hidden = false;
-        monitor.innerHTML = `<section class="room-monitor-shell" aria-label="Monitor do computador"><div class="room-monitor-bezel"><div class="room-monitor-screen"><p class="room-monitor-label">COMPUTADOR DA SALA</p><p class="room-clue" tabindex="-1">${level.clue}</p><div class="room-mechanism"></div></div></div><div class="room-monitor-stem" aria-hidden="true"></div><div class="room-monitor-base" aria-hidden="true"></div></section>`;
+        monitor.innerHTML = `<section class="room-monitor-shell" aria-label="Monitor do computador"><div class="room-monitor-bezel"><div class="room-monitor-screen"><p class="room-clue" tabindex="-1">${level.clue}</p><div class="room-mechanism"></div></div></div><div class="room-monitor-stem" aria-hidden="true"></div><div class="room-monitor-base" aria-hidden="true"></div></section>`;
         const panel = monitor.querySelector('.room-mechanism');
         if (level.type === 'choice') {
           panel.innerHTML = `<div class="room-options">${level.choices.map((v,i)=>`<button data-choice="${i}">${v}</button>`).join('')}</div>`;
@@ -122,12 +122,13 @@
           });
         } else if (level.type === 'dial' || level.type === 'groups') {
           let amount = level.type === 'dial' ? 1 : 0;
+          let adjusted = false;
           const max = level.type === 'dial' ? 10 : 12;
           panel.innerHTML = `<div class="room-adjust"><button data-minus aria-label="Diminuir">−</button><output aria-live="polite"></output><button data-plus aria-label="Aumentar">+</button></div><div class="room-crystals" aria-hidden="true"></div><button class="topic room-check">${level.type === 'dial' ? 'Testar engrenagem' : 'Carregar a máquina'} →</button>`;
-          const render = () => {panel.querySelector('output').textContent = level.type === 'dial' ? `4 × ${amount} = 20` : `${amount} cristais`; panel.querySelector('.room-crystals').textContent = level.type === 'groups' ? '◆ '.repeat(amount) : ''; panel.querySelector('[data-minus]').disabled = amount === 0; panel.querySelector('[data-plus]').disabled = amount === max;};
+          const render = () => {const dialValue = !adjusted && amount === 1 ? '?' : amount; panel.querySelector('output').innerHTML = level.type === 'dial' ? `4 × <span class="room-dial-value">${dialValue}</span> = 20` : `${amount} cristais`; panel.querySelector('.room-crystals').textContent = level.type === 'groups' ? '◆ '.repeat(amount) : ''; panel.querySelector('[data-minus]').disabled = amount === 0; panel.querySelector('[data-plus]').disabled = amount === max;};
           let previousWrong = null;
-          panel.querySelector('[data-minus]').onclick = () => {if(!solved) {amount = Math.max(0,amount-1);render();panel.querySelector('.room-check').disabled=false;}};
-          panel.querySelector('[data-plus]').onclick = () => {if(!solved) {amount = Math.min(max,amount+1);render();panel.querySelector('.room-check').disabled=false;}};
+          panel.querySelector('[data-minus]').onclick = () => {if(!solved) {adjusted = true; amount = Math.max(0,amount-1);render();panel.querySelector('.room-check').disabled=false;}};
+          panel.querySelector('[data-plus]').onclick = () => {if(!solved) {adjusted = true; amount = Math.min(max,amount+1);render();panel.querySelector('.room-check').disabled=false;}};
           panel.querySelector('.room-check').onclick = () => { if (solved || amount === previousWrong) return; const correct = amount === level.right; if(!correct) {previousWrong=amount;panel.querySelector('.room-check').disabled=true;} judge(correct); };
           render();
         } else {
@@ -185,7 +186,7 @@
         container.innerHTML=`<div class="room-finish"><div class="eyebrow">CINCO REGRAS. UMA GRANDE DESCOBERTA.</div><h2 tabindex="-1">Você escapou da mesma sala!</h2><p>A sala era igual. Seu jeito de pensar mudou a cada porta.</p><div class="score-summary"><strong class="score-value">${result.pontos} pontos</strong><p>${first} de ${levels.length} fases resolvidas de primeira · ${result.percentualAcertos}%</p><p>${errors} erros · Rodada ${round}${result.somenteTreino?' · somente treino':''}</p><p>Sem tempo valendo pontos.</p></div><p class="notice">Pontuação de demonstração nesta aba. Não é salva por aluno; atualizar a página reinicia as repetições.</p><button class="primary room-replay">Voltar à mesma sala →</button><button class="topic room-back">← Voltar aos jogos</button></div>`;
         container.querySelector('.room-finish h2').focus();container.querySelector('.room-replay').onclick=start;container.querySelector('.room-back').onclick=()=>{cleanup();voltar();};
       }
-      function draw(walking=false){const player=container.querySelector('.room-player');if(player){player.style.left=`${x/8}%`;player.style.top=`${y/4.25}%`;player.classList.toggle('walking',walking&&!respawnDelay);}}
+      function draw(walking=false){const player=container.querySelector('.room-player');if(player){player.style.left=`${x/8}%`;player.style.top=`${y/4.25}%`;player.classList.toggle('walking',walking&&!respawnDelay);player.classList.toggle('exiting',exiting&&!respawnDelay);}}
       function tick(time){
         if(stopped)return;
         const dt=Math.min((time-last)/1000 || 0,0.035);last=time;
@@ -205,7 +206,8 @@
             if(grounded && ((x>180&&x<225)||(x>485&&x<525))) jump();
           }
           const oldX=x;
-          x=Math.max(20,Math.min(748,x+direction*235*dt));
+          const movementSpeed = exiting ? 352.5 : 235;
+          x=Math.max(20,Math.min(748,x+direction*movementSpeed*dt));
           // As laterais bloqueiam a passagem, mas deixam o personagem saltar por cima da plataforma.
           for(const p of platforms) {
             const reachesSide = y+32>p.top+1 && y<p.top+12-1;

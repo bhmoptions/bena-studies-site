@@ -85,6 +85,7 @@ body.standalone-game{background:var(--paper);min-height:100dvh}
 .room-console{left:unset;top:unset}
 .room-door{left:91%}
 .room-player.walking .player-book{animation:player-book-step .22s steps(2,end) infinite}
+.room-player.exiting.walking .player-book{animation-duration:.1467s}
 
 @keyframes arc-flow{to{stroke-dashoffset:-30}}
 @keyframes player-book-step{50%{bottom:20%}}
@@ -253,16 +254,6 @@ body.standalone-game{background:var(--paper);min-height:100dvh}
   color: var(--monitor-ink);
 }
 
-.room-monitor-label {
-  margin: 0 0 8px !important;
-  color: #516e76 !important;
-  font-family: var(--body);
-  font-size: 9px !important;
-  font-weight: 800;
-  letter-spacing: 1.3px;
-  line-height: 1.2 !important;
-}
-
 .room-monitor-screen .room-clue {
   margin: 0 !important;
   color: var(--monitor-ink) !important;
@@ -293,6 +284,11 @@ body.standalone-game{background:var(--paper);min-height:100dvh}
 
 .room-monitor-screen .room-options,
 .room-monitor-screen .room-adjust { margin-top: 14px; }
+
+.room-monitor-screen .room-dial-value {
+  color: #0000ff;
+  font-weight: 600;
+}
 
 .room-monitor-screen .room-options button,
 .room-monitor-screen .room-adjust button,
