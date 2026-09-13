@@ -3,6 +3,7 @@
   const css = new URL('estilo.css', document.currentScript.src).href;
   const monitorPositionUrl = new URL('Config/monitor_position.json', document.currentScript.src);
   const questionsUrl = new URL('Config/q&a.json', document.currentScript.src);
+  const generalConfigUrl = new URL('Config/General.json', document.currentScript.src);
   if (!document.querySelector(`link[href="${css}"]`)) {
     const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = css; document.head.append(link);
   }
@@ -18,6 +19,7 @@
         stand: { x: 390, y: 183, toleranceX: 18, toleranceY: 12 }, exitRoute: 'center'
       };
       let monitorPositionConfig = { levels: [] };
+      let generalConfig = { spped: {} };
       let levels = [], activeQuestion = null, questionConfigError = null;
       let x = 75, y = 373, vy = 0, grounded = true, target = null, last = 0;
       let exitPlan = null;
@@ -266,6 +268,32 @@
             console.warn('[Jogo] Não foi possível carregar monitor_position.json. Usando a posição padrão.', error);
           });
       }
+      function loadGeneralConfig() {
+        return fetch(generalConfigUrl)
+          .then(response => {
+            if (!response.ok) throw new Error(`General.json: ${response.status}`);
+            return response.json();
+          })
+          .then(config => {
+            const speeds = config?.spped;
+            if (!speeds || !Number.isFinite(Number(speeds.manual_normal))
+              || !Number.isFinite(Number(speeds.auto_walk))
+              || !Number.isFinite(Number(speeds.auto_jump))
+              || !Number.isFinite(Number(speeds.auto_other))) {
+              throw new Error('General.json: velocidades inválidas.');
+            }
+            generalConfig = { spped: {
+              manual_normal: Number(speeds.manual_normal),
+              auto_walk: Number(speeds.auto_walk),
+              auto_jump: Number(speeds.auto_jump),
+              auto_other: Number(speeds.auto_other)
+            } };
+          })
+          .catch(error => {
+            console.error('[Jogo] Não foi possível carregar General.json.', error);
+            throw error;
+          });
+      }
       function cleanup() { stopped = true; cancelAnimationFrame(frame); controller.abort(); held.clear(); dialog.classList.remove('room-dialog'); }
       function start() { round = window.BenaPontuacao.iniciarRodada(key); phase = 0; errors = 0; first = 0; showRoom(); }
       function feedback(state, detail) {
@@ -357,7 +385,9 @@
       }
       function exitStepDuration(step, start) {
         const distance = Math.hypot(step.x - start.x, step.y - start.y);
-        const speed = step.type === 'walk' ? 245 : step.type === 'jump' ? 325 : 260;
+        const speed = step.type === 'walk' ? generalConfig.spped.auto_walk
+          : step.type === 'jump' ? generalConfig.spped.auto_jump
+            : generalConfig.spped.auto_other;
         return Math.max(.18, distance / speed);
       }
       function exitStepPosition(step, start, progress) {
@@ -443,7 +473,7 @@
           let direction=(held.has('right')?1:0)-(held.has('left')?1:0);
           if(target!==null)direction=Math.abs(target-x)<5?0:Math.sign(target-x);
           const oldX=x;
-          const movementSpeed = 235;
+          const movementSpeed = generalConfig.spped.manual_normal;
           x=Math.max(20,Math.min(748,x+direction*movementSpeed*dt));
           // As laterais bloqueiam a passagem, mas deixam o personagem saltar por cima da plataforma.
           for(const p of platforms) {
@@ -478,7 +508,7 @@
       window.addEventListener('keyup',e=>{if(e.key==='ArrowLeft')held.delete('left');if(e.key==='ArrowRight')held.delete('right');},{signal});
       window.addEventListener('blur',()=>held.clear(),{signal});
       document.addEventListener('visibilitychange',()=>{held.clear();last=0;},{signal});
-      Promise.all([loadMonitorPositions(), loadQuestions()]).then(() => {
+      Promise.all([loadMonitorPositions(), loadQuestions(), loadGeneralConfig()]).then(() => {
         if (stopped) return;
         if (questionConfigError) { showConfigurationError(); return; }
         start();
