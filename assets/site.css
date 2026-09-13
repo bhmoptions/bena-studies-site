@@ -122,18 +122,50 @@ dialog .timing-note { font-size: 12px; margin-top: 6px; }
   align-items: center;
 }
 
+.game-template-header .game-brand {
+  gap: 10px;
+  color: #f3ecdc;
+  font-family: var(--display, Georgia), serif;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.game-template-header .game-brand .brand-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 38px;
+  border-radius: 11px;
+  background: #26684e;
+  color: #fff;
+  font-family: var(--display, Georgia), serif;
+  font-size: 28px;
+  font-weight: 600;
+  position: relative;
+}
+
+.game-template-header .game-brand .brand-icon span {
+  position: absolute;
+  right: -6px;
+  top: -7px;
+  color: #d7b36a;
+  font-size: 15px;
+}
+
+.game-template-header .game-brand:hover {
+  color: #f3ecdc;
+}
+
 .game-template-header a:hover {
   color: #d7b36a;
 }
 
-.game-template-header > span:nth-child(2) {
-  font-family: var(--display, Georgia), serif;
-  font-size: 22px;
-  color: #f3ecdc;
-}
-
 .game-template-header b {
   color: #d7b36a;
+}
+
+.game-template-header .brand {
+  color: #f3ecdc;
 }
 
 
