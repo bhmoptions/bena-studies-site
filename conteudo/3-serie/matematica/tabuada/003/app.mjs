@@ -1,8 +1,8 @@
 // Keep the data-driven modules on the same cache version. A stale scene paired
 // with the new puzzle logic would otherwise fail while importing.
 import { SIDES, generatePuzzle, signature, createState, act, scoreInput } from './logica.mjs?v=puzzles-json-8';
-import { createScene } from './cena.mjs?t=' + Date.now();
-import { LABELS, COLORS } from './modelos.mjs?t=' + Date.now();
+import { createScene } from './cena.mjs';
+import { LABELS, COLORS } from './modelos.mjs';
 import { createAudio } from './audio.mjs';
 import { connectInteraction } from './interacao.mjs';
 const KEY='3-serie/matematica/tabuada/003';
