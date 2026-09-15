@@ -243,8 +243,6 @@ export function createWorkshopAssets() {
         ctx.lineTo(256+Math.sin(a)*(big?183:194),256-Math.cos(a)*(big?183:194));ctx.stroke();
         if(big){ctx.font='bold 29px Georgia';ctx.fillStyle='#3c3226';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(n),256+Math.sin(a)*159,256-Math.cos(a)*159);}
       }
-      const a=(-135+target*2.7)*Math.PI/180;
-      ctx.strokeStyle=COLORS[side];ctx.lineWidth=15;ctx.beginPath();ctx.arc(256,256,220,a-Math.PI/2-.07,a-Math.PI/2+.07);ctx.stroke();
       ctx.fillStyle='#6b5336';ctx.font='20px Georgia';ctx.textAlign='center';ctx.fillText('BOLINHAS',256,359);
     });
     const mat = new T.MeshBasicMaterial({ map: texture(dialCanvas) });materials.add(mat);
