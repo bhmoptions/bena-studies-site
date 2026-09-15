@@ -173,9 +173,8 @@ export function createWorkshopAssets() {
     batch(lid); batch(root);
     return { root, faces, lid };
   }
-  function makeFlask(value, side = 'blue', size = 1) {
+  function makeFlask(value, side = 'blue', size = 1, capLabel = false) {
     const root = new T.Group();
-    // Taller body: shoulder and neck shifted up +0.20 so balls have room to breathe.
     const points = [[0,.015],[.23,.015],[.27,.07],[.275,.56],[.23,.92],[.115,1.00],[.115,1.16],[.10,1.19]];
     const geo = geometry('flask-body', () => new T.LatheGeometry(points.map(([x,y]) => new T.Vector2(x,y)), 28));
     mesh(root, geo, glass);
@@ -185,15 +184,28 @@ export function createWorkshopAssets() {
     const beadGeo = geometry('ball', () => new T.SphereGeometry(.083, 12, 8));
     const beads = new T.InstancedMesh(beadGeo, balls, value); beads.castShadow = true;
     const transform = new T.Object3D();
-    // Front-visible rows: the mathematical count is the actual instance count.
     for (let i = 0; i < value; i++) {
       const row = Math.floor(i / 3), col = i % 3;
       transform.position.set((col - 1) * .162, .14 + row * .19, row % 2 ? .035 : -.025);
       transform.updateMatrix(); beads.setMatrixAt(i, transform.matrix);
     }
     root.add(beads); beads.userData.dynamic = true;
-    label(root, String(value), .17, .14, 0, .90, .119, '#35291d', '#f2deb1', 100);
-    // Glass highlights keep the vessel silhouette legible without hiding the balls.
+    if (capLabel) {
+      const capTopY = 1.285;
+      const disc = geometry('cap-disc', () => new T.CircleGeometry(.135, 32));
+      const c = canvas(256, 256, (ctx, w, h) => {
+        ctx.beginPath(); ctx.arc(w / 2, h / 2, w / 2, 0, Math.PI * 2); ctx.fillStyle = '#f2deb1'; ctx.fill();
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#35291d';
+        ctx.font = 'bold 130px Georgia'; ctx.fillText(String(value), w / 2, h / 2 + 6, w - 24);
+      });
+      const discMat = new T.MeshBasicMaterial({ map: texture(c), side: T.DoubleSide, depthWrite: false });
+      materials.add(discMat);
+      const capLabelMesh = new T.Mesh(disc, discMat);
+      capLabelMesh.position.set(0, capTopY, 0);
+      capLabelMesh.rotation.x = -Math.PI / 2;
+      capLabelMesh.userData.dynamic = true;
+      root.add(capLabelMesh);
+    }
     line(root, [[-.19,.12,.19],[-.22,.36,.17],[-.19,.73,.17],[-.08,.92,.08]], ivory, .008);
     root.scale.setScalar(size); batch(root);
     return root;

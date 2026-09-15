@@ -8,7 +8,7 @@
     return;
   }
   // A versioned module avoids mixing a cached app with its updated data-driven logic.
-  const source = new URL('./app.mjs?v=restore-f1d0745-dblclick-robust', document.currentScript.src).href;
+  const source = new URL('./app.mjs?t=' + Date.now(), document.currentScript.src).href;
   window.BENA_JOGO = {
     iniciar(container, voltar, partidaInicial) {
       let disposed = false, cleanup;

@@ -1,6 +1,6 @@
 import * as T from 'three';
 import { OrbitControls } from '../../../../../assets/vendor/three/OrbitControls.js';
-import { createWorkshopAssets, ANGLES } from './modelos.mjs?v=puzzles-json-8';
+import { createWorkshopAssets, ANGLES } from './modelos.mjs?t=' + Date.now();
 import { SIDES, total, balanceTilt, valuesForSide } from './logica.mjs?v=puzzles-json-8';
 import { createBoxEffects } from './efeitos.mjs';
 import { createBoxControls } from './controles-caixa.mjs';
@@ -66,8 +66,8 @@ export function createScene(host,config,callbacks,reducedMotion=false) {
     // Each shelf is permanently attached to its own place on the table.
     const shelf=new T.Group();shelf.rotation.y=ANGLES[side];scene.add(shelf);
     const flasks=valuesForSide(config,side).map((value,i)=>{
-      const flask=assets.makeFlask(value,side,.78);flask.position.set((i-2)*.6,.05,6.25);shelf.add(flask);
-      hit(flask,.64,1,.62,new T.Vector3(0,.43,0),{kind:'supply',value,side});return flask;
+      const flask=assets.makeFlask(value,side,1.01,true);flask.position.set((i-2)*.78,.05,6.25);shelf.add(flask);
+      hit(flask,.83,1,.80,new T.Vector3(0,.43,0),{kind:'supply',value,side});return flask;
     });
     shelves[side]={root:shelf,flasks};
   }
