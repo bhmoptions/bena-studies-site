@@ -11,12 +11,7 @@
         'Cover.webp', 'CoverA.webp', 'CoverB.webp', 'CoverC.webp',
         'CoverD.webp', 'CoverE.webp', 'CoverF.webp', 'CoverG.webp'
       ];
-      var chosen = null;
-      try { chosen = sessionStorage.getItem('bena_cover'); } catch (e) {}
-      if (!chosen || covers.indexOf(chosen) === -1) {
-        chosen = covers[Math.floor(Math.random() * covers.length)];
-        try { sessionStorage.setItem('bena_cover', chosen); } catch (e) {}
-      }
+      var chosen = covers[Math.floor(Math.random() * covers.length)];
       window.__BENA_CHOSEN_COVER = chosen;
       var coverUrl = 'assets/images/Landing%20Page/' + encodeURIComponent(chosen);
       var link = document.createElement('link');
