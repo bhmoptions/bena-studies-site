@@ -1,2 +1,102 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Bena Studies • Caderno Noturno</title><link rel="icon" href="assets/images/favicon.svg"><link rel="stylesheet" href="assets/site.css?v=header-dark-2"><link rel="stylesheet" href="assets/livro.css"><link rel="stylesheet" href="assets/componentes/cabecalho.css?v=shared-header-3"></head><body data-design="caderno-dark"><div id="app"></div><script src="config/site.js"></script><script src="conteudo/catalogo.js"></script><script src="assets/componentes/feedback.js"></script><script src="config/pontuacao.js"></script><script src="assets/componentes/pontuacao.js"></script><script src="assets/site.js?v=header-dark-2"></script><script src="assets/componentes/cabecalho.js?v=shared-header-3"></script><script src="assets/livro.js"></script><script type="module" src="assets/componentes/auth.js?v=escola-3"></script></body></html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bena Studies • Caderno Noturno</title>
+  <link rel="icon" href="assets/images/favicon.svg">
+  <script>
+    (function () {
+      var covers = [
+        'Cover.webp', 'CoverA.webp', 'CoverB.webp', 'CoverC.webp',
+        'CoverD.webp', 'CoverE.webp', 'CoverF.webp', 'CoverG.webp'
+      ];
+      var chosen = null;
+      try { chosen = sessionStorage.getItem('bena_cover'); } catch (e) {}
+      if (!chosen || covers.indexOf(chosen) === -1) {
+        chosen = covers[Math.floor(Math.random() * covers.length)];
+        try { sessionStorage.setItem('bena_cover', chosen); } catch (e) {}
+      }
+      window.__BENA_CHOSEN_COVER = chosen;
+      var coverUrl = 'assets/images/Landing%20Page/' + encodeURIComponent(chosen);
+      var link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = coverUrl;
+      link.fetchPriority = 'high';
+      document.head.appendChild(link);
+      document.documentElement.style.setProperty('--cover-img', 'url("' + coverUrl + '")');
+    })();
+  </script>
+  <link rel="stylesheet" href="assets/site.css?v=header-dark-2">
+  <link rel="stylesheet" href="assets/livro.css">
+  <link rel="stylesheet" href="assets/componentes/cabecalho.css?v=shared-header-3">
+</head>
+<body data-design="caderno-dark">
+  <div id="app">
+    <div data-shared-header data-base="./"></div>
+    <main class="main-stage">
+      <div class="ambient-halo"></div>
+      <div class="book-wrap is-closed" id="bookWrap">
+        <div class="book" id="magicBook" role="button" aria-label="Abrir o Livro de Descobertas" tabindex="0">
+          <div class="book-base"></div>
+          <div class="book-edges-right"></div>
+          <div class="book-edges-bottom"></div>
+          <div class="book-spine"></div>
+
+          <div class="open-spread-right">
+            <div class="final-spread-right"></div>
+            <div class="book-gutter"></div>
+          </div>
+
+          <div class="turning-page page-3">
+            <div class="page-front"></div>
+            <div class="page-back">
+              <div class="final-spread-left"></div>
+            </div>
+          </div>
+
+          <div class="turning-page page-2">
+            <div class="page-front"></div>
+            <div class="page-back"></div>
+          </div>
+
+          <div class="turning-page page-1">
+            <div class="page-front"></div>
+            <div class="page-back"></div>
+          </div>
+
+          <div class="book-cover">
+            <div class="book-cover-front">
+              <div class="cover-sheen"></div>
+              <div class="flutter-corner" aria-hidden="true"></div>
+            </div>
+            <div class="book-cover-back"></div>
+          </div>
+
+          <div class="flowing-elements-layer" id="flowingElementsLayer" aria-hidden="true"></div>
+
+          <div class="destinations-container" id="destinationsContainer" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="instruction-callout" id="instructionCallout">
+        <div class="instruction-pill">
+          <span>✦</span> Toque no livro para abrir seu mundo de descobertas
+        </div>
+      </div>
+    </main>
+    <dialog id="modal"><button class="close" aria-label="Fechar">×</button><div id="modal-content"></div></dialog>
+    <dialog id="game-dialog"><button class="dialog-close" id="dialogClose" aria-label="Fechar modal">×</button><div id="dialogContent"></div></dialog>
+  </div>
+  <script src="config/site.js"></script>
+  <script src="conteudo/catalogo.js"></script>
+  <script src="assets/componentes/feedback.js"></script>
+  <script src="config/pontuacao.js"></script>
+  <script src="assets/componentes/pontuacao.js"></script>
+  <script src="assets/site.js?v=header-dark-2"></script>
+  <script src="assets/componentes/cabecalho.js?v=shared-header-3"></script>
+  <script src="assets/livro.js"></script>
+  <script type="module" src="assets/componentes/auth.js?v=escola-3"></script>
+</body>
+</html>

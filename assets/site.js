@@ -14,7 +14,9 @@ const art = {
  espaco: `<div class="space-scene" aria-hidden="true"><span class="star st1">✧</span><span class="star st2">✦</span><span class="star st3">+</span><div class="orbital o1"></div><div class="orbital o2"></div><div class="planet"><span>?</span></div><div class="moon">＋</div><div class="satellite">Aa</div><div class="space-tag"><span class="signal"></span> CURIOSIDADE: SEM LIMITES</div><span class="coordinate">23° S / UNIVERSO BENA</span></div>`,
  caderno: `<div class="notebook-scene" aria-hidden="true"><div class="paper"><span class="tape"></span><span class="paper-date">meu diário de descobertas</span><h2>Hoje é dia<br>de aprender<br><em>algo incrível!</em></h2><div class="doodle-flower">✳</div><div class="scribble">errando, tentando,<br>e tentando de novo.</div><span class="paper-star">☆</span></div><div class="sticker">100%<br><small>curiosidade</small></div><div class="pencil"></div></div>`
 };
-document.querySelector('#app').innerHTML = `
+const appEl = document.querySelector('#app');
+if (!document.getElementById('magicBook')) {
+appEl.innerHTML = `
 <div data-shared-header data-base="${base}"></div>
 <main class="main-stage">
   <div class="ambient-halo"></div>
@@ -69,6 +71,7 @@ document.querySelector('#app').innerHTML = `
 </main>
 <dialog id="modal"><button class="close" aria-label="Fechar">×</button><div id="modal-content"></div></dialog>
 <dialog id="game-dialog"><button class="dialog-close" id="dialogClose" aria-label="Fechar modal">×</button><div id="dialogContent"></div></dialog>`;
+}
 const modal = document.querySelector('#modal');
 const content = document.querySelector('#modal-content');
 modal.querySelector('.close').onclick = () => modal.close();

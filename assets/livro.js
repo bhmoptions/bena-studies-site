@@ -57,14 +57,14 @@
   // ==========================================================================
   // Lista estática de capas disponíveis na pasta 'assets/images/Landing Page/'
   const staticCoverOptions = [
-    'Cover.jpg',
-    'CoverA.png',
-    'CoverB.png',
-    'CoverC.png',
-    'CoverD.png',
-    'CoverE.png',
-    'CoverF.png',
-    'CoverG.png'
+    'Cover.webp',
+    'CoverA.webp',
+    'CoverB.webp',
+    'CoverC.webp',
+    'CoverD.webp',
+    'CoverE.webp',
+    'CoverF.webp',
+    'CoverG.webp'
   ];
 
   function randomizeBookImages() {
@@ -72,15 +72,15 @@
 
     // Par 1 e 2: Ambos padrão ou ambos variante 'A'
     currentPairIsA = Math.random() < 0.5;
-    const page1File = currentPairIsA ? 'Book Page 1A.png' : 'Book Page 1.png';
-    const page2File = currentPairIsA ? 'Book Page 2A.png' : 'Book Page 2.png';
+    const page1File = currentPairIsA ? 'Book Page 1A.webp' : 'Book Page 1.webp';
+    const page2File = currentPairIsA ? 'Book Page 2A.webp' : 'Book Page 2.webp';
 
     // Demais páginas e capa: Escolha individual 50/50
-    const coverFile = staticCoverOptions[Math.floor(Math.random() * staticCoverOptions.length)];
-    const page3File = Math.random() < 0.5 ? 'Book Page 3A.png' : 'Book Page 3.png';
-    const page4File = Math.random() < 0.5 ? 'Book Page 4A.png' : 'Book Page 4.png';
-    const page5File = Math.random() < 0.5 ? 'Book Page 5A.png' : 'Book Page 5.png';
-    const page6File = Math.random() < 0.5 ? 'Book Page 6A.png' : 'Book Page 6.png';
+    const coverFile = window.__BENA_CHOSEN_COVER || staticCoverOptions[Math.floor(Math.random() * staticCoverOptions.length)];
+    const page3File = Math.random() < 0.5 ? 'Book Page 3A.webp' : 'Book Page 3.webp';
+    const page4File = Math.random() < 0.5 ? 'Book Page 4A.webp' : 'Book Page 4.webp';
+    const page5File = Math.random() < 0.5 ? 'Book Page 5A.webp' : 'Book Page 5.webp';
+    const page6File = Math.random() < 0.5 ? 'Book Page 6A.webp' : 'Book Page 6.webp';
 
     // Aplicação aos elementos correspondentes
     const coverFront = book ? book.querySelector('.book-cover-front') : null;
@@ -94,8 +94,8 @@
     // Par final (cenário): escolhe aleatoriamente entre os pares "End Image"
     const endImageCount = 7;
     const endImageIndex = Math.floor(Math.random() * endImageCount) + 1;
-    const endLeftFile = `End Image${endImageIndex} - Left.png`;
-    const endRightFile = `End Image${endImageIndex} - Right.png`;
+    const endLeftFile = `End Image${endImageIndex} - Left.webp`;
+    const endRightFile = `End Image${endImageIndex} - Right.webp`;
 
     if (coverFront) coverFront.style.backgroundImage = `url("${encodeURI(imgDir + coverFile)}")`;
     if (coverBack) coverBack.style.backgroundImage = `url("${encodeURI(imgDir + page1File)}")`;

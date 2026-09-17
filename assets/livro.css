@@ -523,7 +523,7 @@ html, body {
 
 .book-cover-front {
   background-color: #121824;
-  background-image: url('images/Landing%20Page/Cover.jpg');
+  background-image: var(--cover-img, none);
   background-size: cover;
   background-position: center;
   overflow: hidden;
@@ -542,10 +542,10 @@ html, body {
 }
 
 /* Verso da capa (Dentro do livro quando aberto):
-   Contém Book Page 1.png ou 1A.png com 100% de opacidade */
+   Contém Book Page 1.webp ou 1A.webp com 100% de opacidade */
 .book-cover-back {
   background-color: #f7f1e3;
-  background-image: url('images/Landing%20Page/Book%20Page%201.png');
+  background-image: url('images/Landing%20Page/Book%20Page%201.webp');
   background-size: cover;
   background-position: center;
   transform: rotateY(180deg) translateZ(1px);
@@ -668,11 +668,11 @@ html, body {
 }
 
 /* Folha 1:
-   Frente (Página 2): Book Page 2.png
-   Verso (Página 3): Book Page 3.png (Matemática) */
+   Frente (Página 2): Book Page 2.webp
+   Verso (Página 3): Book Page 3.webp (Matemática) */
 .page-1 .page-front {
   background-color: #f7f1e3;
-  background-image: url('images/Landing%20Page/Book%20Page%202.png');
+  background-image: url('images/Landing%20Page/Book%20Page%202.webp');
   background-size: cover;
   background-position: center;
   border-left: 1px solid #baa887;
@@ -680,7 +680,7 @@ html, body {
 }
 .page-1 .page-back {
   background-color: #f7f1e3;
-  background-image: url('images/Landing%20Page/Book%20Page%203.png');
+  background-image: url('images/Landing%20Page/Book%20Page%203.webp');
   background-size: cover;
   background-position: center;
   border-right: 1px solid #baa887;
@@ -688,11 +688,11 @@ html, body {
 }
 
 /* Folha 2:
-   Frente (Página 4): Book Page 4.png (Ciências)
-   Verso (Página 5): Book Page 5.png (História e Geografia) */
+   Frente (Página 4): Book Page 4.webp (Ciências)
+   Verso (Página 5): Book Page 5.webp (História e Geografia) */
 .page-2 .page-front {
   background-color: #f7f1e3;
-  background-image: url('images/Landing%20Page/Book%20Page%204.png');
+  background-image: url('images/Landing%20Page/Book%20Page%204.webp');
   background-size: cover;
   background-position: center;
   border-left: 1px solid #baa887;
@@ -700,7 +700,7 @@ html, body {
 }
 .page-2 .page-back {
   background-color: #f7f1e3;
-  background-image: url('images/Landing%20Page/Book%20Page%205.png');
+  background-image: url('images/Landing%20Page/Book%20Page%205.webp');
   background-size: cover;
   background-position: center;
   border-right: 1px solid #baa887;
@@ -708,11 +708,11 @@ html, body {
 }
 
 /* Folha 3:
-   Frente (Página 6): Book Page 6.png (Inglês)
-   Verso (Página 7): Metade Esquerda do Cenário Final (livro-popup-left.jpg) */
+   Frente (Página 6): Book Page 6.webp (Inglês)
+   Verso (Página 7): Metade Esquerda do Cenário Final */
 .page-3 .page-front {
   background-color: #f7f1e3;
-  background-image: url('images/Landing%20Page/Book%20Page%206.png');
+  background-image: url('images/Landing%20Page/Book%20Page%206.webp');
   background-size: cover;
   background-position: center;
   border-left: 1px solid #baa887;
