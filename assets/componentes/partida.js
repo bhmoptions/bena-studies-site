@@ -64,12 +64,11 @@ window.BenaPartida = (() => {
     if (!partida?.oficial) return { ok: true, preview: true };
     if (!partida.ativa) return { ok: false, error: 'Partida já foi encerrada.' };
 
+    partida.ativa = false;
+    ativas.delete(partida);
+
     const auth = await obterAuth();
     const resultado = await auth.salvarPartida({ ...dados, partida_id: partida.partidaId });
-    if (resultado?.ok) {
-      partida.ativa = false;
-      ativas.delete(partida);
-    }
     return resultado;
   }
 
