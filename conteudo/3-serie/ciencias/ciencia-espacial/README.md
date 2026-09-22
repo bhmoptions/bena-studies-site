@@ -1,15 +1,12 @@
-# Ciência Espacial
+# Template de jogo com duas áreas
 
-- **Matéria**: Ciências
-- **Modelo**: Jogo de Duas Áreas (`templates/jogo-duas-areas`)
-- **Status**: Estrutura base inicial (Skeleton)
+Base visual do jogo `Matemática / Tabuada / 03` para iniciar novos jogos.
 
-## Visão Geral
-Este jogo utiliza a estrutura de duas áreas:
-- **Painel Lateral (`.area-painel`)**: Exibição de missões, perguntas ou contexto científico.
-- **Área Interativa (`.area-interativa`)**: Mecânica de jogo, seleções ou visualização espacial.
+- `index.html` contém apenas o cabeçalho, a área principal à esquerda e o painel lateral à direita.
+- `estilo.css` contém o layout responsivo: duas colunas no computador e uma coluna no celular.
+- Os dois painéis começam propositalmente vazios e não há JavaScript ou lógica de jogo.
 
-## Arquivos
-- [`index.html`](file:///c:/Users/felip/OneDrive/Personal/Benjamin/Bena%20Studies%20Site/conteudo/3-serie/ciencias/ciencia-espacial/index.html): Estrutura da página.
-- [`estilo.css`](file:///c:/Users/felip/OneDrive/Personal/Benjamin/Bena%20Studies%20Site/conteudo/3-serie/ciencias/ciencia-espacial/estilo.css): Estilos responsivos em Grid de duas colunas.
-- [`jogo.js`](file:///c:/Users/felip/OneDrive/Personal/Benjamin/Bena%20Studies%20Site/conteudo/3-serie/ciencias/ciencia-espacial/jogo.js): Controladores de lógica e estado do jogo.
+Para usar, copie esta pasta para a pasta numerada do novo jogo e então preencha
+o conteúdo dentro de `.game-template-main` e, quando necessário, de
+`.game-template-side`. Ajuste os caminhos relativos de `assets/site.css` e de
+`index.html` ao mover o arquivo para dentro de `conteudo/3-serie/...`.
