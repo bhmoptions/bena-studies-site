@@ -1,32 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modelo de Jogo - Duas Áreas</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#191d29">
+  <title>Template de jogo • Bena Studies</title>
+  <link rel="icon" href="../../assets/images/favicon.svg">
+  <link rel="stylesheet" href="../../assets/site.css">
   <link rel="stylesheet" href="estilo.css">
+  <link rel="stylesheet" href="../../assets/componentes/cabecalho.css?v=shared-header-3">
 </head>
-<body>
-  <header class="game-template-header">
-    <a href="../../index.html" class="header-back-link">← Voltar aos jogos</a>
-    <span class="header-brand">Bena Studies <b class="header-star">✦</b></span>
-  </header>
+<body data-design="caderno-dark" class="game-template-page">
+  <div data-shared-header data-base="../../"></div>
 
-  <main class="game-container two-area-layout">
-    <!-- Área 1: Painel Lateral / Pergunta / Instruções -->
-    <section class="area-painel" id="area-painel">
-      <div class="card-instrucoes">
-        <h2>Instruções</h2>
-        <p>Espaço reservado para perguntas, instruções e controles do jogo.</p>
-      </div>
-    </section>
-
-    <!-- Área 2: Área Interativa / Canvas / Tabuleiro -->
-    <section class="area-interativa" id="area-interativa">
-      <div class="canvas-placeholder">
-        <p>Área Interativa Principal</p>
-      </div>
-    </section>
+  <main class="game-template-layout" aria-label="Área do jogo">
+    <section class="game-template-main" aria-label="Área principal do jogo"></section>
+    <aside class="game-template-side" aria-label="Área lateral"></aside>
   </main>
+  <script src="../../config/site.js"></script>
+  <script src="../../conteudo/catalogo.js"></script>
+  <script src="../../assets/componentes/cabecalho.js?v=shared-header-3"></script>
+  <script type="module" src="../../assets/componentes/auth.js?v=escola-3"></script>
 </body>
 </html>
