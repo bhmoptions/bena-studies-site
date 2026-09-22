@@ -7,6 +7,13 @@ Se a mensagem do usuário começar com `Q:` ou `q:`, apenas responda ou explique
 Antes de criar ou alterar qualquer jogo, leia e siga [Padrão de feedback dos jogos](docs/padrao-feedback-jogos.md).
 O mascote do caderno foi aprovado pelo usuário. Reutilize `assets/componentes/feedback.js` e os estilos compartilhados; não crie cópias ou substitua as mensagens/animações por outro padrão sem uma solicitação do usuário.
 
+## Uso obrigatório de templates para novos jogos
+Ao criar um novo jogo baseado em um template (exemplo: `templates/jogo-duas-areas/`):
+- **PROIBIDO recriar ou codificar do zero**: O agente **NUNCA** deve tentar recriar, reprogramar ou gerar código sintético aproximado com base no template.
+- **Cópia obrigatória da pasta**: O agente deve **copiar a pasta do template na íntegra** para a pasta de destino do novo jogo (ex.: `Copy-Item -Path "templates/jogo-duas-areas/*" -Destination "conteudo/{serie}-serie/{materia}/{tema}/{id}/" -Recurse -Force`).
+- **Ajustes permitidos**: O agente deve apenas ajustar os caminhos relativos de importação para os arquivos compartilhados (como `../../../../` para scripts, CSS e o atributo `data-base`), o título da página e conectar o arquivo `jogo.js` daquele jogo específico, mantendo toda a estrutura de classes, IDs, variáveis e CSS do template intactos.
+- **Bloqueio de arquivos / nuvem**: Se houver falha de leitura ou bloqueio de arquivos locais por serviços como OneDrive, o agente **NÃO deve inventar ou aproximar código**; deve resolver o acesso aos arquivos reais e realizar a cópia exata do template original.
+
 ## Organização
 Conteúdo em `conteudo/{serie}-serie/{materia}/{tema}/{001,002,...}/`. Cada tema tem uma lista `jogos` em `conteudo/catalogo.js`. Atualize o catálogo ao adicionar ou remover conteúdo. A série ativa é definida em `config/site.js`.
 Leia também o `README.md` para navegação e execução local.
