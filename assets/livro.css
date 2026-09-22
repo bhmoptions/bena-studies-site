@@ -28,8 +28,10 @@
   --hand: 'Kalam', cursive;
   --body: 'DM Sans', sans-serif;
 
-  --book-w: clamp(406px, 42vw, 532px);
-  --book-h: clamp(560px, 59vw, 742px);
+  --book-available-h: calc(100vh - 120px);
+  --book-available-h: calc(100dvh - 120px);
+  --book-h: clamp(280px, min(59vw, var(--book-available-h)), 742px);
+  --book-w: calc(var(--book-h) * 0.717);
   --book-spine: 67px;
 
   --cover-duration: 1.5s;
@@ -45,6 +47,7 @@
 html, body {
   width: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--paper);
   background-image: 
     linear-gradient(var(--line) 1px, transparent 1px),
@@ -62,14 +65,16 @@ html, body {
    Palco Principal (Stage)
    -------------------------------------------------------------------------- */
 .main-stage {
-  min-height: calc(100vh - 78px);
+  min-height: calc(100vh - 62px);
+  min-height: calc(100dvh - 62px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
-  padding: 30px 16px 60px;
+  padding: clamp(14px, 2.5vh, 28px) 16px clamp(18px, 3.5vh, 36px);
   perspective: 2000px;
+  box-sizing: border-box;
 }
 
 /* Keep the landing brand aligned with the game-page header. */
@@ -1553,8 +1558,14 @@ dialog#game-dialog::backdrop {
    Ajustes Responsivos
    -------------------------------------------------------------------------- */
 @media (max-width: 768px) {
+  :root {
+    --book-available-h: calc(100vh - 170px);
+    --book-available-h: calc(100dvh - 170px);
+    --book-w: min(380px, calc(100vw - 36px), calc(var(--book-available-h) * 0.717));
+    --book-h: calc(var(--book-w) / 0.717);
+  }
   .instruction-callout {
-    margin-top: 24px;
+    margin-top: 20px;
   }
   .instruction-pill {
     font-size: 13px;
