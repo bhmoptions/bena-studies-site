@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Andrews Run • Bena Studies</title>
+  <meta name="description" content="Corrida espacial educativa - desvie de obstáculos e capture os corpos celestes." />
+  <link rel="icon" href="../../../../assets/images/favicon.svg">
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preload" as="image" href="https://www.solarsystemscope.com/textures/download/2k_moon.jpg" crossorigin="anonymous" />
+</head>
+<body>
+  <header class="game-template-header">
+    <a href="../../../../index.html">← Voltar aos jogos</a>
+    <span>Bena Studies <b>✦</b></span>
+  </header>
+
+  <div id="game-wrap">
+    <canvas id="game"></canvas>
+
+    <!-- HUD -->
+    <div id="hud" class="hidden">
+      <div class="hud-left">
+        <div id="score">0</div>
+        <div id="best">RECORDE 0</div>
+      </div>
+      <div class="hud-right">
+        <button id="btn-pause" class="icon-btn" aria-label="Pausar">⏸</button>
+        <button id="btn-mute" class="icon-btn" aria-label="Som">🔊</button>
+      </div>
+      <div class="game-speed-setting" aria-label="Velocidade do jogo">
+        <span>Velocidade</span>
+        <div class="speed-options game-speed-options" role="group" aria-label="Velocidade do jogo">
+          <button type="button" data-speed="0.5">Lento</button>
+          <button type="button" data-speed="1" class="active">Normal</button>
+          <button type="button" data-speed="2">Rápido</button>
+          <button type="button" data-speed="3">Supersônico</button>
+        </div>
+      </div>
+      <button id="btn-catalog" class="icon-btn catalog-btn catalog-lock" aria-label="Acessar configurações">🔒</button>
+      <div id="question-banner"><span id="question-text">Pegue apenas estrelas</span></div>
+      <div id="score-feedback" class="hidden">
+        <div id="feedback-element">Estrela</div>
+        <div id="feedback-points">+10</div>
+      </div>
+    </div>
+
+
+    <!-- Temporary element animation catalog -->
+    <div id="screen-catalog" class="catalog-overlay hidden">
+      <div class="catalog-panel">
+        <div class="catalog-header">
+          <div class="catalog-heading">
+            <div class="catalog-kicker">CONFIGURAÇÕES</div>
+            <h2>Catálogo temporário</h2>
+            <p>Use estes nomes para me dizer quais versões você quer trocar.</p>
+          </div>
+          <div class="catalog-header-actions">
+            <button id="btn-catalog-close" class="catalog-close" aria-label="Fechar configurações">✕</button>
+          </div>
+        </div>
+        <div id="catalog-scroll" class="catalog-scroll">
+          <div id="catalog-grid" class="catalog-grid"></div>
+        </div>
+      </div>
+      <canvas id="catalog-canvas" aria-hidden="true"></canvas>
+    </div>
+
+    <!-- Touch controls (shown on touch devices) -->
+    <div id="touch-controls" class="hidden">
+      <button data-action="left" aria-label="Mover para esquerda">◀</button>
+      <button data-action="slide" aria-label="Deslizar">▼</button>
+      <button data-action="jump" aria-label="Pular">▲</button>
+      <button data-action="right" aria-label="Mover para direita">▶</button>
+    </div>
+
+    <!-- Start screen -->
+    <div id="screen-start" class="overlay">
+      <div class="panel">
+        <h1>ANDREWS<br /><span>RUN</span></h1>
+        <p class="subtitle">Exploração Espacial</p>
+        <div class="howto">
+          <div><kbd>◀</kbd><kbd>▶</kbd> mudar de faixa</div>
+          <div><kbd>▲</kbd> / <kbd>W</kbd> pular</div>
+          <div><kbd>▼</kbd> deslizar</div>
+          <div><kbd>Espaço</kbd> segure para acelerar</div>
+          <div>📱 deslize o dedo na tela</div>
+        </div>
+        <button id="btn-start" class="big-btn">▶ &nbsp;COMEÇAR</button>
+        <p id="start-best" class="best-line"></p>
+      </div>
+    </div>
+
+
+    <!-- Question confirmation screen -->
+    <div id="screen-question" class="overlay hidden">
+      <div class="panel question-panel">
+        <p class="question-label">DESAFIO</p>
+        <h2 id="question-prompt">Pegue apenas estrelas</h2>
+        <button id="btn-question-ok" class="big-btn">OK</button>
+      </div>
+    </div>
+
+    <!-- Pause screen -->
+    <div id="screen-pause" class="overlay hidden">
+      <div class="panel">
+        <h2>PAUSA</h2>
+        <button id="btn-resume" class="big-btn">CONTINUAR</button>
+        <button id="btn-restart-pause" class="ghost-btn">Reiniciar</button>
+      </div>
+    </div>
+
+    <!-- Game over screen -->
+    <div id="screen-over" class="overlay hidden">
+      <div class="panel">
+        <h2>FIM DE JOGO!</h2>
+        <p id="final-score">Pontuação: 0</p>
+        <p id="final-coins">Acertos: 0</p>
+        <p id="new-best" class="hidden">★ NOVO RECORDE! ★</p>
+        <button id="btn-restart" class="big-btn">JOGAR NOVAMENTE</button>
+        <button id="btn-menu" class="ghost-btn">Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/education.js"></script>
+  <script src="js/collectibles3d.js"></script>
+  <script src="js/entities.js"></script>
+  <script src="js/catalog.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

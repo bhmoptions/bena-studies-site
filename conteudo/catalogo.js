@@ -54,6 +54,13 @@ window.BENA_CONTEUDO = {
                 descricao: 'Explore o espaço e responda aos desafios científicos.',
                 arquivo: 'ciencias/ciencia-espacial/jogo.js',
                 pagina: 'ciencias/ciencia-espacial/index.html'
+              },
+              {
+                id: 'andrews-run',
+                nome: 'Andrews Run',
+                descricao: 'Desvie dos obstáculos e capture os corpos celestes em alta velocidade pelo espaço!',
+                arquivo: 'ciencias/andrews-run/jogo.js',
+                pagina: 'ciencias/andrews-run/index.html'
               }
             ]
           }

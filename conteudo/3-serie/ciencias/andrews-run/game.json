@@ -1,0 +1,92 @@
+{
+  "Questões": [
+      {
+        "frase": "Pegue apenas estrelas",
+        "tipo": "estrela"
+      },
+      {
+        "frase": "Pegue apenas os planetas",
+        "tipo": "planeta"
+      },
+      {
+        "frase": "Fuja de tudo, menos da Lua!",
+        "tipo": "lua"
+      },
+      {
+        "frase": "Colete os corpos celestes",
+        "tipo": "corpoceleste"
+      },
+      {
+        "frase": "Pegue somente os corpos luminosos",
+        "tipo": "luminoso"
+      },
+      {
+        "frase": "Recolha apenas os corpos celestes iluminados",
+        "tipo": "iluminado"
+      },
+      {
+        "frase": "Encontre os instrumentos de observação. Evite o resto!",
+        "tipo": "observacao"
+      },
+      {
+        "frase": "Capture apenas o planeta em que vivemos",
+        "tipo": "terra"
+      },
+      {
+        "frase": "Pegue o satélite do nosso planeta",
+        "tipo": "lua"
+      },
+      {
+        "frase": "Capture apenas o corpo celeste que ilumina a Terra",
+        "tipo": "sol"
+      },
+      {"frase":"Pegue o planeta famoso por seus anéis!","tipo":"saturno"},
+      {"frase":"Encontre objetos que produzem sua própria luz!","tipo":"luminoso"}
+  ],
+  "Elementos": [
+      {
+        "imagem": "Estrela",
+        "tipos": ["corpoceleste","estrela","luminoso"]
+      },
+      {
+        "imagem": "Sol",
+        "tipos": ["corpoceleste","sol","estrela","luminoso"]
+      },
+      {
+        "imagem": "Asteróide",
+        "tipos": ["corpoceleste","iluminado"]
+      },
+      {
+        "imagem": "Terra",
+        "tipos": ["corpoceleste","planeta","terra","iluminado"]
+      },
+      {
+        "imagem": "Marte",
+        "tipos": ["corpoceleste","planeta","iluminado"]
+      },
+      {
+        "imagem": "Saturno",
+        "tipos": ["corpoceleste","planeta","saturno","iluminado"]
+      },
+      {
+        "imagem": "Galáxia",
+        "tipos": ["corpoceleste","luminoso"]
+      },
+      {
+        "imagem": "Buraco Negro",
+        "tipos": ["corpoceleste"]
+      },
+      {
+        "imagem": "Lua",
+        "tipos": ["corpoceleste","lua","satelite"]
+      },
+      {
+        "imagem": "Luneta",
+        "tipos": ["observacao"]
+      },
+      {
+        "imagem": "Telescópio",
+        "tipos": ["observacao"]
+      }
+    ]    
+}
