@@ -163,7 +163,10 @@
       else if (a === 'slide') this.player.slide();
     },
 
-    start() {
+    async start() {
+      if (window.EducationDataPromise) {
+        try { await window.EducationDataPromise; } catch (e) {}
+      }
       SoundFX.ensure(); SoundFX.click();
       clearTimeout(this.questionPromptTimer);
       this.player.reset();

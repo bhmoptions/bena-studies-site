@@ -1,5 +1,23 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
-:root {
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+  -webkit-user-select: none; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Fixa o cabeçalho compartilhado oficial do Bena Studies no topo */
+.shared-site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+}
+
+#game-wrap {
   --gold: #ffd54a;
   --gold-deep: #c89000;
   --coral: #ff5a5a;
@@ -7,58 +25,6 @@
   --panel: rgba(14, 8, 34, .86);
   --line: rgba(255, 213, 74, .35);
   --display: Impact, 'Arial Black', 'Haettenschweiler', sans-serif;
-}
-html, body {
-  height: 100%;
-  overflow: hidden;
-  background: var(--ink);
-  font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
-  -webkit-user-select: none; user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Header padrão obrigatório do Bena Studies */
-.game-template-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 62px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 0 clamp(18px, 3vw, 32px);
-  border-bottom: 1px solid #303646;
-  background: #191d29;
-  font-size: 13px;
-  box-sizing: border-box;
-  z-index: 1000;
-}
-
-.game-template-header a {
-  color: #a8b0c2;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 14px;
-  transition: color 0.15s ease;
-}
-
-.game-template-header a:hover {
-  color: #d7b36a;
-}
-
-.game-template-header > span:nth-child(2) {
-  font-family: 'Cinzel Decorative', 'Cinzel', Georgia, serif;
-  font-size: 22px;
-  color: #f3ecdc;
-}
-
-.game-template-header b {
-  color: #d7b36a;
-}
-
-#game-wrap {
   position: fixed;
   top: 62px;
   left: 0;
@@ -67,6 +33,7 @@ html, body {
   height: calc(100dvh - 62px);
   overflow: hidden;
   touch-action: none;
+  background: var(--ink);
 }
 #game { display: block; width: 100%; height: 100%; }
 
