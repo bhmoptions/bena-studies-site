@@ -32,6 +32,7 @@
     const rawQuestions = json['Questões'] || json.questions || [];
     const rawElements = json['Elementos'] || json.elements || [];
     const rawSpeeds = json['velocidades'] || json['Velocidades'] || json.speeds || [];
+    const desafiosPedagogicos = Number(json['desafiospedagógicos'] || json['desafiosPedagogicos'] || json['desafios_pedagogicos']) || 10;
 
     const questions = rawQuestions.map(q => ({
       phrase: q.frase || q.phrase || '',
@@ -51,13 +52,14 @@
       { nome: 'Supersônico', valor: 3, padrao: false }
     ];
 
-    return { questions, elements, speeds };
+    return { questions, elements, speeds, desafiosPedagogicos };
   }
 
   // Objeto base inicial compartilhado globalmente
   const DATA = {
     questions: [],
     elements: [],
+    desafiosPedagogicos: 10,
     speeds: [
       { nome: 'Lento', valor: 0.5, padrao: false },
       { nome: 'Normal', valor: 1, padrao: true },
@@ -78,6 +80,7 @@
       DATA.questions = parsed.questions;
       DATA.elements = parsed.elements;
       DATA.speeds = parsed.speeds;
+      DATA.desafiosPedagogicos = parsed.desafiosPedagogicos;
       return DATA;
     })
     .catch(err => {
