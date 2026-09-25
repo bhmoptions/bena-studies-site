@@ -50,7 +50,10 @@
         </div>
       </div>
       <button id="btn-catalog" class="icon-btn catalog-btn catalog-lock" aria-label="Acessar configurações">🔒</button>
-      <div id="question-banner"><span id="question-text">Pegue apenas estrelas</span></div>
+      <div id="question-banner">
+        <span id="question-text">Pegue apenas estrelas</span>
+        <span id="mission-progress" class="mission-badge" title="Progresso da missão">0/10</span>
+      </div>
       <div id="score-feedback" class="hidden">
         <div id="feedback-element">Estrela</div>
         <div id="feedback-points">+10</div>
@@ -122,13 +125,15 @@
       </div>
     </div>
 
-    <!-- Game over screen -->
+    <!-- Game over / Victory screen -->
     <div id="screen-over" class="overlay hidden">
-      <div class="panel">
-        <h2>FIM DE JOGO!</h2>
-        <p id="final-score">Pontuação: 0</p>
-        <p id="final-coins">Acertos: 0</p>
-        <p id="new-best" class="hidden">★ NOVO RECORDE! ★</p>
+      <div class="panel panel-result">
+        <h2 id="final-title">FIM DE JOGO!</h2>
+        <div id="final-feedback" class="feedback" role="status" aria-live="polite" aria-atomic="true"></div>
+        <div id="final-score-summary" class="score-summary"></div>
+        <p id="final-score" class="hidden">Pontuação: 0</p>
+        <p id="final-coins" class="hidden">Acertos: 0</p>
+        <p id="new-best" class="hidden">★ NOVO RECORDE DA CORRIDA! ★</p>
         <button id="btn-restart" class="big-btn">JOGAR NOVAMENTE</button>
         <button id="btn-menu" class="ghost-btn">Menu</button>
       </div>
@@ -138,6 +143,10 @@
   <script src="../../../../config/site.js"></script>
   <script src="../../../../conteudo/catalogo.js"></script>
   <script src="../../../../assets/componentes/cabecalho.js?v=shared-header-3"></script>
+  <script src="../../../../config/pontuacao.js"></script>
+  <script src="../../../../assets/componentes/pontuacao.js"></script>
+  <script src="../../../../assets/componentes/partida.js"></script>
+  <script src="../../../../assets/componentes/feedback.js"></script>
   <script type="module" src="../../../../assets/componentes/auth.js?v=escola-3"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="js/utils.js"></script>

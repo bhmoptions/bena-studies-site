@@ -251,6 +251,26 @@ kbd {
   color:#fff; font-weight:900; font-size:clamp(16px,2.2vw,24px); text-align:center; letter-spacing:.4px;
   pointer-events:none;
 }
+.mission-badge {
+  display:inline-block; margin-left:10px; padding:3px 10px;
+  background:rgba(255,213,74,.25); border:1px solid var(--gold);
+  border-radius:999px; font-size:clamp(13px,1.6vw,17px); font-weight:900;
+  color:#fff; letter-spacing:.5px; vertical-align:middle;
+}
+.panel-result {
+  max-width:min(520px,94vw); max-height:90vh; overflow-y:auto; padding:24px 26px;
+}
+.panel-result .score-summary {
+  margin:16px 0; padding:16px; background:rgba(10,5,24,.85);
+  border:1px solid rgba(255,213,74,.35); border-radius:14px; text-align:left;
+}
+.panel-result .score-value {
+  display:block; font-family:var(--display); font-size:clamp(26px,5vw,36px);
+  color:var(--gold); margin-bottom:8px; letter-spacing:.5px;
+}
+.panel-result .score-summary p { margin:5px 0; font-size:13px; color:#eae3f7; line-height:1.45; }
+.panel-result .score-summary strong { color:#fff; }
+.panel-result .mascot-feedback { margin-top:10px; margin-bottom:12px; text-align:left; }
 #score-feedback {
   position:absolute; left:50%; top:41%; transform:translate(-50%,-50%);
   min-width:220px; text-align:center; pointer-events:none;

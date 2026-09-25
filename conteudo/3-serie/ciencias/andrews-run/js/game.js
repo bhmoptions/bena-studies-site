@@ -90,6 +90,15 @@
     question: null, questionResolved: 0, questionBatch: 6, collectibleId: 0, feedbackTimer: 0, questionPromptTimer: 0,
     shake: 0, dieT: 0,
     travel: 0, sleepOffset: 0,
+
+    // ── Pontuação oficial Bena ──────────────────────────────────────────────
+    MISSION_SIZE: 10,          // N fixo de decisões por rodada oficial
+    missionDecisions: 0,       // total de elementos resolvidos nesta rodada
+    missionAcertosPrimeira: 0, // A — decisões corretas na primeira e única chance
+    missionErros: 0,           // E — decisões incorretas (pegar errado / deixar o correto passar)
+    _partida: null,            // sessão oficial BenaPartida
+    _roundNumber: 0,           // número da rodada nesta aba (provisório)
+    // ───────────────────────────────────────────────────────────────────────
     buildings: [], stars: [], clouds: [],
     last: 0,
 
@@ -222,6 +231,21 @@
       this.score = 0; this.correctCount = 0;
       this.questionResolved = 0; this.collectibleId = 0;
       this.shake = 0; this.travel = 0; this.sleepOffset = 0;
+
+      // Reinicia contadores oficiais de ranking
+      this.missionDecisions = 0;
+      this.missionAcertosPrimeira = 0;
+      this.missionErros = 0;
+      this._roundNumber++;
+      this._updateMissionBadge();
+
+      // Inicia sessão oficial BenaPartida (sem aguardar, para não atrasar o jogo)
+      if (window.BenaPartida) {
+        window.BenaPartida.iniciar('3-serie/ciencias/andrews-run')
+          .then(p => { this._partida = p; })
+          .catch(e => { console.warn('[Ranking] Erro ao iniciar partida:', e); this._partida = null; });
+      }
+
       this.state = 'playing';
       scrStart.classList.add('hidden'); scrOver.classList.add('hidden'); scrPause.classList.add('hidden'); scrQuestion.classList.add('hidden');
       hud.classList.remove('hidden');
@@ -250,22 +274,114 @@
       this.updateBest();
       if (window.Collectibles3D) Collectibles3D.clear();
     },
-    gameOver() {
+    gameOver(vitoria = false) {
       this.boosting = false;
       this.state = 'over';
       const s = Math.floor(this.score);
       const isBest = s > this.best;
       if (isBest) { this.best = s; U.store.set('ss_edu_best', s); }
-      el('final-score').textContent = 'Pontuação: ' + s;
-      el('final-coins').textContent = 'Acertos: ' + this.correctCount;
       el('new-best').classList.toggle('hidden', !isBest);
-      setTimeout(() => { scrOver.classList.remove('hidden'); hud.classList.add('hidden'); }, 650);
       this.updateBest();
+
+      // ── Pontuação oficial ────────────────────────────────────────────────
+      const N = this.MISSION_SIZE;
+      const A = this.missionAcertosPrimeira;
+      const E = this.missionErros;
+      const concluida = vitoria; // só completo se chegou ao fim dos N elementos
+      const configPontuacao = (window.BENA_CONFIG_PONTUACAO && window.BENA_CONFIG_PONTUACAO['3-serie/ciencias/andrews-run']) || {};
+      let resOficial = null;
+      if (window.BenaPontuacao && N > 0) {
+        try {
+          resOficial = window.BenaPontuacao.calcular({
+            total: N,
+            acertosPrimeira: A,
+            erros: E,
+            rodada: this._roundNumber,
+            concluida,
+            tempoAtivo: configPontuacao.tempoAtivo || false
+          });
+        } catch (calcErr) {
+          console.warn('[Ranking] calcular retornou erro:', calcErr.message);
+        }
+      }
+
+      if (window.BenaPartida && this._partida) {
+        window.BenaPartida.concluir(this._partida, {
+          jogo_id: '3-serie/ciencias/andrews-run',
+          total_questoes: N,
+          acertos_primeira: A,
+          erros_validos: E
+        }).then(r => console.log('[Ranking] Partida concluída:', r))
+          .catch(e => console.warn('[Ranking] Erro ao salvar partida:', e));
+        this._partida = null;
+      }
+
+      setTimeout(() => {
+        this._showFinalResult(vitoria, s, A, E, N, resOficial, isBest);
+        scrOver.classList.remove('hidden');
+        hud.classList.add('hidden');
+      }, 650);
     },
+
+    _showFinalResult(vitoria, arcadeScore, A, E, N, resOficial, isBest) {
+      const titleEl = el('final-title');
+      const summaryEl = el('final-score-summary');
+      const feedbackAreaEl = el('final-feedback');
+
+      if (titleEl) titleEl.textContent = vitoria ? 'MISSÃO CUMPRIDA!' : 'FIM DE JOGO!';
+
+      // Mascote BenaFeedback
+      if (window.BenaFeedback && feedbackAreaEl) {
+        if (vitoria) {
+          window.BenaFeedback.mostrar(feedbackAreaEl, 'success',
+            `Você tomou ${A} decisões certas de ${N}! Incrível explorador!`);
+        } else if (resOficial && resOficial.concluida === false && A > 0) {
+          window.BenaFeedback.mostrar(feedbackAreaEl, 'error',
+            `Você foi longe! ${A} decisão(ões) certa(s). Continue treinando!`,
+            'Tente chegar ao fim da missão!');
+        } else {
+          window.BenaFeedback.mostrar(feedbackAreaEl, 'error',
+            'A corrida terminou! Vamos tentar de novo?',
+            'Tente chegar ao fim da missão!');
+        }
+      }
+
+      // Resumo de pontuação
+      if (summaryEl) {
+        const rodadaInfo = resOficial
+          ? `Rodada ${this._roundNumber}${resOficial.somenteTreino ? ' · somente treino (6ª+ rodada)' : ''}`
+          : `Rodada ${this._roundNumber}`;
+        const pontosOficiais = resOficial
+          ? `<strong class="score-value">${resOficial.pontos} pontos (Ranking Bena)</strong>`
+          : '';
+        const precisaoStr = resOficial
+          ? `${resOficial.percentualAcertos}% de precisão`
+          : `${A} acerto(s) correto(s)`;
+        const avisoIncompleto = !vitoria
+          ? '<p><em>Rodada incompleta — 0 pontos no ranking. Complete os 10 desafios para pontuar!</em></p>'
+          : '';
+        summaryEl.innerHTML = `
+          ${pontosOficiais}
+          <p><strong>Pontuação da Corrida (arcade):</strong> ${arcadeScore} pts</p>
+          <p><strong>Decisões corretas (1ª tentativa):</strong> ${A} de ${N}</p>
+          <p><strong>Decisões incorretas:</strong> ${E}</p>
+          <p>${precisaoStr} · ${rodadaInfo}</p>
+          ${avisoIncompleto}
+          <p>Pontuação oficial é salva para alunos conectados.</p>
+        `.trim();
+      }
+    },
+
+    _updateMissionBadge() {
+      const badge = el('mission-progress');
+      if (badge) badge.textContent = `${this.missionDecisions}/${this.MISSION_SIZE}`;
+    },
+
     updateBest() {
       bestEl.textContent = 'RECORDE ' + this.best;
       el('start-best').textContent = this.best > 0 ? '★ Recorde: ' + this.best + ' ★' : 'Pegue os elementos corretos e evite os errados.';
     },
+
 
     playerScreen() {
       const x = this.W / 2 + this.player.x * this.W * 0.30;
@@ -329,6 +445,23 @@
     resolveEducationalElement(c, mode) {
       if (c.taken) return;
       c.taken = true;
+
+      // ── Decisão pedagógica oficial ───────────────────────────────────────
+      // Uma "decisão correta de primeira" é:
+      //   collect + c.correct  → pegou o alvo certo
+      //   miss   + !c.correct  → ignorou corretamente o elemento errado
+      // Um "erro" é qualquer outra combinação.
+      const decisaoCorreta = (mode === 'collect' && c.correct) || (mode === 'miss' && !c.correct);
+      this.missionDecisions++;
+      if (decisaoCorreta) {
+        this.missionAcertosPrimeira++;
+      } else {
+        this.missionErros++;
+      }
+      this._updateMissionBadge();
+      // ────────────────────────────────────────────────────────────────────
+
+      // Pontuação arcade (mantida para feedback imediato durante a corrida)
       if (mode === 'collect') {
         if (c.correct) { this.score += 10; this.correctCount++; SoundFX.coin(); this.showScoreFeedback(c.name, 10); }
         else { this.score -= 5; SoundFX.tone(180, 0.18, 'square', 0.09, 90); this.showScoreFeedback(c.name, -5); }
@@ -336,8 +469,16 @@
         if (c.correct) { this.score -= 2; this.showScoreFeedback(c.name, -2); }
         else { this.score += 1; this.showScoreFeedback(c.name, 1); }
       }
+
       this.questionResolved++;
       if (this.questionResolved >= this.questionBatch) this.pickQuestion(true);
+
+      // ── Vitória: chegou ao fim da missão ─────────────────────────────────
+      if (this.missionDecisions >= this.MISSION_SIZE) {
+        this.state = 'dying'; // congela o jogo suavemente
+        this.dieT = 0.3;      // curta pausa antes do resultado aparecer
+        setTimeout(() => { this.gameOver(true); }, 350);
+      }
     },
     collectibleScreen(c) {
       const p = this.persp(c.z), x = this.laneX(c.lane, c.z), yBase = this.worldY(c.z);
