@@ -38,7 +38,7 @@
     state: 'menu',
     player: new Player(),
     obstacles: [], collectibles: [], particles: [],
-    speed: 14, speedMultiplier: 1, elapsed: 0, distSinceSpawn: 0,
+    speed: 14, speedMultiplier: Number(U.store.get('andrews_run_speed', 1)) || 1, elapsed: 0, distSinceSpawn: 0,
     boosting: false, boostBlend: 0,
     BOOST_MULTIPLIER: 1.5,
     score: 0, correctCount: 0,

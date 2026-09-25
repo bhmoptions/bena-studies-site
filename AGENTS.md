@@ -46,16 +46,16 @@ Todas as páginas próprias de jogos e templates de jogos devem seguir estritame
 ## Servidor
 Quando o usuário pedir para abrir o servidor, use "http://localhost:8765/"
 
-## Controle de versão e deploy (GitHub e Vercel)
+## Controle de versão
 ### 1. Backup obrigatório antes de iniciar alterações
 Antes de realizar qualquer alteração, criação ou remoção de arquivos no projeto:
 1. Verifique o status do repositório (`git status`).
-2. Se houver alterações locais ou arquivos pendentes, faça commit e push para o GitHub antes de prosseguir (`git add .`, `git commit -m "checkpoint: <descrição>"`, `git push origin main`).
-3. Somente inicie a nova tarefa/implementação após assegurar que o estado prévio do projeto está preservado no repositório remoto.
+2. Se houver alterações locais ou arquivos pendentes, faça apenas commit antes de prosseguir (`git add .`, `git commit -m "checkpoint: <descrição>"`). **NÃO faça push.**
+3. Somente inicie a nova tarefa/implementação após assegurar que o estado prévio do projeto está salvo no repositório local.
 
-### 2. Commit e push obrigatório ao concluir tarefas
+### 2. Commit obrigatório ao concluir tarefas
 Ao finalizar com sucesso qualquer alteração, correção ou implementação de funcionalidade:
 1. Verifique o status do repositório (`git status`).
 2. Faça commit de todas as alterações com mensagem semântica clara (ex.: `feat: ...`, `fix: ...`, `chore: ...`).
-3. Execute `git push origin main` para acionar imediatamente o build e deploy contínuo na Vercel.
-4. Informe o usuário sobre a conclusão e disponibilize o link de produção (ou da tela alterada) para facilitar os testes.
+3. **NÃO execute push.** O agente não deve realizar push para o repositório remoto.
+4. Informe o usuário sobre a conclusão para que ele possa revisar as alterações locais.

@@ -88,5 +88,23 @@
         "imagem": "Telescópio",
         "tipos": ["observacao"]
       }
-    ]    
+    ],
+  "velocidades": [
+      {
+        "nome": "Lento",
+        "valor": 0.5
+      },
+      {
+        "nome": "Normal",
+        "valor": 1
+      },
+      {
+        "nome": "Rápido",
+        "valor": 2
+      },
+      {
+        "nome": "Supersônico",
+        "valor": 3
+      }
+    ]      
 }

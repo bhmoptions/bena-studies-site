@@ -9,7 +9,51 @@
   const scroll = document.getElementById('catalog-scroll');
   const btnOpen = document.getElementById('btn-catalog');
   const btnClose = document.getElementById('btn-catalog-close');
-  const speedButtons = Array.from(document.querySelectorAll('.game-speed-options [data-speed]'));
+  let speedButtons = [];
+
+  function buildSpeedControls() {
+    const container = document.querySelector('.game-speed-options');
+    if (!container) return;
+
+    const speeds = (window.EducationData?.speeds?.length)
+      ? window.EducationData.speeds
+      : [
+          { nome: 'Lento', valor: 0.5, padrao: false },
+          { nome: 'Normal', valor: 1, padrao: true },
+          { nome: 'Rápido', valor: 2, padrao: false },
+          { nome: 'Supersônico', valor: 3, padrao: false }
+        ];
+
+    const defaultItem = speeds.find(s => s.padrao) || speeds.find(s => s.valor === 1) || speeds[0];
+    const defaultVal = defaultItem ? defaultItem.valor : 1;
+
+    let savedVal = window.Utils ? window.Utils.store.get('andrews_run_speed', defaultVal) : defaultVal;
+    savedVal = Number(savedVal);
+    if (!speeds.some(s => s.valor === savedVal)) {
+      savedVal = defaultVal;
+    }
+
+    if (window.Game) {
+      window.Game.speedMultiplier = savedVal;
+    }
+
+    container.innerHTML = '';
+    speedButtons = speeds.map(s => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.dataset.speed = String(s.valor);
+      btn.textContent = s.nome;
+      if (s.valor === savedVal) {
+        btn.classList.add('active');
+      }
+      btn.addEventListener('click', () => {
+        Catalog.setSpeed(s.valor);
+      });
+      container.appendChild(btn);
+      return btn;
+    });
+  }
+
   if (!T || !overlay || !grid || !canvas || !btnOpen || !btnClose || !window.Collectibles3D) return;
 
   const Catalog = {
@@ -59,8 +103,14 @@
       this.resize();
       window.addEventListener('resize', () => this.resize());
       btnOpen.addEventListener('click', () => this.requestOpen());
-      speedButtons.forEach(btn => btn.addEventListener('click', () => this.setSpeed(Number(btn.dataset.speed))));
-      this.syncSpeedButtons();
+
+      buildSpeedControls();
+      if (window.EducationDataPromise) {
+        window.EducationDataPromise.then(() => {
+          buildSpeedControls();
+        }).catch(() => {});
+      }
+
       btnClose.addEventListener('click', () => this.close());
       overlay.addEventListener('mousedown', (e) => { if (e.target === overlay) this.close(); });
       document.addEventListener('keydown', (e) => { if (this.active && e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); this.close(); } }, true);
@@ -81,13 +131,17 @@
     },
 
     setSpeed(multiplier) {
-      if (!window.Game || ![0.5, 1, 2, 3].includes(multiplier)) return;
-      Game.speedMultiplier = multiplier;
-      speedButtons.forEach(btn => btn.classList.toggle('active', Number(btn.dataset.speed) === multiplier));
+      const num = Number(multiplier);
+      if (!window.Game || isNaN(num) || num <= 0) return;
+      Game.speedMultiplier = num;
+      if (window.Utils) {
+        window.Utils.store.set('andrews_run_speed', num);
+      }
+      speedButtons.forEach(btn => btn.classList.toggle('active', Number(btn.dataset.speed) === num));
     },
 
     syncSpeedButtons() {
-      const current = window.Game?.speedMultiplier || 1;
+      const current = window.Game?.speedMultiplier ?? 1;
       speedButtons.forEach(btn => btn.classList.toggle('active', Number(btn.dataset.speed) === current));
     },
 

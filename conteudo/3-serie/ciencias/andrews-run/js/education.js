@@ -1,10 +1,37 @@
-/* education.js — carrega dados educacionais dinamicamente de game.json */
+/* education.js — carrega dados educacionais e configurações dinamicamente de game.json */
 (function () {
   'use strict';
+
+  function parseVelocidades(raw) {
+    if (Array.isArray(raw)) {
+      return raw.map(item => {
+        const nome = String(item.nome || item.name || item.rotulo || item.label || '').trim();
+        const valor = Number(item.valor ?? item.multiplicador ?? item.multiplier ?? item.speed);
+        const padrao = Boolean(item.padrao || item.default || (valor === 1));
+        return { nome, valor, padrao };
+      }).filter(item => item.nome && !isNaN(item.valor) && item.valor > 0);
+    }
+    if (raw && typeof raw === 'object') {
+      return Object.entries(raw).map(([nome, val]) => {
+        let valor = 1;
+        let padrao = false;
+        if (typeof val === 'object' && val !== null) {
+          valor = Number(val.valor ?? val.multiplicador ?? val.multiplier);
+          padrao = Boolean(val.padrao || val.default || (valor === 1));
+        } else {
+          valor = Number(val);
+          padrao = (valor === 1);
+        }
+        return { nome: String(nome).trim(), valor, padrao };
+      }).filter(item => item.nome && !isNaN(item.valor) && item.valor > 0);
+    }
+    return [];
+  }
 
   function parseData(json) {
     const rawQuestions = json['Questões'] || json.questions || [];
     const rawElements = json['Elementos'] || json.elements || [];
+    const rawSpeeds = json['velocidades'] || json['Velocidades'] || json.speeds || [];
 
     const questions = rawQuestions.map(q => ({
       phrase: q.frase || q.phrase || '',
@@ -16,13 +43,27 @@
       types: (e.tipos || e.types || []).map(t => String(t).trim().toLowerCase())
     })).filter(e => e.name && e.types.length);
 
-    return { questions, elements };
+    const parsedSpeeds = parseVelocidades(rawSpeeds);
+    const speeds = parsedSpeeds.length ? parsedSpeeds : [
+      { nome: 'Lento', valor: 0.5, padrao: false },
+      { nome: 'Normal', valor: 1, padrao: true },
+      { nome: 'Rápido', valor: 2, padrao: false },
+      { nome: 'Supersônico', valor: 3, padrao: false }
+    ];
+
+    return { questions, elements, speeds };
   }
 
   // Objeto base inicial compartilhado globalmente
   const DATA = {
     questions: [],
-    elements: []
+    elements: [],
+    speeds: [
+      { nome: 'Lento', valor: 0.5, padrao: false },
+      { nome: 'Normal', valor: 1, padrao: true },
+      { nome: 'Rápido', valor: 2, padrao: false },
+      { nome: 'Supersônico', valor: 3, padrao: false }
+    ]
   };
   window.EducationData = DATA;
 
@@ -36,6 +77,7 @@
       const parsed = parseData(json);
       DATA.questions = parsed.questions;
       DATA.elements = parsed.elements;
+      DATA.speeds = parsed.speeds;
       return DATA;
     })
     .catch(err => {
@@ -66,6 +108,12 @@
         { name: 'Lua', types: ['corpoceleste','lua','satelite'] },
         { name: 'Luneta', types: ['observacao'] },
         { name: 'Telescópio', types: ['observacao'] }
+      ];
+      DATA.speeds = [
+        { nome: 'Lento', valor: 0.5, padrao: false },
+        { nome: 'Normal', valor: 1, padrao: true },
+        { nome: 'Rápido', valor: 2, padrao: false },
+        { nome: 'Supersônico', valor: 3, padrao: false }
       ];
       return DATA;
     });
