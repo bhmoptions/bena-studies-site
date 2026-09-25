@@ -2,46 +2,64 @@
   "Questões": [
       {
         "frase": "Pegue apenas estrelas",
-        "tipo": "estrela"
+        "tipo": "estrela",
+        "qtd": 0.20
       },
       {
         "frase": "Pegue apenas os planetas",
-        "tipo": "planeta"
+        "tipo": "planeta",
+        "qtd": 0.25
       },
       {
         "frase": "Fuja de tudo, menos da Lua!",
-        "tipo": "lua"
+        "tipo": "lua",
+        "qtd": 0.10
       },
       {
         "frase": "Colete os corpos celestes",
-        "tipo": "corpoceleste"
+        "tipo": "corpoceleste",
+        "qtd": 0.80
       },
       {
         "frase": "Pegue somente os corpos luminosos",
-        "tipo": "luminoso"
+        "tipo": "luminoso",
+        "qtd": 0.20
       },
       {
         "frase": "Recolha apenas os corpos celestes iluminados",
-        "tipo": "iluminado"
+        "tipo": "iluminado",
+        "qtd": 0.20
       },
       {
         "frase": "Encontre os instrumentos de observação. Evite o resto!",
-        "tipo": "observacao"
+        "tipo": "observacao",
+        "qtd": 0.10
       },
       {
         "frase": "Capture apenas o planeta em que vivemos",
-        "tipo": "terra"
+        "tipo": "terra",
+        "qtd": 0.10
       },
       {
         "frase": "Pegue o satélite do nosso planeta",
-        "tipo": "lua"
+        "tipo": "lua",
+        "qtd": 0.10
       },
       {
         "frase": "Capture apenas o corpo celeste que ilumina a Terra",
-        "tipo": "sol"
+        "tipo": "sol",
+        "qtd": 0.10
       },
-      {"frase":"Pegue o planeta famoso por seus anéis!","tipo":"saturno"},
-      {"frase":"Encontre objetos que produzem sua própria luz!","tipo":"luminoso"}
+      {
+        "frase":"Pegue o planeta famoso por seus anéis!",
+        "tipo":"saturno",
+        "qtd": 0.10
+      },
+      {
+        "frase":"Encontre objetos que produzem sua própria luz!",
+        "tipo":"luminoso",
+        "qtd": 0.20
+      }
   ],
   "Elementos": [
       {
@@ -107,5 +125,6 @@
         "valor": 2
       }
     ],
-  "desafiospedagógicos": 20
+  "desafiospedagógicos": 20,
+  "questionBatch": 20
 }
