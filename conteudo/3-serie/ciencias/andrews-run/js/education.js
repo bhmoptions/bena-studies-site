@@ -32,7 +32,20 @@
     const rawQuestions = json['Questões'] || json.questions || [];
     const rawElements = json['Elementos'] || json.elements || [];
     const rawSpeeds = json['velocidades'] || json['Velocidades'] || json.speeds || [];
-    const desafiosPedagogicos = Number(json['desafiospedagógicos'] || json['desafiosPedagogicos'] || json['desafios_pedagogicos']) || 10;
+    
+    let desafiosPedagogicos = 10;
+    if (json && typeof json === 'object') {
+      for (const k of Object.keys(json)) {
+        const cleanKey = k.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+        if (cleanKey === 'desafiospedagogicos') {
+          const val = Number(json[k]);
+          if (!isNaN(val) && val > 0) {
+            desafiosPedagogicos = val;
+            break;
+          }
+        }
+      }
+    }
 
     const questions = rawQuestions.map(q => ({
       phrase: q.frase || q.phrase || '',
@@ -69,8 +82,8 @@
   };
   window.EducationData = DATA;
 
-  // Carregamento dinâmico de game.json
-  const loadPromise = fetch('game.json')
+  // Carregamento dinâmico de game.json com cache-busting
+  const loadPromise = fetch('game.json?v=' + Date.now(), { cache: 'no-store' })
     .then(res => {
       if (!res.ok) throw new Error('Falha ao carregar game.json: ' + res.status);
       return res.json();

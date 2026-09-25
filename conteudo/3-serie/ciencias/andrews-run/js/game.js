@@ -139,6 +139,13 @@
       this.updateBest();
       el('btn-mute').textContent = SoundFX.muted ? '🔇' : '🔊';
 
+      if (window.EducationDataPromise) {
+        window.EducationDataPromise.then(() => {
+          this.MISSION_SIZE = (window.EducationData && window.EducationData.desafiosPedagogicos) || 10;
+          this._updateMissionBadge();
+        }).catch(() => {});
+      }
+
       Input.init();
       Input.onAction((a) => this.onAction(a));
 
@@ -394,7 +401,16 @@
 
     _updateMissionBadge() {
       const badge = el('mission-progress');
-      if (badge) badge.textContent = `${this.missionDecisions}/${this.MISSION_SIZE}`;
+      if (!badge) return;
+      if (this.missionDecisions >= this.MISSION_SIZE) {
+        badge.style.background = '#d7b36a';
+        badge.style.color = '#191d29';
+        badge.textContent = `★ Missão Cumprida! (${this.MISSION_SIZE}/${this.MISSION_SIZE})`;
+      } else {
+        badge.style.background = '';
+        badge.style.color = '';
+        badge.textContent = `${this.missionDecisions}/${this.MISSION_SIZE}`;
+      }
     },
 
     updateBest() {
@@ -479,13 +495,7 @@
         this._updateMissionBadge();
 
         if (this.missionDecisions === this.MISSION_SIZE) {
-          // Missão cumprida! Salvar partida oficial e dar feedback visual/sonoro sem interromper o jogo
-          const badge = document.getElementById('mission-progress');
-          if (badge) {
-             badge.style.background = '#d7b36a'; // Gold color indicating completion
-             badge.style.color = '#191d29';
-             badge.textContent = 'Missão Cumprida!';
-          }
+          // Missão cumprida! Salvar partida oficial e dar feedback sonoro sem interromper o jogo
           if (window.SoundFX) {
              SoundFX.coin();
              setTimeout(() => SoundFX.coin(), 150);
