@@ -87,12 +87,12 @@
       U.store.set('andrews_run_character', characterId);
       U.store.set('ss_edu_character', characterId);
     },
-    question: null, questionResolved: 0, questionBatch: 6, collectibleId: 0, feedbackTimer: 0, questionPromptTimer: 0,
+    question: null, questionResolved: 0, questionBatch: 20, batchElementsQueue: [], collectibleId: 0, feedbackTimer: 0, questionPromptTimer: 0,
     shake: 0, dieT: 0,
     travel: 0, sleepOffset: 0,
 
     // ── Pontuação oficial Bena ──────────────────────────────────────────────
-    MISSION_SIZE: 10,          // N fixo de decisões por rodada oficial
+    MISSION_SIZE: 20,          // N fixo de decisões por rodada oficial
     missionDecisions: 0,       // total de elementos resolvidos nesta rodada
     missionAcertosPrimeira: 0, // A — decisões corretas na primeira e única chance
     missionErros: 0,           // E — decisões incorretas (pegar errado / deixar o correto passar)
@@ -141,7 +141,8 @@
 
       if (window.EducationDataPromise) {
         window.EducationDataPromise.then(() => {
-          this.MISSION_SIZE = (window.EducationData && window.EducationData.desafiosPedagogicos) || 10;
+          this.MISSION_SIZE = (window.EducationData && window.EducationData.desafiosPedagogicos) || 20;
+          this.questionBatch = (window.EducationData && window.EducationData.questionBatch) || 20;
           this._updateMissionBadge();
         }).catch(() => {});
       }
@@ -233,14 +234,18 @@
       this.obstacles = []; this.collectibles = []; this.particles = [];
       if (window.Collectibles3D) Collectibles3D.clear();
       Spawner.reset();
-      this.speed = 14; this.elapsed = 0; this.distSinceSpawn = 20;
+      this.speed = 14; this.elapsed = 0;
+      this.distSinceSpawn = -30; // Espaço livre na pista no início do jogo
+      Spawner.nextGap = 45;
       this.boosting = false; this.boostBlend = 0;
       this.score = 0; this.correctCount = 0;
       this.questionResolved = 0; this.collectibleId = 0;
+      this.batchElementsQueue = [];
       this.shake = 0; this.travel = 0; this.sleepOffset = 0;
 
       // Reinicia contadores oficiais de ranking
-      this.MISSION_SIZE = (window.EducationData && window.EducationData.desafiosPedagogicos) || 10;
+      this.MISSION_SIZE = (window.EducationData && window.EducationData.desafiosPedagogicos) || 20;
+      this.questionBatch = (window.EducationData && window.EducationData.questionBatch) || 20;
       this.missionDecisions = 0;
       this.missionAcertosPrimeira = 0;
       this.missionErros = 0;
@@ -288,6 +293,7 @@
       scrOver.classList.add('hidden'); scrPause.classList.add('hidden'); scrQuestion.classList.add('hidden');
       scrStart.classList.remove('hidden'); hud.classList.add('hidden');
       this.updateBest();
+      this.batchElementsQueue = [];
       if (window.Collectibles3D) Collectibles3D.clear();
     },
     _concluirPartidaOficial(concluida) {
@@ -429,6 +435,32 @@
       return roofPx / (this.H * 0.38);
     },
 
+    prepareBatchElements(q) {
+      const data = window.EducationData;
+      if (!data || !data.elements || !data.elements.length || !q) {
+        this.batchElementsQueue = [];
+        return;
+      }
+      const total = this.questionBatch || 20;
+      const qtdRatio = (typeof q.qtd === 'number' && !isNaN(q.qtd)) ? q.qtd : 0.20;
+      const numCorrect = Math.max(1, Math.min(total, Math.round(qtdRatio * total)));
+      const numWrong = total - numCorrect;
+
+      const matching = data.elements.filter(e => e.types && e.types.includes(q.type));
+      const nonMatching = data.elements.filter(e => !e.types || !e.types.includes(q.type));
+
+      const pool = [];
+      for (let i = 0; i < numCorrect; i++) {
+        pool.push(matching.length ? U.choice(matching) : U.choice(data.elements));
+      }
+      for (let i = 0; i < numWrong; i++) {
+        pool.push(nonMatching.length ? U.choice(nonMatching) : U.choice(data.elements));
+      }
+
+      // Embaralha para que os elementos corretos fiquem distribuídos aleatoriamente ao longo dos 20
+      this.batchElementsQueue = U.shuffle(pool);
+    },
+
     pickQuestion(avoidCurrent) {
       const qs = (window.EducationData && EducationData.questions) || [];
       if (!qs.length) return;
@@ -436,27 +468,53 @@
       if (avoidCurrent && qs.length > 1 && this.question && q.type === this.question.type) q = qs[(qs.indexOf(q) + 1) % qs.length];
       this.question = q;
       this.questionResolved = 0;
+      this.prepareBatchElements(q);
       if (questionEl) questionEl.textContent = q.phrase;
       if (questionPromptEl) questionPromptEl.textContent = q.phrase;
       this.boosting = false;
       this.state = 'question';
       clearTimeout(this.questionPromptTimer);
       scrQuestion.classList.add('hidden');
-      const delay = avoidCurrent ? 880 : 0;
+      const delay = avoidCurrent ? 250 : 0;
       this.questionPromptTimer = setTimeout(() => { if (this.state === 'question') scrQuestion.classList.remove('hidden'); }, delay);
     },
+
     confirmQuestion() {
       if (this.state !== 'question') return;
       SoundFX.ensure(); SoundFX.click();
       scrQuestion.classList.add('hidden');
+
+      // Espaço livre no início da nova fase: remove elementos da pista e dá folga antes de novos spawns
+      this.obstacles = [];
+      this.collectibles = [];
+      if (window.Collectibles3D) Collectibles3D.clear();
+      this.distSinceSpawn = -35;
+      Spawner.nextGap = 45;
+
       this.state = 'playing';
       this.last = performance.now();
     },
+
+    transitionToNextPhase() {
+      // Espaço livre no final da fase: limpa a pista de obstáculos e elementos
+      this.obstacles = [];
+      this.collectibles = [];
+      if (window.Collectibles3D) Collectibles3D.clear();
+      this.distSinceSpawn = -9999; // Impede novos obstáculos enquanto o jogador corre pela pista limpa
+
+      // Corre suavemente pela pista limpa por 1.2s antes de abrir a nova questão
+      setTimeout(() => {
+        if (this.state === 'playing') {
+          this.pickQuestion(true);
+        }
+      }, 1200);
+    },
+
     spawnEducationalElement(row) {
       if (this.collectibles.some(c => !c.taken)) return;
-      const data = window.EducationData;
-      if (!data || !data.elements.length || !this.question) return;
-      const element = U.choice(data.elements);
+      if (!this.batchElementsQueue || this.batchElementsQueue.length === 0) return;
+      const element = this.batchElementsQueue.shift();
+
       const trains = row.obstacles.filter(o => o.type === 'train' && o.len >= 8);
       let lane, z = this.VIEW_DIST + 4, y = 0, onTrain = false;
       if (trains.length && Math.random() < 0.28) {
@@ -515,7 +573,9 @@
       }
 
       this.questionResolved++;
-      if (this.questionResolved >= this.questionBatch) this.pickQuestion(true);
+      if (this.questionResolved >= this.questionBatch) {
+        this.transitionToNextPhase();
+      }
     },
     collectibleScreen(c) {
       const p = this.persp(c.z), x = this.laneX(c.lane, c.z), yBase = this.worldY(c.z);
