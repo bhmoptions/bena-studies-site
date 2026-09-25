@@ -100,11 +100,11 @@
       },
       {
         "nome": "Rápido",
-        "valor": 2
+        "valor": 1.5
       },
       {
         "nome": "Supersônico",
-        "valor": 3
+        "valor": 2
       }
     ]      
 }
