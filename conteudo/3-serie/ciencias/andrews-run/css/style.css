@@ -281,21 +281,34 @@ kbd {
 @media(max-width:600px){#question-banner{top:70px;max-width:calc(100vw - 24px);font-size:15px;padding:8px 12px}}
 
 
-/* In-game speed control and locked settings button */
+/* In-game speed and character controls and locked settings button */
 .game-speed-setting {
   position:absolute; top:66px; right:16px; z-index:7;
-  display:flex; flex-direction:column; align-items:flex-end; gap:5px; pointer-events:auto;
+  display:flex; flex-direction:column; align-items:flex-end; gap:10px; pointer-events:auto;
 }
-.game-speed-setting > span { color:var(--gold); font-size:10px; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; text-shadow:0 2px 4px #000; }
-.speed-options { display:flex; gap:5px; flex-wrap:wrap; }
-.speed-options button {
+.setting-block { display:flex; flex-direction:column; align-items:flex-end; gap:5px; }
+.setting-block > span { color:var(--gold); font-size:10px; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; text-shadow:0 2px 4px #000; }
+.speed-options { display:flex; gap:5px; flex-wrap:wrap; justify-content:flex-end; }
+.speed-options button, .character-option {
   border:1px solid rgba(255,255,255,.28); background:rgba(10,5,24,.76); color:#e9e4f3;
-  border-radius:9px; padding:6px 9px; font-size:11px; font-weight:800; cursor:pointer;
-  transition:background .15s,border-color .15s,color .15s,transform .08s;
+  border-radius:9px; font-size:11px; font-weight:800; cursor:pointer;
+  transition:background .15s,border-color .15s,color .15s,transform .08s,box-shadow .15s;
 }
-.speed-options button:hover { border-color:rgba(255,213,74,.65); }
-.speed-options button:active { transform:scale(.96); }
-.speed-options button.active { background:var(--gold); border-color:var(--gold); color:#211400; box-shadow:0 0 14px rgba(255,213,74,.22); }
+.speed-options button { padding:6px 9px; }
+.speed-options button:hover, .character-option:hover { border-color:rgba(255,213,74,.65); }
+.speed-options button:active, .character-option:active { transform:scale(.96); }
+.speed-options button.active, .character-option.active { background:var(--gold); border-color:var(--gold); color:#211400; box-shadow:0 0 14px rgba(255,213,74,.22); }
+.character-options { display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap; }
+.character-option {
+  min-width:84px; padding:6px; display:flex; flex-direction:column; align-items:center; gap:5px;
+  background:rgba(10,5,24,.82);
+}
+.character-option img {
+  width:58px; height:78px; object-fit:contain; display:block;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.35));
+}
+.character-option strong { font-size:11px; line-height:1; letter-spacing:.2px; }
+.character-option.active img { filter:drop-shadow(0 5px 12px rgba(0,0,0,.28)); }
 .catalog-lock { position:absolute; left:16px; bottom:16px; z-index:7; pointer-events:auto; font-size:18px; }
 
 /* Temporary animation catalog */
@@ -346,7 +359,7 @@ kbd {
   position:fixed; top:62px; left:0; right:0; bottom:0; width:100%; height:calc(100dvh - 62px); z-index:32; pointer-events:none; display:block;
 }
 @media(max-width:600px){
-  .catalog-overlay{padding:8px}.catalog-panel{width:100%;height:94vh}.catalog-header{padding:15px;flex-direction:column}.catalog-header-actions{width:100%;margin-left:0;justify-content:flex-end}.game-speed-setting{top:62px;right:10px;max-width:320px}.speed-options{justify-content:flex-end}.speed-options button{padding:5px 7px;font-size:10px}.catalog-lock{left:10px;bottom:10px}
+  .catalog-overlay{padding:8px}.catalog-panel{width:100%;height:94vh}.catalog-header{padding:15px;flex-direction:column}.catalog-header-actions{width:100%;margin-left:0;justify-content:flex-end}.game-speed-setting{top:62px;right:10px;max-width:320px}.speed-options{justify-content:flex-end}.speed-options button{padding:5px 7px;font-size:10px}.character-options{gap:6px}.character-option{min-width:74px;padding:5px}.character-option img{width:48px;height:66px}.character-option strong{font-size:10px}.catalog-lock{left:10px;bottom:10px}
   .catalog-scroll{padding:10px}.catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
   .catalog-card{height:158px}.catalog-preview{height:120px}.catalog-name{height:38px;font-size:12px}
 }

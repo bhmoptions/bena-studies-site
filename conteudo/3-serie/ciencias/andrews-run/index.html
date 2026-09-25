@@ -10,6 +10,10 @@
   <link rel="stylesheet" href="../../../../assets/site.css">
   <link rel="stylesheet" href="../../../../assets/componentes/cabecalho.css?v=shared-header-3">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="preload" as="image" href="assets/player-sprites.png" />
+  <link rel="preload" as="image" href="assets/player-sprites-female.png" />
+  <link rel="preload" as="image" href="assets/character-male-thumb.png" />
+  <link rel="preload" as="image" href="assets/character-female-thumb.png" />
   <link rel="preload" as="image" href="https://www.solarsystemscope.com/textures/download/2k_moon.jpg" crossorigin="anonymous" />
 </head>
 <body data-design="caderno-dark" class="game-template-page">
@@ -28,9 +32,24 @@
         <button id="btn-pause" class="icon-btn" aria-label="Pausar">⏸</button>
         <button id="btn-mute" class="icon-btn" aria-label="Som">🔊</button>
       </div>
-      <div class="game-speed-setting" aria-label="Velocidade do jogo">
-        <span>Velocidade</span>
-        <div class="speed-options game-speed-options" role="group" aria-label="Velocidade do jogo"></div>
+      <div class="game-speed-setting" aria-label="Controles do jogo">
+        <div class="setting-block" aria-label="Velocidade do jogo">
+          <span>Velocidade</span>
+          <div class="speed-options game-speed-options" role="group" aria-label="Velocidade do jogo"></div>
+        </div>
+        <div class="setting-block game-character-setting" aria-label="Personagem">
+          <span>Personagem</span>
+          <div class="character-options game-character-options" role="group" aria-label="Seleção de personagem">
+            <button type="button" class="character-option active" data-character="male" aria-label="Escolher personagem menino">
+              <img src="assets/character-male-thumb.png" alt="" />
+              <strong>Menino</strong>
+            </button>
+            <button type="button" class="character-option" data-character="female" aria-label="Escolher personagem menina">
+              <img src="assets/character-female-thumb.png" alt="" />
+              <strong>Menina</strong>
+            </button>
+          </div>
+        </div>
       </div>
       <button id="btn-catalog" class="icon-btn catalog-btn catalog-lock" aria-label="Acessar configurações">🔒</button>
       <div id="question-banner"><span id="question-text">Pegue apenas estrelas</span></div>

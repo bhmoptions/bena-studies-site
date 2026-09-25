@@ -10,6 +10,7 @@
   const btnOpen = document.getElementById('btn-catalog');
   const btnClose = document.getElementById('btn-catalog-close');
   let speedButtons = [];
+  const characterButtons = Array.from(document.querySelectorAll('.game-character-options [data-character]'));
 
   function buildSpeedControls() {
     const container = document.querySelector('.game-speed-options');
@@ -104,6 +105,10 @@
       window.addEventListener('resize', () => this.resize());
       btnOpen.addEventListener('click', () => this.requestOpen());
 
+      characterButtons.forEach(btn => btn.addEventListener('click', () => this.setCharacter(btn.dataset.character)));
+      this.syncCharacterButtons();
+      window.addEventListener('load', () => { this.syncSpeedButtons(); this.syncCharacterButtons(); });
+
       buildSpeedControls();
       if (window.EducationDataPromise) {
         window.EducationDataPromise.then(() => {
@@ -145,6 +150,17 @@
       speedButtons.forEach(btn => btn.classList.toggle('active', Number(btn.dataset.speed) === current));
     },
 
+    setCharacter(characterId) {
+      if (!window.Game || !characterId) return;
+      Game.setCharacter(characterId);
+      this.syncCharacterButtons();
+    },
+
+    syncCharacterButtons() {
+      const current = window.Game?.currentCharacterId || 'male';
+      characterButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.character === current));
+    },
+
     open() {
       if (this.active || !window.Game || Game.state !== 'playing') return;
       this.openState = Game.state;
@@ -152,6 +168,7 @@
       Game.state = 'catalog';
       this.active = true;
       this.syncSpeedButtons();
+      this.syncCharacterButtons();
       overlay.classList.remove('hidden');
       this.resize();
       this.animate(performance.now());

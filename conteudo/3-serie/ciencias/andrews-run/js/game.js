@@ -17,6 +17,35 @@
   const INK = 'rgba(10,8,22,.92)';
   const FONT = '"Arial Black", Arial, sans-serif';
 
+  // Character sprite atlases. Each frame is [sourceX, sourceY, sourceWidth, sourceHeight].
+  const PLAYER_CONFIGS = {
+    male: {
+      atlasSrc: 'assets/player-sprites.png',
+      frames: {
+        run: [
+          [216,31,144,308],[216,31,144,308],[370,32,152,307],[537,32,152,306],[700,33,147,306],
+          [862,33,149,306],[1025,32,150,307],[1195,31,140,286],[1348,29,150,310]
+        ],
+        jump: [[9,462,144,214],[143,411,136,265],[284,403,142,254],[430,402,148,214],[581,402,163,256],[732,421,140,255]],
+        slide: [[897,488,149,159],[1417,481,119,158]],
+        death: [[12,776,183,193],[188,778,173,180],[369,769,159,192],[535,769,135,194],[677,808,175,148],[831,813,152,134],[970,845,192,118],[1168,874,175,82],[1358,882,165,79]]
+      }
+    },
+    female: {
+      atlasSrc: 'assets/player-sprites-female.png',
+      frames: {
+        run: [[20,28,156,312],[202,27,146,313],[374,38,138,302],[538,20,149,320],[713,37,148,303],[887,31,143,309],[1056,32,144,308],[1226,27,166,313]],
+        jump: [[20,371,190,263],[236,368,171,266],[433,399,207,235],[666,376,219,258],[911,391,214,243],[1151,391,198,243]],
+        slide: [[20,681,200,175],[246,677,229,179],[501,682,230,174],[757,697,218,159],[1001,662,201,194]],
+        death: [[20,884,167,219],[213,943,178,160],[417,914,175,189],[618,963,167,140],[811,960,163,143],[1000,1007,138,96],[1164,1016,100,87],[1290,1024,120,79],[1436,1016,188,87]]
+      }
+    }
+  };
+  Object.values(PLAYER_CONFIGS).forEach(cfg => {
+    cfg.image = new Image();
+    cfg.image.src = cfg.atlasSrc;
+  });
+
   function hash(n) {
     const s = Math.sin(n * 127.1) * 43758.5453;
     return s - Math.floor(s);
@@ -43,6 +72,21 @@
     BOOST_MULTIPLIER: 1.5,
     score: 0, correctCount: 0,
     best: U.store.get('ss_edu_best', 0),
+    currentCharacterId: (function() {
+      const saved = U.store.get('andrews_run_character', U.store.get('ss_edu_character', 'male'));
+      return PLAYER_CONFIGS[saved] ? saved : 'male';
+    })(),
+
+    getCurrentCharacter() {
+      return PLAYER_CONFIGS[this.currentCharacterId] || PLAYER_CONFIGS.male;
+    },
+
+    setCharacter(characterId) {
+      if (!PLAYER_CONFIGS[characterId]) return;
+      this.currentCharacterId = characterId;
+      U.store.set('andrews_run_character', characterId);
+      U.store.set('ss_edu_character', characterId);
+    },
     question: null, questionResolved: 0, questionBatch: 6, collectibleId: 0, feedbackTimer: 0, questionPromptTimer: 0,
     shake: 0, dieT: 0,
     travel: 0, sleepOffset: 0,
@@ -1250,149 +1294,63 @@
     drawPlayer(time) {
       const ps = this.playerScreen();
       const dead = this.state === 'dying' || this.state === 'over';
-      const s = Math.min(this.W, this.H) / 350; // smaller, lighter silhouette than the original character
-      const phase = this.player.runPhase;
-      const air = U.clamp(this.player.airBlend || 0, 0, 1);
-      const slide = U.clamp(this.player.slideBlend || 0, 0, 1);
-      const jumpTuck = U.clamp(this.player.y / 0.85, 0, 1);
-      const slideP = U.clamp((this.player.slideAge || 0) / (this.player.slideDuration || 0.82), 0, 1);
-      const rollWave = Math.sin(slideP * Math.PI * 2);
-      const stride = Math.sin(phase);
-      const bob = (1 - air) * (1 - slide) * Math.abs(Math.sin(phase)) * 1.35 * s;
-      const landing = this.player.landingT > 0 ? Math.sin((this.player.landingT / 0.16) * Math.PI) * 2.8 * s : 0;
+      const groundY = this.groundY();
 
-      const mix = (a, b, t) => U.lerp(a, b, t);
-      const P = (x, y) => ({ x, y });
-      const mixP = (a, b, t) => P(mix(a.x, b.x, t), mix(a.y, b.y, t));
-      const inkStroke = (lw) => { ctx.strokeStyle = INK; ctx.lineWidth = lw; ctx.stroke(); };
-      const limb = (pts, outerW, innerW, color) => {
-        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-        ctx.strokeStyle = INK; ctx.lineWidth = outerW * s;
-        ctx.beginPath(); ctx.moveTo(pts[0].x * s, pts[0].y * s);
-        for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x * s, pts[i].y * s);
-        ctx.stroke();
-        ctx.strokeStyle = color; ctx.lineWidth = innerW * s;
-        ctx.beginPath(); ctx.moveTo(pts[0].x * s, pts[0].y * s);
-        for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x * s, pts[i].y * s);
-        ctx.stroke();
-      };
-      const shoe = (foot, knee, front) => {
-        const ang = U.clamp((foot.x - knee.x) * 0.025, -0.28, 0.28) + slide * (front ? -0.38 : 0.24);
-        ctx.save(); ctx.translate(foot.x * s, foot.y * s); ctx.rotate(ang);
-        ctx.fillStyle = '#f7f9ff'; roundRect(-7.5 * s, -4.2 * s, 16 * s, 8.4 * s, 3.5 * s); ctx.fill(); inkStroke(1.8 * s);
-        ctx.fillStyle = '#ff6b57'; roundRect(-7.5 * s, 1.7 * s, 16 * s, 3.2 * s, 1.5 * s); ctx.fill();
-        ctx.strokeStyle = '#9aa4bd'; ctx.lineWidth = 1.1 * s;
-        ctx.beginPath(); ctx.moveTo(-2.5 * s, -1.4 * s); ctx.lineTo(4 * s, -1.4 * s); ctx.stroke();
-        ctx.restore();
-      };
+      // Keep the original ground shadow so jumps still read clearly against the track.
+      const shadowScale = U.clamp(1 - this.player.y * 0.42, 0.48, 1);
+      const shadowW = Math.min(this.W, this.H) * 0.055 * shadowScale;
+      const shadowH = Math.max(3, shadowW * 0.22);
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,.34)';
+      ctx.beginPath();
+      ctx.ellipse(ps.x, groundY + 4, shadowW, shadowH, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
 
-      // --- articulated pose --------------------------------------------------
-      const legPose = (side, a) => {
-        const reach = Math.sin(a);
-        const lift = Math.max(0, Math.cos(a));
-        const hip = P(side * 5.5, -2);
-        const kneeRun = P(side * 6 + reach * 4.5, 10 - lift * 3.5);
-        const footRun = P(side * 7 + reach * 11, 28 - lift * 8.5);
-        const kneeAir = P(side * 8.5, 7 + (side < 0 ? 1 : 0));
-        const footAir = P(side * 11.5, 18 - (side < 0 ? 0 : 1.5));
-        const tuck = Math.max(air, jumpTuck * 0.85);
-        const knee = mixP(kneeRun, kneeAir, tuck);
-        const foot = mixP(footRun, footAir, tuck);
-        const slideHip = P(side * 5, 10);
-        const slideKnee = side < 0 ? P(-14 - rollWave * 2, 14 + Math.abs(rollWave) * 2) : P(13 + rollWave * 2, 7 - Math.abs(rollWave) * 2);
-        const slideFoot = side < 0 ? P(-29 - rollWave * 2, 22) : P(19 + rollWave * 2, 21);
-        return {
-          hip: mixP(hip, slideHip, slide),
-          knee: mixP(knee, slideKnee, slide),
-          foot: mixP(foot, slideFoot, slide)
-        };
-      };
-      const leftLeg = legPose(-1, phase);
-      const rightLeg = legPose(1, phase + Math.PI);
+      const currentCharacter = this.getCurrentCharacter();
+      const spriteImage = currentCharacter.image;
+      if (!spriteImage.complete || !spriteImage.naturalWidth) return;
 
-      const armPose = (side, a) => {
-        const swing = -Math.sin(a);
-        const shoulderRun = P(side * 10.5, -31);
-        const elbowRun = P(side * (15 + swing * 4), -19 + Math.abs(swing) * 1.5);
-        const handRun = P(side * (19 + swing * 8), -7 + Math.abs(swing) * 2);
-        const elbowAir = P(side * 15, -35);
-        const handAir = P(side * 18, -24);
-        const elbow = mixP(elbowRun, elbowAir, air);
-        const hand = mixP(handRun, handAir, air);
-        const shoulderSlide = side < 0 ? P(-7, -2) : P(8, -1);
-        const elbowSlide = side < 0 ? P(-16, 7) : P(14, 7);
-        const handSlide = side < 0 ? P(-24, 16) : P(5, 16);
-        return {
-          shoulder: mixP(shoulderRun, shoulderSlide, slide),
-          elbow: mixP(elbow, elbowSlide, slide),
-          hand: mixP(hand, handSlide, slide)
-        };
-      };
-      const leftArm = armPose(-1, phase);
-      const rightArm = armPose(1, phase + Math.PI);
+      let frames = currentCharacter.frames.run;
+      let index = 0;
+      let anchorY = ps.y + 3;
+      let alpha = 1;
+
+      if (dead) {
+        frames = currentCharacter.frames.death;
+        const progress = this.state === 'dying' ? U.clamp(1 - this.dieT / 0.7, 0, 1) : 1;
+        index = Math.min(frames.length - 1, Math.floor(progress * frames.length));
+        anchorY = groundY + 4;
+        alpha = this.state === 'dying' ? 0.98 : 0.94;
+      } else if (this.player.sliding || this.player.slideBlend > 0.28) {
+        frames = currentCharacter.frames.slide;
+        const p = U.clamp((this.player.slideAge || 0) / (this.player.slideDuration || 0.82), 0, 1);
+        index = frames.length <= 2 ? ((p < 0.24 || p > 0.76) ? 0 : Math.min(1, frames.length - 1)) : Math.min(frames.length - 1, Math.floor(p * frames.length));
+        anchorY = ps.y + 5;
+      } else if (this.player.jumping || this.player.airBlend > 0.18) {
+        frames = currentCharacter.frames.jump;
+        // vy starts at +5.8 and finishes near -5.8, giving us a stable 0..1 jump timeline.
+        const p = this.player.jumping ? U.clamp((5.8 - this.player.vy) / 11.6, 0, 1) : 1;
+        index = Math.min(frames.length - 1, Math.floor(p * frames.length));
+      } else {
+        const cycle = ((this.player.runPhase / (Math.PI * 2)) % 1 + 1) % 1;
+        index = Math.min(frames.length - 1, Math.floor(cycle * frames.length));
+        anchorY += Math.abs(Math.sin(this.player.runPhase)) * 1.2;
+      }
+
+      const f = frames[index] || frames[0];
+      const [sx, sy, sw, sh] = f;
+      // The source atlas was generated at one consistent character scale. Using one
+      // shared scale preserves the natural height difference between running, jumping,
+      // sliding and lying down rather than enlarging crouched/death frames.
+      const scale = (Math.min(this.W, this.H) * 0.24) / 310;
+      const dw = sw * scale, dh = sh * scale;
 
       ctx.save();
-      ctx.translate(ps.x, ps.y);
-
-      // Shadow stays attached to the ground while the character jumps.
-      const jumpPx = this.player.y * this.H * 0.38;
-      const shadowScale = U.clamp(1 - this.player.y * 0.42, 0.48, 1);
-      ctx.fillStyle = 'rgba(0,0,0,.34)';
-      ctx.beginPath(); ctx.ellipse(0, jumpPx + 4 * s, 21 * s * shadowScale, 5.5 * s * shadowScale, 0, 0, Math.PI * 2); ctx.fill();
-
-      ctx.translate(0, -28 * s + bob + landing + 6 * slide * s);
-      if (dead) { ctx.rotate(1.15); ctx.globalAlpha = 0.95; }
-
-      // A subtle torso lean makes the runner feel in motion instead of standing upright.
-      const torsoX = 8 * slide;
-      const torsoY = -21 + 23 * slide;
-      const torsoRot = -0.022 * stride * (1 - air) - (0.96 - rollWave * 0.08) * slide;
-      const torsoW = mix(22, 24, slide);
-      const torsoH = mix(36, 30, slide);
-
-      // Back leg and back arm first for clean visual layering.
-      limb([leftLeg.hip, leftLeg.knee, leftLeg.foot], 10.2, 6.8, '#25324d');
-      shoe(leftLeg.foot, leftLeg.knee, false);
-      limb([leftArm.shoulder, leftArm.elbow, leftArm.hand], 8.2, 5.5, '#35b8aa');
-      ctx.fillStyle = '#efb183'; ctx.beginPath(); ctx.arc(leftArm.hand.x * s, leftArm.hand.y * s, 2.8 * s, 0, Math.PI * 2); ctx.fill(); inkStroke(1.3 * s);
-
-      // Torso / jacket.
-      ctx.save(); ctx.translate(torsoX * s, torsoY * s); ctx.rotate(torsoRot);
-      const jacket = ctx.createLinearGradient(0, -torsoH * 0.55 * s, 0, torsoH * 0.55 * s);
-      jacket.addColorStop(0, '#48d3c2'); jacket.addColorStop(1, '#169889');
-      roundRect(-torsoW * 0.5 * s, -torsoH * 0.52 * s, torsoW * s, torsoH * s, 7 * s);
-      ctx.fillStyle = jacket; ctx.fill(); inkStroke(2 * s);
-      ctx.fillStyle = '#11796f'; roundRect(-torsoW * 0.5 * s, torsoH * 0.27 * s, torsoW * s, torsoH * 0.16 * s, 2 * s); ctx.fill();
-      ctx.restore();
-
-      // Front leg and arm.
-      limb([rightLeg.hip, rightLeg.knee, rightLeg.foot], 9.5, 6.2, '#2f3d5d');
-      shoe(rightLeg.foot, rightLeg.knee, true);
-      limb([rightArm.shoulder, rightArm.elbow, rightArm.hand], 8.6, 5.8, '#43c8b9');
-      ctx.fillStyle = '#efb183'; ctx.beginPath(); ctx.arc(rightArm.hand.x * s, rightArm.hand.y * s, 2.9 * s, 0, Math.PI * 2); ctx.fill(); inkStroke(1.3 * s);
-
-      // Backpack sits on the visible back of the runner.
-      ctx.save(); ctx.translate((torsoX - 0.5) * s, (torsoY + 0.5) * s); ctx.rotate(torsoRot);
-      ctx.fillStyle = '#f7b843'; roundRect(-7.2 * s, -11.5 * s, 14.4 * s, 23 * s, 5 * s); ctx.fill(); inkStroke(1.7 * s);
-      ctx.fillStyle = '#dc8522'; roundRect(-5.5 * s, 3 * s, 11 * s, 5.4 * s, 2.2 * s); ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = 1.1 * s;
-      ctx.beginPath(); ctx.moveTo(-3.4 * s, -7 * s); ctx.lineTo(3.4 * s, -7 * s); ctx.stroke();
-      ctx.restore();
-
-      // Head is mostly seen from behind, which suits an endless runner much better.
-      const head = P(17 * slide + rollWave * 1.8 * slide, -51 + 47 * slide + Math.abs(rollWave) * 1.8 * slide);
-      ctx.fillStyle = '#efb183'; ctx.beginPath(); ctx.arc(head.x * s, head.y * s, 9.2 * s, 0, Math.PI * 2); ctx.fill(); inkStroke(1.9 * s);
-      ctx.fillStyle = '#242b40';
-      ctx.beginPath(); ctx.arc(head.x * s, (head.y - 1.8) * s, 8.8 * s, Math.PI * 0.95, Math.PI * 2.05); ctx.fill();
-      ctx.fillStyle = '#ff6652';
-      ctx.beginPath(); ctx.arc(head.x * s, (head.y - 3.6) * s, 8.7 * s, Math.PI * 1.03, Math.PI * 1.97); ctx.lineTo((head.x + 7.9) * s, (head.y - 1.8) * s); ctx.lineTo((head.x - 7.9) * s, (head.y - 1.8) * s); ctx.closePath(); ctx.fill();
-      ctx.strokeStyle = INK; ctx.lineWidth = 1.6 * s; ctx.stroke();
-      ctx.fillStyle = '#d9473a'; roundRect((head.x - 7.2) * s, (head.y - 3.2) * s, 14.4 * s, 3.2 * s, 1.5 * s); ctx.fill();
-
-      // Hood/collar peeking above the backpack.
-      ctx.strokeStyle = '#0f776d'; ctx.lineWidth = 3 * s; ctx.lineCap = 'round';
-      ctx.beginPath(); ctx.arc((torsoX + 1.2 * slide) * s, (torsoY - torsoH * 0.47) * s, 6.5 * s, 0.18, Math.PI - 0.18); ctx.stroke();
-
+      ctx.globalAlpha = alpha;
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(spriteImage, sx, sy, sw, sh, ps.x - dw / 2, anchorY - dh, dw, dh);
       ctx.restore();
     },
 
