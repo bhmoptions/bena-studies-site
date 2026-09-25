@@ -48,13 +48,13 @@ window.BENA_CONTEUDO = {
           {
             nome: 'Astronomia & Espaço',
             jogos: [
-              {
+              /* {
                 id: 'ciencia-espacial',
                 nome: 'Ciência Espacial',
                 descricao: 'Explore o espaço e responda aos desafios científicos.',
                 arquivo: 'ciencias/ciencia-espacial/jogo.js',
                 pagina: 'ciencias/ciencia-espacial/index.html'
-              },
+              }, */
               {
                 id: 'andrews-run',
                 nome: 'Andrews Run',
