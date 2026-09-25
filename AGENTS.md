@@ -50,12 +50,12 @@ Quando o usuário pedir para abrir o servidor, use "http://localhost:8765/"
 ### 1. Backup obrigatório antes de iniciar alterações
 Antes de realizar qualquer alteração, criação ou remoção de arquivos no projeto:
 1. Verifique o status do repositório (`git status`).
-2. Se houver alterações locais ou arquivos pendentes, faça apenas commit antes de prosseguir (`git add .`, `git commit -m "checkpoint: <descrição>"`). **NÃO faça push.**
+2. Se houver alterações locais ou arquivos pendentes, faça apenas commit antes de prosseguir (`git add .`, `git commit -m "checkpoint: <descrição>"`). **Não faça push**, a menos que o usuário solicite.
 3. Somente inicie a nova tarefa/implementação após assegurar que o estado prévio do projeto está salvo no repositório local.
 
 ### 2. Commit obrigatório ao concluir tarefas
 Ao finalizar com sucesso qualquer alteração, correção ou implementação de funcionalidade:
 1. Verifique o status do repositório (`git status`).
 2. Faça commit de todas as alterações com mensagem semântica clara (ex.: `feat: ...`, `fix: ...`, `chore: ...`).
-3. **NÃO execute push.** O agente não deve realizar push para o repositório remoto.
-4. Informe o usuário sobre a conclusão para que ele possa revisar as alterações locais.
+3. **Não execute push por padrão.** O agente só deve realizar push para o repositório remoto quando explicitamente solicitado pelo usuário.
+4. Informe o usuário sobre a conclusão para que ele possa revisar as alterações locais ou aprovar o envio (push).
